@@ -390,7 +390,7 @@ select {
   right: 0;
   bottom: -1px;
 
-  height: 210px;
+  height: 190px;
 
   overflow: hidden;
 
@@ -401,37 +401,35 @@ select {
 
   position: absolute;
 
-  left: -15%;
+  left: -10%;
 
-  width: 130%;
+  width: 120%;
 
   border-radius: 50%;
 
+  transform: rotate(1.8deg);
+   
 }
-
+   
 
 .curve-lime {
 
-  bottom: 42px;
-
-  height: 150px;
+  bottom: -78px;
 
   background: var(--eva-verde);
 
-  transform: rotate(2.8deg);
+  z-index: 1;
 
 }
 
 
 .curve-teal {
 
-  bottom: -92px;
-
-  height: 190px;
+  bottom: -100px;
 
   background: var(--eva-verde-azulado);
 
-  transform: rotate(-1.8deg);
+  z-index: 2;
 
 }
 
