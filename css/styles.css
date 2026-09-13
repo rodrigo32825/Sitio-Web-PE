@@ -47,3 +47,16 @@ a {
     width: calc(100% - 48px);
   }
 }
+
+.eva-title-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.eva-title-logo img {
+  width: 260px;
+  height: auto;
+}
+
+
