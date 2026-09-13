@@ -210,21 +210,13 @@ select {
 
   position: relative;
 
-  min-height: 730px;
+  min-height: 780px;
 
   overflow: hidden;
 
   background:
-    radial-gradient(
-      circle at 85% 60%,
-      rgba(185, 255, 255, 0.35),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 15% 45%,
-      rgba(129, 201, 250, 0.22),
-      transparent 36%
-    ),
+    radial-gradient(circle at 14% 50%, rgba(129, 201, 250, 0.16), transparent 34%),
+    radial-gradient(circle at 88% 55%, rgba(185, 255, 255, 0.24), transparent 32%),
     var(--eva-blanco);
 
 }
@@ -398,7 +390,7 @@ select {
   right: 0;
   bottom: -1px;
 
-  height: 155px;
+  height: 210px;
 
   overflow: hidden;
 
@@ -409,37 +401,37 @@ select {
 
   position: absolute;
 
-  left: -8%;
+  left: -15%;
 
-  width: 116%;
+  width: 130%;
 
-  border-radius: 50% 50% 0 0;
+  border-radius: 50%;
 
 }
 
 
 .curve-lime {
 
-  bottom: 24px;
+  bottom: 42px;
 
-  height: 135px;
+  height: 150px;
 
   background: var(--eva-verde);
 
-  transform: rotate(2deg);
+  transform: rotate(2.8deg);
 
 }
 
 
 .curve-teal {
 
-  bottom: -70px;
+  bottom: -92px;
 
-  height: 170px;
+  height: 190px;
 
   background: var(--eva-verde-azulado);
 
-  transform: rotate(-1deg);
+  transform: rotate(-1.8deg);
 
 }
 
@@ -972,7 +964,7 @@ select {
 
   .hero {
 
-    min-height: 590px;
+    min-height: 610px;
 
   }
 
@@ -1056,25 +1048,25 @@ select {
 
   .hero-curves {
 
-    height: 100px;
+    height: 125px;
 
   }
 
 
   .curve-lime {
 
-    bottom: 20px;
+    bottom: 24px;
 
-    height: 80px;
+    height: 95px;
 
   }
 
 
   .curve-teal {
 
-    bottom: -42px;
+    bottom: -58px;
 
-    height: 95px;
+    height: 120px;
 
   }
 
