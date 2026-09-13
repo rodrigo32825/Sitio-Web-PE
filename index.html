@@ -24,62 +24,292 @@
     rel="stylesheet"
   >
 
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 
 <body>
 
-  <header>
-    <div class="eva-container">
-      <nav>
-        Inicio · Educación · Viajes · Mesa Viajera · Hablemos
+  <!-- HEADER -->
+  <header class="site-header">
+
+    <div class="eva-container header-inner">
+
+      <nav class="main-nav" aria-label="Navegación principal">
+
+        <a class="nav-link active" href="#inicio">
+          Inicio
+        </a>
+
+        <a class="nav-link" href="#educacion">
+          Educación
+        </a>
+
+        <a class="nav-link" href="#viajes">
+          Viajes
+        </a>
+
+        <a class="nav-link" href="#mesa-viajera">
+          Mesa Viajera
+        </a>
+
+        <a class="nav-button" href="#contacto">
+          Hablemos
+        </a>
+
       </nav>
+
     </div>
+
   </header>
+
+
 
   <main>
 
-    <section class="eva-hero">
-  <div class="eva-container eva-hero-content">
+    <!-- HERO -->
+    <section class="hero" id="inicio">
 
-    <p class="eva-eyebrow">
-      EDUCACIÓN · VIAJES · EXPERIENCIAS
-    </p>
+      <div class="eva-container hero-inner">
 
-    <h1 class="eva-hero-title">
-      <span>Hazlo realidad</span>
+        <p class="hero-eyebrow">
+          Estudia&nbsp; · &nbsp;Viaja&nbsp; · &nbsp;Aprende
+        </p>
 
-      <span class="eva-title-logo">
-  con
-  <img src="./assets/logo_eva.png" alt="EVA">
-</span>
-    </h1>
+        <h1 class="hero-title">
 
-    <p class="eva-hero-description">
-      Educación, viajes y experiencias para llevarte más lejos.
-    </p>
+          <span class="hero-title-first">
+            Hazlo realidad
+          </span>
 
-    <a class="eva-main-button" href="#servicios">
-      Explora lo que podemos hacer por ti
-      <span aria-hidden="true">→</span>
-    </a>
+          <span class="hero-title-second">
 
-  </div>
-</section>
+            <span class="hero-con">
+              con
+            </span>
 
-    <section id="servicios">
-      <div class="eva-container">
+            <img
+              class="hero-logo"
+              src="./assets/logo_eva.png"
+              alt="Proyecto EVA"
+            >
 
-        <h2>¿Qué quieres hacer hoy?</h2>
+          </span>
 
-        <p>Educación</p>
-        <p>Viajes</p>
-        <p>Mesa Viajera</p>
+        </h1>
+
+        <p class="hero-description">
+          Educación, viajes y experiencias
+          <br>
+          para llevarte más lejos.
+        </p>
+
+        <a class="primary-button" href="#servicios">
+
+          <span>
+            Explora lo que podemos hacer por ti
+          </span>
+
+          <span class="button-arrow" aria-hidden="true">
+            ↓
+          </span>
+
+        </a>
 
       </div>
+
+
+      <!-- CURVAS DE IDENTIDAD -->
+      <div class="hero-curves" aria-hidden="true">
+
+        <div class="curve curve-lime"></div>
+        <div class="curve curve-teal"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- SERVICIOS -->
+    <section class="services" id="servicios">
+
+      <div class="eva-container">
+
+        <h2 class="section-title">
+          ¿Qué quieres hacer hoy?
+        </h2>
+
+
+        <div class="services-grid">
+
+          <!-- EDUCACIÓN -->
+          <article class="service-card" id="educacion">
+
+            <h3>
+              Educación
+            </h3>
+
+            <p>
+              Estudia en el extranjero con acompañamiento en cada paso.
+            </p>
+
+            <a href="#educacion">
+              Explora tus opciones
+              <span aria-hidden="true">↗</span>
+            </a>
+
+          </article>
+
+
+          <!-- VIAJES -->
+          <article class="service-card" id="viajes">
+
+            <h3>
+              Viajes
+            </h3>
+
+            <p>
+              Experiencias a tu medida, con cada detalle en su lugar.
+            </p>
+
+            <a href="#viajes">
+              Planea tu viaje
+              <span aria-hidden="true">↗</span>
+            </a>
+
+          </article>
+
+
+          <!-- MESA VIAJERA -->
+          <article class="service-card" id="mesa-viajera">
+
+            <h3>
+              Mesa Viajera
+            </h3>
+
+            <p>
+              Convierte los regalos de tu boda en nuevas experiencias.
+            </p>
+
+            <a href="#mesa-viajera">
+              Conoce Mesa Viajera
+              <span aria-hidden="true">↗</span>
+            </a>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- CONFIANZA -->
+    <section class="trust-strip">
+
+      <div class="eva-container trust-grid">
+
+        <div>
+          Experiencia internacional.
+        </div>
+
+        <div>
+          Atención personalizada.
+        </div>
+
+        <div>
+          Procesos claros.
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- CTA FINAL -->
+    <section class="final-cta" id="contacto">
+
+      <div class="eva-container final-cta-inner">
+
+        <div class="cta-accent"></div>
+
+        <h2>
+          Tu siguiente paso
+          <br>
+          empieza aquí.
+        </h2>
+
+        <p>
+          Cuéntanos qué tienes en mente.
+        </p>
+
+        <a class="outline-button" href="#contacto">
+
+          <span>
+            Hablemos
+          </span>
+
+          <span class="outline-arrow" aria-hidden="true">
+            →
+          </span>
+
+        </a>
+
+      </div>
+
+
+      <div class="footer-curves" aria-hidden="true">
+
+        <div class="footer-curve-lime"></div>
+        <div class="footer-curve-teal"></div>
+
+      </div>
+
     </section>
 
   </main>
+
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="eva-container footer-inner">
+
+      <img
+        class="footer-logo"
+        src="./assets/logo_eva.png"
+        alt="Proyecto EVA"
+      >
+
+
+      <div class="footer-links">
+
+        <span>
+          Instagram
+        </span>
+
+        <span>
+          WhatsApp
+        </span>
+
+        <span>
+          Correo
+        </span>
+
+        <span>
+          Aviso de privacidad
+        </span>
+
+      </div>
+
+    </div>
+
+  </footer>
 
 </body>
 
