@@ -1,0 +1,49 @@
+:root {
+  --eva-petroleo: #073F4C;
+  --eva-verde-azulado: #007B91;
+  --eva-limon: #BDE54D;
+  --eva-verde: #ABD63F;
+  --eva-gris: #344055;
+  --eva-verde-claro: #EBF4EF;
+  --eva-linea: #CCDDE0;
+  --eva-blanco: #FFFFFF;
+
+  --eva-font: "Manrope", sans-serif;
+  --eva-max-width: 1272px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--eva-font);
+  color: var(--eva-gris);
+  background: var(--eva-blanco);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.eva-container {
+  width: min(calc(100% - 168px), var(--eva-max-width));
+  margin-inline: auto;
+}
+
+@media (max-width: 768px) {
+  .eva-container {
+    width: calc(100% - 48px);
+  }
+}
