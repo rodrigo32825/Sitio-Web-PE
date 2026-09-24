@@ -1,0 +1,110 @@
+/* Mesa Viajera: una página independiente con la identidad de Proyecto EVA. */
+body { background: #f8faf6; }
+
+.mesa-header { position: relative; z-index: 3; background: #fff; }
+.mesa-header-inner { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.mesa-home-link { color: var(--eva-petroleo); font-size: 15px; font-weight: 700; white-space: nowrap; }
+.mesa-home-link:hover, .mesa-nav-link:hover, .mesa-secondary:hover { color: var(--eva-verde-azulado); }
+.mesa-nav { display: flex; align-items: center; gap: 34px; }
+.mesa-nav-link { color: var(--eva-gris); font-size: 15px; font-weight: 600; }
+.mesa-nav-button { padding: 13px 28px; border: 1.5px solid var(--eva-verde-azulado); border-radius: 100px; color: var(--eva-petroleo); font-size: 15px; font-weight: 700; }
+.mesa-nav-button:hover { background: var(--eva-petroleo); color: #fff; }
+
+.mesa-hero { position: relative; overflow: hidden; min-height: 690px; background: #f8faf6; }
+.mesa-hero-photo { position: absolute; inset: 0 0 0 auto; width: 74%; background: url('../assets/Mesa/hero-mesa-viajera.webp') center center / cover no-repeat; }
+.mesa-hero-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #f8faf6 0%, rgba(248,250,246,.96) 18%, rgba(248,250,246,.25) 53%, transparent 80%), linear-gradient(0deg, #f8faf6 0%, transparent 22%); }
+.mesa-hero-inner { position: relative; z-index: 1; padding-top: 48px; padding-bottom: 100px; }
+.mesa-seal { width: 112px; height: 112px; margin-bottom: 22px; }
+.mesa-eyebrow, .mesa-kicker { color: var(--eva-verde-azulado); font-size: 12px; font-weight: 800; letter-spacing: .17em; }
+.mesa-eyebrow { margin: 0 0 14px; }
+.mesa-hero h1 { max-width: 770px; margin: 0; color: var(--eva-petroleo); font-size: clamp(48px, 6.2vw, 88px); line-height: 1.05; letter-spacing: -.068em; font-weight: 800; }
+.mesa-hero h1 em, .mesa-contact h2 em { color: var(--eva-verde-azulado); font-family: 'Bodoni Moda', Georgia, serif; font-weight: 600; letter-spacing: -.055em; }
+.mesa-lead { max-width: 495px; margin: 28px 0 0; color: #334553; font-size: 18px; line-height: 1.65; }
+.mesa-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
+.mesa-primary { display: inline-flex; align-items: center; justify-content: center; gap: 32px; min-height: 58px; padding: 14px 23px 14px 28px; border-radius: 100px; background: var(--eva-limon); color: var(--eva-petroleo); font-size: 15px; font-weight: 800; }
+.mesa-primary:hover { background: var(--eva-verde); transform: translateY(-2px); }
+.mesa-primary span { font-size: 22px; line-height: 1; }
+.mesa-secondary { display: inline-flex; align-items: center; gap: 12px; color: var(--eva-petroleo); font-size: 15px; font-weight: 700; }
+
+.mesa-experiences { padding: 98px 0 110px; background: #fff; }
+.mesa-section-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 410px); align-items: end; column-gap: 70px; }
+.mesa-section-intro .mesa-kicker { grid-column: 1 / -1; margin: 0 0 20px; }
+.mesa-section-intro h2, .mesa-process h2 { max-width: 720px; margin: 0; color: var(--eva-petroleo); font-size: clamp(39px, 4.3vw, 64px); line-height: 1.12; letter-spacing: -.055em; }
+.mesa-section-intro > p:last-child { margin: 0 0 6px; color: var(--eva-gris); font-size: 17px; line-height: 1.7; }
+.mesa-experience-list { margin-top: 58px; border-top: 1px solid var(--eva-linea); }
+.mesa-experience { display: grid; grid-template-columns: 72px minmax(260px, 1fr) minmax(280px, 440px); align-items: center; gap: 28px; min-height: 142px; border-bottom: 1px solid var(--eva-linea); }
+.mesa-number { align-self: start; margin-top: 35px; color: var(--eva-verde-azulado); font-size: 13px; font-weight: 700; }
+.mesa-type { color: #659199; font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+.mesa-experience h3 { margin: 5px 0 0; color: var(--eva-petroleo); font-size: clamp(23px, 2.1vw, 30px); line-height: 1.2; letter-spacing: -.03em; }
+.mesa-experience p { margin: 0; color: #4c5965; font-size: 16px; line-height: 1.6; }
+.mesa-list-note { max-width: 690px; margin: 30px 0 0 auto; color: var(--eva-verde-azulado); font-size: 14px; line-height: 1.6; }
+
+.mesa-process { padding: 100px 0 108px; background: #edf4ee; }
+.mesa-process-heading { display: grid; grid-template-columns: 30% 1fr; gap: 22px; align-items: start; }
+.mesa-process-heading .mesa-kicker { margin: 12px 0 0; }
+.mesa-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 72px 0 0; padding: 0; list-style: none; }
+.mesa-steps li { padding-top: 22px; border-top: 2px solid var(--eva-verde-azulado); }
+.mesa-steps li > span { color: var(--eva-verde-azulado); font-size: 14px; font-weight: 800; }
+.mesa-steps h3 { max-width: 260px; margin: 26px 0 12px; color: var(--eva-petroleo); font-size: 25px; line-height: 1.24; letter-spacing: -.035em; }
+.mesa-steps p { max-width: 340px; margin: 0; color: var(--eva-gris); font-size: 15px; line-height: 1.7; }
+
+.mesa-contact { position: relative; overflow: hidden; padding: 98px 0 112px; background: var(--eva-petroleo); }
+.mesa-contact::after { content: ''; position: absolute; right: -16%; bottom: -310px; width: 680px; height: 460px; border: 55px solid var(--eva-limon); border-radius: 50%; opacity: .8; }
+.mesa-contact-inner { position: relative; z-index: 1; }
+.mesa-contact .mesa-kicker { margin: 0 0 18px; color: var(--eva-limon); }
+.mesa-contact h2 { max-width: 850px; margin: 0; color: #fff; font-size: clamp(44px, 5.1vw, 76px); line-height: 1.12; letter-spacing: -.06em; }
+.mesa-contact h2 em { color: #d6efa6; }
+.mesa-contact p:not(.mesa-kicker) { max-width: 610px; margin: 24px 0 31px; color: #d6e3e5; font-size: 17px; line-height: 1.6; }
+.mesa-primary-light { background: #d2ee8b; }
+.mesa-footer { padding: 30px 0; background: #fff; }
+.mesa-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--eva-gris); font-size: 13px; }
+.mesa-footer a { color: var(--eva-verde-azulado); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .mesa-nav { gap: 22px; }
+  .mesa-hero-photo { width: 80%; }
+  .mesa-hero h1 { max-width: 650px; }
+  .mesa-section-intro { column-gap: 32px; }
+  .mesa-experience { grid-template-columns: 48px minmax(190px, 1fr) minmax(230px, 1fr); gap: 16px; }
+}
+
+@media (max-width: 768px) {
+  .mesa-header-inner { min-height: 78px; }
+  .mesa-nav-link { display: none; }
+  .mesa-nav-button { padding: 11px 19px; }
+  .mesa-hero { min-height: auto; }
+  .mesa-hero-photo { top: 0; right: 0; width: 100%; height: 360px; background-position: 70% 43%; }
+  .mesa-hero-photo::after { background: linear-gradient(to bottom, transparent 25%, rgba(248,250,246,.05) 53%, #f8faf6 100%); }
+  .mesa-hero-inner { padding-top: 282px; padding-bottom: 72px; }
+  .mesa-seal { width: 92px; height: 92px; margin-bottom: 16px; }
+  .mesa-hero h1 { font-size: clamp(45px, 9vw, 62px); line-height: 1.08; }
+  .mesa-lead { margin-top: 20px; font-size: 16px; }
+  .mesa-actions { gap: 18px; }
+  .mesa-experiences { padding: 76px 0 85px; }
+  .mesa-section-intro { display: block; }
+  .mesa-section-intro h2 { max-width: 590px; }
+  .mesa-section-intro > p:last-child { max-width: 590px; margin: 20px 0 0; }
+  .mesa-experience-list { margin-top: 42px; }
+  .mesa-experience { grid-template-columns: 34px 1fr; gap: 10px; padding: 24px 0; min-height: auto; }
+  .mesa-number { margin-top: 6px; }
+  .mesa-experience p { grid-column: 2; font-size: 15px; }
+  .mesa-list-note { margin-left: 44px; }
+  .mesa-process { padding: 78px 0 88px; }
+  .mesa-process-heading { display: block; }
+  .mesa-process-heading .mesa-kicker { margin: 0 0 20px; }
+  .mesa-steps { gap: 22px; margin-top: 50px; }
+  .mesa-steps h3 { font-size: 21px; }
+  .mesa-contact { padding: 78px 0 90px; }
+  .mesa-contact::after { right: -450px; bottom: -370px; }
+}
+
+@media (max-width: 600px) {
+  .mesa-home-link { font-size: 13px; }
+  .mesa-header-inner { gap: 12px; }
+  .mesa-hero h1 { font-size: clamp(44px, 10vw, 56px); }
+  .mesa-primary { width: 100%; justify-content: space-between; }
+  .mesa-steps { display: block; }
+  .mesa-steps li + li { margin-top: 30px; }
+  .mesa-steps h3 { max-width: none; margin-top: 18px; }
+  .mesa-footer-inner { align-items: flex-start; flex-direction: column; }
+}
