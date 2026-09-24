@@ -5,7 +5,7 @@ body { background: #f8faf6; }
 .mesa-header-inner { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .mesa-home-link { color: var(--eva-petroleo); font-size: 15px; font-weight: 700; white-space: nowrap; }
 .mesa-home-link:hover, .mesa-nav-link:hover, .mesa-secondary:hover { color: var(--eva-verde-azulado); }
-.mesa-nav { display: flex; align-items: center; gap: 34px; }
+.mesa-nav { display: flex; align-items: center; gap: 26px; }
 .mesa-nav-link { color: var(--eva-gris); font-size: 15px; font-weight: 600; }
 .mesa-nav-button { padding: 13px 28px; border: 1.5px solid var(--eva-verde-azulado); border-radius: 100px; color: var(--eva-petroleo); font-size: 15px; font-weight: 700; }
 .mesa-nav-button:hover { background: var(--eva-petroleo); color: #fff; }
@@ -26,7 +26,20 @@ body { background: #f8faf6; }
 .mesa-primary span { font-size: 22px; line-height: 1; }
 .mesa-secondary { display: inline-flex; align-items: center; gap: 12px; color: var(--eva-petroleo); font-size: 15px; font-weight: 700; }
 
-.mesa-experiences { padding: 98px 0 110px; background: #fff; }
+.mesa-about { padding: 100px 0 108px; background: #fff; scroll-margin-top: 20px; }
+.mesa-about .mesa-kicker { margin: 0 0 27px; }
+.mesa-about-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(310px, 480px); align-items: start; gap: 70px; }
+.mesa-about h2 { margin: 0; color: var(--eva-petroleo); font-size: clamp(40px, 4.6vw, 68px); line-height: 1.11; letter-spacing: -.055em; }
+.mesa-about h2 em { color: var(--eva-verde-azulado); font-family: 'Bodoni Moda', Georgia, serif; font-weight: 600; letter-spacing: -.055em; }
+.mesa-about-copy p { margin: 0; color: #4c5965; font-size: 17px; line-height: 1.7; }
+.mesa-about-copy p + p { margin-top: 19px; }
+.mesa-about-copy strong { color: var(--eva-petroleo); font-weight: 700; }
+.mesa-about-roles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 44px; margin-top: 74px; }
+.mesa-about-roles > div { padding-top: 20px; border-top: 2px solid var(--eva-verde-azulado); }
+.mesa-about-roles span { color: var(--eva-verde-azulado); font-size: 11px; font-weight: 800; letter-spacing: .15em; }
+.mesa-about-roles p { max-width: 430px; margin: 16px 0 0; color: var(--eva-petroleo); font-size: clamp(20px, 2vw, 26px); line-height: 1.4; letter-spacing: -.025em; }
+
+.mesa-experiences { padding: 98px 0 110px; background: #f8faf6; }
 .mesa-section-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 410px); align-items: end; column-gap: 70px; }
 .mesa-section-intro .mesa-kicker { grid-column: 1 / -1; margin: 0 0 20px; }
 .mesa-section-intro h2, .mesa-process h2 { max-width: 720px; margin: 0; color: var(--eva-petroleo); font-size: clamp(39px, 4.3vw, 64px); line-height: 1.12; letter-spacing: -.055em; }
@@ -61,9 +74,10 @@ body { background: #f8faf6; }
 .mesa-footer a { color: var(--eva-verde-azulado); font-weight: 700; }
 
 @media (max-width: 900px) {
-  .mesa-nav { gap: 22px; }
+  .mesa-nav { gap: 18px; }
   .mesa-hero-photo { width: 80%; }
   .mesa-hero h1 { max-width: 650px; }
+  .mesa-about-intro { gap: 34px; }
   .mesa-section-intro { column-gap: 32px; }
   .mesa-experience { grid-template-columns: 48px minmax(190px, 1fr) minmax(230px, 1fr); gap: 16px; }
 }
@@ -80,6 +94,11 @@ body { background: #f8faf6; }
   .mesa-hero h1 { font-size: clamp(45px, 9vw, 62px); line-height: 1.08; }
   .mesa-lead { margin-top: 20px; font-size: 16px; }
   .mesa-actions { gap: 18px; }
+  .mesa-about { padding: 76px 0 84px; }
+  .mesa-about-intro { display: block; }
+  .mesa-about h2 { max-width: 650px; }
+  .mesa-about-copy { max-width: 650px; margin-top: 24px; }
+  .mesa-about-roles { margin-top: 52px; }
   .mesa-experiences { padding: 76px 0 85px; }
   .mesa-section-intro { display: block; }
   .mesa-section-intro h2 { max-width: 590px; }
@@ -103,6 +122,7 @@ body { background: #f8faf6; }
   .mesa-header-inner { gap: 12px; }
   .mesa-hero h1 { font-size: clamp(44px, 10vw, 56px); }
   .mesa-primary { width: 100%; justify-content: space-between; }
+  .mesa-about-roles { grid-template-columns: 1fr; gap: 28px; }
   .mesa-steps { display: block; }
   .mesa-steps li + li { margin-top: 30px; }
   .mesa-steps h3 { max-width: none; margin-top: 18px; }
