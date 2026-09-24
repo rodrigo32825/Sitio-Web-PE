@@ -142,6 +142,31 @@ select {
 }
 
 
+.nav-logo-mesa {
+
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0;
+
+}
+
+
+.nav-logo-mesa img {
+
+  width: 48px;
+  height: 48px;
+
+}
+
+
+.nav-logo-mesa::after {
+
+  display: none;
+
+}
+
+
 .nav-link::after {
 
   content: "";
