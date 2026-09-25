@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css?v=menu-2">
-  <link rel="stylesheet" href="./css/mesa-viajera.css?v=3">
+  <link rel="stylesheet" href="./css/mesa-viajera.css?v=4">
 </head>
 <body>
   <header class="mesa-header">
@@ -114,12 +114,28 @@
         <div class="mesa-gifts" aria-labelledby="gift-types-title">
           <div class="mesa-gifts-heading">
             <p class="mesa-kicker">FORMAS DE REGALAR</p>
-            <h3 id="gift-types-title">Cada invitado encuentra su manera de participar.</h3>
+            <h3 id="gift-types-title">Cada invitado encuentra su forma de regalar.</h3>
           </div>
           <div class="mesa-gift-types">
-            <div><h4>Regalos con meta</h4><p>Varios invitados suman aportaciones para alcanzar un objetivo, como sus vuelos.</p></div>
-            <div><h4>Regalos repetibles</h4><p>Un mismo regalo, como un desayuno para dos, puede elegirse varias veces.</p></div>
-            <div><h4>Regalos únicos</h4><p>Una experiencia especial, como una noche de hotel, se elige una sola vez.</p></div>
+            <article class="mesa-gift-type">
+              <figure class="mesa-gift-photo">
+                <img src="./assets/Mesa/regalo-meta.webp" alt="Pareja caminando junto a un tren con vista al mar" width="1536" height="1024" loading="lazy" decoding="async">
+                <div class="mesa-goal-meter" role="img" aria-label="Ejemplo visual de una meta parcialmente alcanzada">
+                  <span class="mesa-goal-title">Ejemplo · la meta crece con cada regalo</span>
+                  <span class="mesa-goal-track" aria-hidden="true"><span></span></span>
+                  <span class="mesa-goal-ends" aria-hidden="true"><span>Inicio</span><span>Meta</span></span>
+                </div>
+              </figure>
+              <div class="mesa-gift-copy"><h4>Regalos con meta</h4><p>Varios invitados suman aportaciones para alcanzar un objetivo, como su gran viaje juntos.</p></div>
+            </article>
+            <article class="mesa-gift-type">
+              <figure class="mesa-gift-photo"><img src="./assets/Mesa/regalo-repetible.webp" alt="Dos cócteles en una terraza de París al anochecer" width="1536" height="1024" loading="lazy" decoding="async"></figure>
+              <div class="mesa-gift-copy"><h4>Regalos repetibles</h4><p>Unos cócteles en París pueden regalarse varias veces: un brindis para más de una noche especial.</p></div>
+            </article>
+            <article class="mesa-gift-type">
+              <figure class="mesa-gift-photo"><img src="./assets/Mesa/regalo-unico.webp" alt="Habitación de hotel con terraza frente al mar" width="1536" height="1024" loading="lazy" decoding="async"></figure>
+              <div class="mesa-gift-copy"><h4>Regalos únicos</h4><p>Una experiencia especial, como una noche de hotel, se elige una sola vez.</p></div>
+            </article>
           </div>
         </div>
       </div>

@@ -63,14 +63,23 @@ body { background: #f8faf6; }
 .mesa-steps li > span { color: var(--eva-verde-azulado); font-size: 14px; font-weight: 800; }
 .mesa-steps h3 { max-width: 260px; margin: 26px 0 12px; color: var(--eva-petroleo); font-size: 25px; line-height: 1.24; letter-spacing: -.035em; }
 .mesa-steps p { max-width: 340px; margin: 0; color: var(--eva-gris); font-size: 15px; line-height: 1.7; }
-.mesa-gifts { margin-top: 78px; padding: 39px 43px 42px; border-radius: 14px; background: #fff; box-shadow: 0 18px 48px rgba(7,63,76,.045); }
-.mesa-gifts-heading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 26px; }
+.mesa-gifts { margin-top: 80px; padding-top: 42px; border-top: 1px solid #cedfdc; }
+.mesa-gifts-heading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 30px; }
 .mesa-gifts-heading .mesa-kicker { margin: 0 0 5px; white-space: nowrap; }
 .mesa-gifts h3 { max-width: 490px; margin: 0; color: var(--eva-petroleo); font-size: clamp(24px, 2.5vw, 34px); line-height: 1.25; letter-spacing: -.035em; }
-.mesa-gift-types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; padding-top: 27px; border-top: 1px solid var(--eva-linea); }
-.mesa-gift-types > div + div { padding-left: 28px; border-left: 1px solid var(--eva-linea); }
-.mesa-gift-types h4 { margin: 0 0 9px; color: var(--eva-petroleo); font-size: 19px; letter-spacing: -.025em; }
-.mesa-gift-types p { margin: 0; color: var(--eva-gris); font-size: 14px; line-height: 1.65; }
+.mesa-gift-types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.mesa-gift-type { overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 14px 36px rgba(7,63,76,.055); }
+.mesa-gift-photo { position: relative; height: 220px; margin: 0; overflow: hidden; background: #e4e9e2; }
+.mesa-gift-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mesa-gift-photo::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 24%; background: linear-gradient(transparent, rgba(255,255,255,.65)); pointer-events: none; }
+.mesa-gift-copy { padding: 19px 24px 27px; }
+.mesa-gift-copy h4 { margin: 0 0 9px; color: var(--eva-petroleo); font-size: 20px; letter-spacing: -.025em; }
+.mesa-gift-copy p { margin: 0; color: var(--eva-gris); font-size: 14px; line-height: 1.65; }
+.mesa-goal-meter { position: absolute; z-index: 1; right: 12px; bottom: 12px; left: 12px; padding: 11px 14px 10px; border: 1px solid rgba(255,255,255,.7); border-radius: 9px; background: rgba(255,255,255,.9); box-shadow: 0 5px 18px rgba(7,63,76,.08); backdrop-filter: blur(8px); }
+.mesa-goal-title { display: block; margin-bottom: 8px; color: var(--eva-petroleo); font-size: 11px; font-weight: 800; }
+.mesa-goal-track { display: block; height: 8px; overflow: hidden; border-radius: 100px; background: #dbe9e3; }
+.mesa-goal-track span { display: block; width: 66%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--eva-verde-azulado), var(--eva-limon)); }
+.mesa-goal-ends { display: flex; justify-content: space-between; margin-top: 5px; color: #536d70; font-size: 10px; font-weight: 700; }
 
 .mesa-contact { position: relative; overflow: hidden; padding: 98px 0 112px; background: var(--eva-petroleo); }
 .mesa-contact::after { content: ''; position: absolute; right: -16%; bottom: -310px; width: 680px; height: 460px; border: 55px solid var(--eva-limon); border-radius: 50%; opacity: .8; }
@@ -124,11 +133,12 @@ body { background: #f8faf6; }
   .mesa-process-heading .mesa-kicker { margin: 0 0 20px; }
   .mesa-steps { gap: 22px; margin-top: 50px; }
   .mesa-steps h3 { font-size: 21px; }
-  .mesa-gifts { margin-top: 58px; padding: 30px; }
+  .mesa-gifts { margin-top: 58px; padding-top: 33px; }
   .mesa-gifts-heading { display: block; }
   .mesa-gifts-heading .mesa-kicker { margin-bottom: 13px; }
-  .mesa-gift-types { gap: 16px; }
-  .mesa-gift-types > div + div { padding-left: 16px; }
+  .mesa-gift-types { grid-template-columns: 1fr; gap: 18px; }
+  .mesa-gift-type { display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); align-items: center; }
+  .mesa-gift-photo { height: 210px; }
   .mesa-contact { padding: 78px 0 90px; }
   .mesa-contact::after { right: -450px; bottom: -370px; }
 }
@@ -143,8 +153,7 @@ body { background: #f8faf6; }
   .mesa-steps { display: block; }
   .mesa-steps li + li { margin-top: 30px; }
   .mesa-steps h3 { max-width: none; margin-top: 18px; }
-  .mesa-gifts { padding: 26px 23px; }
-  .mesa-gift-types { display: block; }
-  .mesa-gift-types > div + div { margin-top: 19px; padding: 19px 0 0; border-top: 1px solid var(--eva-linea); border-left: 0; }
+  .mesa-gift-type { display: block; }
+  .mesa-gift-photo { height: 215px; }
   .mesa-footer-inner { align-items: flex-start; flex-direction: column; }
 }
