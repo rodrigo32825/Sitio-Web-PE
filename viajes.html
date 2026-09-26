@@ -7,15 +7,18 @@
   <title>Viajes | Proyecto EVA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css?v=menu-2">
-  <link rel="stylesheet" href="./css/viajes.css?v=1">
+  <link rel="stylesheet" href="./css/viajes.css?v=2">
 </head>
 <body>
   <header class="travel-header">
     <div class="travel-utility eva-container">
       <a class="travel-home-link" href="./index.html" aria-label="Volver al inicio de Proyecto EVA">← <span>Proyecto EVA</span></a>
-      <a class="travel-sive" href="https://proyectoeva.streamlit.app/#inicio" target="_blank" rel="noopener noreferrer" aria-label="Abrir SIVE en una nueva pestaña">Acceso SIVE <span aria-hidden="true">↗</span></a>
+      <a class="travel-sive" href="https://proyectoeva.streamlit.app/#inicio" target="_blank" rel="noopener noreferrer" aria-label="Abrir SIVE, Sistema Integral de Viajes EVA, en una nueva pestaña">
+        <span class="travel-sive-copy"><strong>SIVE</strong><span>Sistema Integral de Viajes EVA</span></span>
+        <span class="travel-sive-arrow" aria-hidden="true">↗</span>
+      </a>
     </div>
     <nav class="travel-nav eva-container" aria-label="Navegación principal">
       <a href="./index.html">Inicio</a>
@@ -38,7 +41,11 @@
           <a class="travel-text-link" href="#formas-de-viajar">Explora nuestras formas de viajar <span aria-hidden="true">↓</span></a>
         </div>
       </div>
-      <span class="travel-hero-index" aria-hidden="true">01 / 03</span>
+      <nav class="travel-hero-rail eva-container" aria-label="Tipos de viaje">
+        <a href="#corporativos"><span>01</span> Corporativos</a>
+        <a href="#educativos"><span>02</span> Educativos</a>
+        <a href="#placer"><span>03</span> De placer</a>
+      </nav>
     </section>
 
     <section class="travel-intro" aria-labelledby="intro-title">
@@ -56,23 +63,23 @@
           <h2 id="types-title">Tres motivos para salir.<br><em>Una manera de acompañarte.</em></h2>
         </div>
         <div class="travel-type-grid">
-          <article class="travel-type">
+          <article class="travel-type" id="corporativos">
             <span class="travel-type-number">01 / NEGOCIOS</span>
             <h3>Viajes<br>corporativos<span class="travel-period">.</span></h3>
             <p>Agendas que se mueven, reuniones que importan. Coordinamos vuelos, hospedaje y traslados con atención al tiempo y a las necesidades de tu equipo.</p>
-            <span class="travel-type-foot">Tu agenda, bien conectada <span aria-hidden="true">↗</span></span>
+            <a class="travel-type-foot" href="mailto:travel@proyectoeva.mx?subject=Viaje%20corporativo">Hablemos de este viaje <span aria-hidden="true">↗</span></a>
           </article>
-          <article class="travel-type">
+          <article class="travel-type" id="educativos">
             <span class="travel-type-number">02 / APRENDIZAJE</span>
             <h3>Viajes<br>educativos<span class="travel-period">.</span></h3>
             <p>Para estudiantes, grupos e instituciones: organizamos la logística del trayecto y la estancia para que la experiencia de aprender comience con el pie derecho.</p>
-            <span class="travel-type-foot">Aprender también es viajar <span aria-hidden="true">↗</span></span>
+            <a class="travel-type-foot" href="mailto:travel@proyectoeva.mx?subject=Viaje%20educativo">Hablemos de este viaje <span aria-hidden="true">↗</span></a>
           </article>
-          <article class="travel-type">
+          <article class="travel-type" id="placer">
             <span class="travel-type-number">03 / DESCUBRIR</span>
             <h3>Viajes<br>de placer<span class="travel-period">.</span></h3>
             <p>Una escapada, una celebración o ese destino que llevas tiempo imaginando. Encontramos opciones que encajen con tu estilo, tu ritmo y tus ganas de descubrir.</p>
-            <span class="travel-type-foot">Tu viaje, a tu manera <span aria-hidden="true">↗</span></span>
+            <a class="travel-type-foot" href="mailto:travel@proyectoeva.mx?subject=Viaje%20de%20placer">Hablemos de este viaje <span aria-hidden="true">↗</span></a>
           </article>
         </div>
       </div>

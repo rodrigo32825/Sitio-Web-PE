@@ -11,7 +11,7 @@ body { background: #f8faf6; }
 .mesa-nav-button:hover { background: var(--eva-petroleo); color: #fff; }
 
 .mesa-hero { position: relative; overflow: hidden; min-height: 690px; background: #f8faf6; }
-.mesa-hero-photo { position: absolute; inset: 0 0 0 auto; width: 74%; background: url('../assets/Mesa/hero-mesa-viajera.webp') center center / cover no-repeat; }
+.mesa-hero-photo { position: absolute; inset: 0 0 0 auto; width: 74%; background: url('../assets/Mesa/hero-mesa-viajera-v2.webp') center center / cover no-repeat; }
 .mesa-hero-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #f8faf6 0%, rgba(248,250,246,.96) 18%, rgba(248,250,246,.25) 53%, transparent 80%), linear-gradient(0deg, #f8faf6 0%, transparent 22%); }
 .mesa-hero-inner { position: relative; z-index: 1; padding-top: 48px; padding-bottom: 100px; }
 .mesa-seal { width: 112px; height: 112px; margin-bottom: 22px; }
@@ -41,6 +41,11 @@ body { background: #f8faf6; }
 .mesa-about-roles > div { padding-top: 20px; border-top: 2px solid var(--eva-verde-azulado); }
 .mesa-about-roles span { color: var(--eva-verde-azulado); font-size: 11px; font-weight: 800; letter-spacing: .15em; }
 .mesa-about-roles p { max-width: 430px; margin: 16px 0 0; color: var(--eva-petroleo); font-size: clamp(20px, 2vw, 26px); line-height: 1.4; letter-spacing: -.025em; }
+.mesa-occasions { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; margin-top: 66px; padding-top: 26px; border-top: 1px solid var(--eva-linea); }
+.mesa-occasions .mesa-kicker { margin: 5px 0 0; white-space: nowrap; }
+.mesa-occasions ul { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px 0; margin: 0; padding: 0; list-style: none; }
+.mesa-occasions li { color: var(--eva-petroleo); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.mesa-occasions li + li { margin-left: 18px; padding-left: 18px; border-left: 1px solid #b5c9c7; }
 
 .mesa-experiences { padding: 98px 0 110px; background: #f8faf6; }
 .mesa-section-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 410px); align-items: end; column-gap: 70px; }
@@ -119,6 +124,8 @@ body { background: #f8faf6; }
   .mesa-about h2 { max-width: 650px; }
   .mesa-about-copy { max-width: 650px; margin-top: 24px; }
   .mesa-about-roles { margin-top: 52px; }
+  .mesa-occasions { display: block; margin-top: 50px; }
+  .mesa-occasions ul { justify-content: flex-start; margin-top: 18px; }
   .mesa-experiences { padding: 76px 0 85px; }
   .mesa-section-intro { display: block; }
   .mesa-section-intro h2 { max-width: 590px; }
@@ -150,6 +157,8 @@ body { background: #f8faf6; }
   .mesa-primary { width: 100%; justify-content: space-between; }
   .mesa-secondary { width: 100%; }
   .mesa-about-roles { grid-template-columns: 1fr; gap: 28px; }
+  .mesa-occasions li { font-size: 12px; }
+  .mesa-occasions li + li { margin-left: 11px; padding-left: 11px; }
   .mesa-steps { display: block; }
   .mesa-steps li + li { margin-top: 30px; }
   .mesa-steps h3 { max-width: none; margin-top: 18px; }
