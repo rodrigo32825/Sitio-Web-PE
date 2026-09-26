@@ -107,6 +107,7 @@ body { background: #f8faf6; }
 .mesa-primary-light { background: #d2ee8b; }
 .mesa-footer { padding: 30px 0; background: #fff; }
 .mesa-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--eva-gris); font-size: 13px; }
+.mesa-footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
 .mesa-footer a { color: var(--eva-verde-azulado); font-weight: 700; }
 
 @media (max-width: 900px) {

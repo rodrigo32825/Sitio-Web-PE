@@ -882,6 +882,10 @@ select {
 
 }
 
+.footer-links a { color: inherit; text-decoration: none; }
+.footer-links a:hover { color: var(--eva-verde-azulado); text-decoration: underline; }
+.footer-links a:focus-visible { outline: 3px solid var(--eva-verde-azulado); outline-offset: 4px; }
+
 
 
 /* TABLET
