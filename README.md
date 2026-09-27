@@ -20,3 +20,11 @@ Fuentes de los logotipos, para cotejar la versión de cada marca:
 - Original Campus: `https://originalcampus.edu.au/images/logo.svg`
 
 Los programas, modalidades y requisitos pueden cambiar; se consultan en los enlaces oficiales antes de orientar a una familia.
+
+## Visibilidad en buscadores
+
+- `robots.txt` anuncia `sitemap.xml`; el mapa enumera las páginas públicas que queremos que los buscadores descubran.
+- Cada HTML tiene una URL canónica absoluta de `https://proyectoeva.mx/`. Al añadir una página, agrega su URL al mapa y su propia etiqueta `rel="canonical"`.
+- Los títulos y descripciones resumen cada servicio en lenguaje natural. Las cuatro páginas principales incluyen etiquetas para compartir sus enlaces en redes y mensajería.
+- La portada declara el nombre, sitio, correo y logotipo de Proyecto EVA como datos estructurados de la organización.
+- Para medir la presencia en Google, verificar el dominio en Google Search Console y enviar `https://proyectoeva.mx/sitemap.xml`. Search Console mide impresiones y clics de la Búsqueda de Google; no sustituye una herramienta de análisis de todas las visitas del sitio.
