@@ -954,7 +954,10 @@ select {
 
   .header-inner {
 
-    min-height: 96px;
+    min-height: 116px;
+
+    padding-top: 12px;
+    padding-bottom: 12px;
 
   }
 
@@ -963,14 +966,22 @@ select {
 
     width: 100%;
 
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    justify-items: center;
+    gap: 8px 12px;
 
   }
 
 
   .nav-link {
 
-    display: none;
+    display: inline-flex;
+
+    padding: 5px 0;
+
+    font-size: 13px;
 
   }
 
@@ -979,18 +990,26 @@ select {
 
     display: inline-flex;
 
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+
   }
 
 
   .nav-logo-mesa img {
 
-    width: 76px;
-    height: 76px;
+    width: 65px;
+    height: 65px;
 
   }
 
 
   .nav-button {
+
+    grid-column: 2 / 4;
+    grid-row: 2;
+    justify-self: end;
 
     min-width: 132px;
     height: 48px;
