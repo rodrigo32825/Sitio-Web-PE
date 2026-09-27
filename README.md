@@ -10,6 +10,7 @@ Educación, viajes y experiencias para llevarte más lejos.
 - `estudia/*.html`: una ficha por institución. Se puede actualizar cada historia, área y enlace oficial en su propio archivo.
 - `assets/Estudia/hero-estudia.webp`: fotografía de portada. Sustituye este archivo manteniendo el mismo nombre para cambiar la imagen sin editar HTML o CSS. Fotografía editorial creada para Proyecto EVA; no representa un campus concreto.
 - `assets/Estudia/logos/`: logotipos tomados de los sitios oficiales de las instituciones. Mantén el nombre y formato del archivo al reemplazarlos por versiones autorizadas.
+- `css/estudia.css`: Estudia conserva el blanco, el verde azulado y la tipografía Manrope de EVA. Las clases `.study-trent`, `.study-yorkville`, `.study-tfs` y `.study-original` definen acentos discretos por institución (verde, azul, rojo sobrio y ámbar). Los logotipos oficiales claros se presentan sobre placas pequeñas de color oscuro para mantener su legibilidad.
 
 Fuentes de los logotipos, para cotejar la versión de cada marca:
 
