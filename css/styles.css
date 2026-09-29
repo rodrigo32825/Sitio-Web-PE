@@ -886,6 +886,38 @@ select {
 .footer-links a:hover { color: var(--eva-verde-azulado); text-decoration: underline; }
 .footer-links a:focus-visible { outline: 3px solid var(--eva-verde-azulado); outline-offset: 4px; }
 
+.footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.footer-contact-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--eva-linea);
+  border-radius: 50%;
+  background: #F1F7F7;
+  color: var(--eva-petroleo);
+}
+
+.footer-contact-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-contact-link:hover .footer-contact-icon,
+.footer-contact-link:focus-visible .footer-contact-icon {
+  border-color: var(--eva-verde-azulado);
+  background: var(--eva-verde-azulado);
+  color: var(--eva-blanco);
+}
+
 
 
 /* TABLET
@@ -930,7 +962,9 @@ select {
 
   .footer-links {
 
-    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 14px 28px;
 
   }
 
@@ -1309,6 +1343,8 @@ select {
   .footer-links {
 
     width: 100%;
+
+    justify-content: initial;
 
     display: grid;
 
