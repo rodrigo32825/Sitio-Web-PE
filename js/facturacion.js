@@ -44,7 +44,7 @@
       const category = item.category || 'Other expenses';
       grouped.set(category, (grouped.get(category) || 0) + cents(item.amount));
     }
-    const categories = Array.from(grouped);
+    const categories = Array.from(grouped.keys());
     if (categories.length > 5) {
       const other = categories.slice(4).reduce((sum, name) => sum + grouped.get(name), 0);
       categories.splice(4);
