@@ -38,6 +38,7 @@
           <button type="button" id="new-button">Nuevo</button>
         </div>
         <p class="editor-help">Los datos del formulario no se envían al sitio. Guarda el borrador como archivo si quieres retomarlo después.</p>
+        <p class="editor-help">Al reutilizar un borrador, cambia el folio, la fecha, el cliente y el enlace de pago.</p>
 
         <fieldset><legend><span>01</span> Documento</legend>
           <div class="field-grid"><label>Folio <input name="folio" required placeholder="PR-EVA-2026-09-001"></label><label>Fecha de emisión <input name="fecha" type="date" required></label></div>
@@ -58,6 +59,7 @@
 
         <fieldset><legend><span>03</span> Pago</legend>
           <label>Enlace de pago con tarjeta <input name="enlacePago" type="url" required inputmode="url" placeholder="https://.../card_capture"></label>
+          <p class="editor-help">Verifica que este enlace corresponda al importe de la nueva solicitud.</p>
           <div class="field-grid"><label>Cargo de procesamiento (MXN) <input name="cargo" type="number" min="0" step="0.01" value="0"></label><label>Ajuste / redondeo (MXN) <input name="ajuste" type="number" step="0.01" value="0"></label></div>
           <details><summary>Transferencia bancaria <small>opcional; incluye estos datos solo si la ofreces</small></summary>
             <div class="field-grid"><label>Banco <input name="banco" placeholder="BBVA"></label><label>Beneficiario <input name="beneficiario" placeholder="Razón social"></label></div>
