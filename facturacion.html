@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Facturación · Payment Request | Proyecto EVA</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/recursos-internos.css">
+  <script src="./js/facturacion.js" defer></script>
+</head>
+<body class="billing-page">
+  <header class="resources-header no-print">
+    <div class="resources-container resources-header-inner">
+      <a class="back-link" href="./recursos-internos.html">← Recursos internos</a>
+      <span>PROYECTO EVA <b>/</b> FACTURACIÓN</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="billing-intro no-print">
+      <div><p class="eyebrow">PAYMENT REQUEST / PROYECTO EVA</p><h1>Prepara el cobro.<br><em>El diseño ya está listo.</em></h1><p>Llena los datos, agrega los gastos y descarga tu solicitud de pago en PDF. El detalle comenzará en la segunda hoja.</p></div>
+      <div class="billing-actions">
+        <button type="button" class="action-primary" id="print-button">Generar PDF <span aria-hidden="true">↗</span></button>
+        <p>En la ventana de impresión elige <strong>Guardar como PDF</strong>.</p>
+      </div>
+    </div>
+
+    <div class="billing-workspace">
+      <form id="request-form" class="editor no-print" novalidate>
+        <div class="editor-title"><div><span class="eyebrow">EDITOR</span><h2>Nueva solicitud</h2></div><strong id="editor-total">MXN 0.00</strong></div>
+        <div class="editor-toolbar">
+          <button type="button" id="save-button">Descargar borrador</button>
+          <label class="file-button">Cargar borrador<input id="load-file" type="file" accept=".json,application/json" hidden></label>
+          <button type="button" id="new-button">Nuevo</button>
+        </div>
+        <p class="editor-help">Los datos del formulario no se envían al sitio. Guarda el borrador como archivo si quieres retomarlo después.</p>
+
+        <fieldset><legend><span>01</span> Documento</legend>
+          <div class="field-grid"><label>Folio <input name="folio" required placeholder="PR-EVA-2026-09-001"></label><label>Fecha de emisión <input name="fecha" type="date" required></label></div>
+          <div class="field-grid"><label>Periodo de gastos <input name="periodo" placeholder="08–25 SEP 2026"></label><label>Ciudad / destino <input name="destino" placeholder="MONTERREY / TOLUCA"></label></div>
+          <label>Concepto principal <input name="concepto" required placeholder="TRAVEL FOR ..."></label>
+        </fieldset>
+
+        <fieldset><legend><span>02</span> Cliente y emisor</legend>
+          <label>Facturar a <input name="cliente" required placeholder="TRENT UNIVERSITY"></label>
+          <div class="field-grid"><label>Atención a <input name="atencion" placeholder="Nombre de contacto"></label><label>Correo del cliente <input name="correoCliente" type="email" placeholder="contacto@empresa.com"></label></div>
+          <details><summary>Datos del emisor <small>editar si cambian</small></summary>
+            <label>Razón social <input name="emisor" value="ESTUDIA VIAJA Y APRENDE SAS DE CV"></label>
+            <div class="field-grid"><label>RFC <input name="rfc" value="EVA2407248C9"></label><label>Teléfono <input name="telefono" value="+52 55 3408 2389"></label></div>
+            <label>Domicilio <input name="domicilio" value="Mitla 395 Int. 5, Narvarte, CDMX 03023"></label>
+            <label>Correo de contacto <input name="correoEmisor" type="email" value="travel@proyectoeva.mx"></label>
+          </details>
+        </fieldset>
+
+        <fieldset><legend><span>03</span> Pago</legend>
+          <label>Enlace de pago con tarjeta <input name="enlacePago" type="url" required inputmode="url" placeholder="https://.../card_capture"></label>
+          <div class="field-grid"><label>Cargo de procesamiento (MXN) <input name="cargo" type="number" min="0" step="0.01" value="0"></label><label>Ajuste / redondeo (MXN) <input name="ajuste" type="number" step="0.01" value="0"></label></div>
+          <details><summary>Transferencia bancaria <small>opcional; incluye estos datos solo si la ofreces</small></summary>
+            <div class="field-grid"><label>Banco <input name="banco" placeholder="BBVA"></label><label>Beneficiario <input name="beneficiario" placeholder="Razón social"></label></div>
+            <div class="field-grid"><label>CLABE <input name="clabe" placeholder="18 dígitos"></label><label>Cuenta <input name="cuenta" placeholder="Número de cuenta"></label></div>
+            <div class="field-grid"><label>SWIFT <input name="swift" placeholder="Código SWIFT"></label><label>Dirección del banco <input name="direccionBanco" placeholder="Ciudad y dirección"></label></div>
+          </details>
+        </fieldset>
+
+        <fieldset><legend><span>04</span> Detalle de gastos</legend>
+          <p class="editor-help">Agrega renglones o pega una tabla de Excel con cinco columnas: Fecha, Tipo, Descripción, Ciudad y MXN.</p>
+          <div id="expense-rows" class="expense-editor-rows"></div>
+          <datalist id="expense-types"><option value="Flights"><option value="Accommodation"><option value="Ground transport"><option value="Meals"><option value="Event fees"></datalist>
+          <button type="button" class="add-row" id="add-row">+ Agregar gasto</button>
+          <details class="paste-details"><summary>Pegar varios gastos de Excel</summary>
+            <textarea id="bulk-input" rows="5" placeholder="08 Sep&#9;Ground transport&#9;Uber al aeropuerto&#9;Mexico City&#9;259.97"></textarea>
+            <button type="button" id="paste-button">Agregar renglones pegados</button>
+          </details>
+        </fieldset>
+      </form>
+
+      <section class="preview-area" aria-label="Vista previa de la solicitud de pago">
+        <div class="preview-heading no-print"><span>VISTA PREVIA</span><span>Carta · MXN</span></div>
+        <div id="print-area">
+          <article class="sheet first-sheet">
+            <div class="sheet-accent"></div>
+            <div class="sheet-head"><img src="./assets/Home/logo_eva.png" alt="Proyecto EVA"><div><h2>PAYMENT REQUEST</h2><p>TRAVEL EXPENSES <span id="p-periodo"></span></p></div></div>
+            <div class="sheet-meta"><div><span>REFERENCE / FOLIO</span><strong id="p-folio">—</strong></div><div><span>ISSUE DATE</span><strong id="p-fecha">—</strong></div><div><span>CURRENCY</span><strong>MXN</strong></div></div>
+            <div class="sheet-parties"><div><span>ISSUED BY</span><strong id="p-emisor"></strong><p id="p-rfc"></p><p id="p-domicilio"></p><p id="p-telefono"></p></div><div><span>BILL TO</span><strong id="p-cliente">—</strong><p id="p-atencion"></p><p id="p-correoCliente"></p></div></div>
+            <div class="sheet-service"><span>SERVICE DESCRIPTION</span><div><strong id="p-concepto">—</strong><small id="p-destino"></small></div></div>
+            <div class="sheet-summary"><div class="summary-title"><span>EXPENSE SUMMARY</span><span>MXN</span></div><div id="p-summary-rows"></div><div class="summary-extra"><div><span>Expense subtotal</span><strong id="p-subtotal">0.00</strong></div><div><span>Payment processing fee</span><strong id="p-cargo">0.00</strong></div><div><span>Rounding adjustment</span><strong id="p-ajuste">0.00</strong></div></div></div>
+            <div class="sheet-total"><span>TOTAL DUE</span><strong id="p-total">MXN 0.00</strong></div>
+            <div class="sheet-payment" id="p-payment"><div class="sheet-bank"><span>BANK TRANSFER</span><strong id="p-banco"></strong><div><span>Beneficiary</span><b id="p-beneficiario"></b></div><div><span>CLABE</span><b id="p-clabe"></b></div><div><span>Account</span><b id="p-cuenta"></b></div><div><span>SWIFT</span><b id="p-swift"></b></div><small id="p-direccionBanco"></small></div><div class="sheet-card"><div class="card-heading"><strong>PAY WITH CARD</strong><svg viewBox="0 0 36 28" aria-hidden="true"><rect x="2" y="3" width="32" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 10h26" fill="none" stroke="currentColor" stroke-width="2"/><rect x="6" y="17" width="8" height="3" rx="1" fill="currentColor"/></svg></div><p>Secure online payment</p><a id="p-pay-link" href="#" target="_blank" rel="noopener noreferrer">PAY ONLINE <span aria-hidden="true">›</span></a><small>Opens your payment page</small></div></div>
+            <footer class="sheet-footer"><strong>PROYECTOEVA.MX</strong><span id="p-correoEmisor"></span><span>1 / <span class="p-page-count">2</span></span></footer>
+          </article>
+          <div id="detail-pages"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

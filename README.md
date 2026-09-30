@@ -21,6 +21,14 @@ Fuentes de los logotipos, para cotejar la versión de cada marca:
 
 Los programas, modalidades y requisitos pueden cambiar; se consultan en los enlaces oficiales antes de orientar a una familia.
 
+## Recursos internos y solicitudes de pago
+
+- `viajes.html` enlaza a `recursos-internos.html`, que reúne SIVE y Facturación.
+- `facturacion.html` permite crear un Payment Request con resumen en la primera hoja y gastos detallados desde la segunda. El botón **Generar PDF** abre la impresión del navegador; elige **Guardar como PDF**, papel carta y gráficos de fondo.
+- En **Detalle de gastos** se pueden añadir renglones o pegar cinco columnas desde Excel: Fecha, Tipo, Descripción, Ciudad y MXN. El formulario suma los gastos, el cargo de procesamiento y el ajuste de redondeo; muestra el total en ambas hojas.
+- **Descargar borrador** guarda un archivo JSON en el equipo. **Cargar borrador** recupera los datos, incluida la información bancaria que se haya escrito. El sitio no conserva estos datos y no incluye enlaces de pago de clientes en el código.
+- Los archivos HTML están fuera del sitemap y usan `noindex`, pero GitHub Pages no ofrece acceso privado. Quien conozca la dirección puede abrir el formulario; no lo uses como almacenamiento de documentos confidenciales.
+
 ## Visibilidad en buscadores
 
 - `robots.txt` anuncia `sitemap.xml`; el mapa enumera las páginas públicas que queremos que los buscadores descubran.
