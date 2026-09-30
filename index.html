@@ -46,7 +46,7 @@
     rel="stylesheet"
   >
 
-  <link rel="stylesheet" href="./css/styles.css?v=contactos-1">
+  <link rel="stylesheet" href="./css/styles.css?v=home-eva-20260930">
 </head>
 
 
@@ -81,6 +81,17 @@
 
       </nav>
 
+      <details class="mobile-menu">
+        <summary aria-label="Menú principal"><span></span><span></span><span></span></summary>
+        <nav aria-label="Navegación móvil">
+          <a href="#inicio">Inicio</a>
+          <a href="./estudia.html">Educación</a>
+          <a href="./viajes.html">Viajes</a>
+          <a href="./mesa-viajera.html">Mesa Viajera</a>
+        </nav>
+      </details>
+      <a class="mobile-contact" href="#contacto">Hablemos</a>
+
     </div>
 
   </header>
@@ -92,63 +103,38 @@
     <!-- HERO -->
     <section class="hero" id="inicio">
 
+      <div class="hero-photo" aria-hidden="true"></div>
+
       <div class="eva-container hero-inner">
 
+        <img class="hero-brand" src="./assets/Home/logo_eva_home.png" alt="Proyecto EVA" width="300" height="139">
+
         <p class="hero-eyebrow">
-          Estudia&nbsp; · &nbsp;Viaja&nbsp; · &nbsp;Aprende
+          Educación · Viajes · Experiencias
         </p>
 
         <h1 class="hero-title">
-
-          <span class="hero-title-first">
-            Hazlo realidad
-          </span>
-
-          <span class="hero-title-second">
-
-            <span class="hero-con">
-              con
-            </span>
-
-            <img
-              class="hero-logo"
-              src="./assets/Home/logo_eva.png"
-              alt="EVA"
-            >
-
-          </span>
-
+          <span>Estudia fuera.</span>
+          <span>Viaja a tu manera.</span>
+          <span>Aprende del mundo.</span>
         </h1>
 
         <p class="hero-description">
-          Educación, viajes y experiencias
+          Educación internacional, viajes a medida
           <br>
-          para llevarte más lejos.
+          y experiencias para celebrar grandes momentos.
         </p>
 
-        <a class="primary-button" href="#servicios">
-
-          <span>
-            Explora lo que podemos hacer por ti
-          </span>
-
-          <span class="button-arrow" aria-hidden="true">
-            ↓
-          </span>
-
-        </a>
+        <div class="hero-actions">
+          <a class="primary-button" href="#servicios">
+            Descubre qué hacemos <span aria-hidden="true">→</span>
+          </a>
+          <a class="text-button" href="#nuestra-historia">
+            Conoce nuestra historia <span aria-hidden="true">→</span>
+          </a>
+        </div>
 
       </div>
-
-
-      <!-- CURVAS DE IDENTIDAD -->
-      <div class="hero-curves" aria-hidden="true">
-
-        <div class="curve curve-lime"></div>
-        <div class="curve curve-teal"></div>
-
-      </div>
-
     </section>
 
 
@@ -158,8 +144,9 @@
 
       <div class="eva-container">
 
+        <p class="section-eyebrow">Tres formas de ir más lejos</p>
         <h2 class="section-title">
-          ¿Qué quieres hacer hoy?
+          Lo que hacemos
         </h2>
 
 
@@ -168,12 +155,13 @@
           <!-- EDUCACIÓN -->
           <article class="service-card" id="educacion">
 
+            <span class="service-number">01</span>
             <h3>
-              Educación
+              Educación internacional
             </h3>
 
             <p>
-              Estudia en el extranjero con acompañamiento en cada paso.
+              Programas para estudiar en el extranjero con guía en cada paso.
             </p>
 
             <a href="./estudia.html">
@@ -187,12 +175,13 @@
           <!-- VIAJES -->
           <article class="service-card" id="viajes">
 
+            <span class="service-number">02</span>
             <h3>
-              Viajes
+              Viajes a medida
             </h3>
 
             <p>
-              Experiencias a tu medida, con cada detalle en su lugar.
+              Viajes de placer, académicos y corporativos pensados para ti.
             </p>
 
             <a href="./viajes.html">
@@ -206,12 +195,13 @@
           <!-- MESA VIAJERA -->
           <article class="service-card" id="mesa-viajera">
 
+            <span class="service-number">03</span>
             <h3>
               Mesa Viajera
             </h3>
 
             <p>
-              Convierte una celebración en viajes, experiencias y nuevos recuerdos.
+              Celebraciones y regalos que se convierten en experiencias.
             </p>
 
             <a href="./mesa-viajera.html">
@@ -225,6 +215,16 @@
 
       </div>
 
+    </section>
+
+    <section class="story" id="nuestra-historia">
+      <div class="eva-container story-inner">
+        <p>¿Qué es Proyecto EVA?</p>
+        <h2>Nacimos para abrir oportunidades a quienes quieren estudiar en otro país.</h2>
+        <div>
+          Hoy también diseñamos viajes y experiencias para celebrar los momentos que importan. En cada camino, te acompañamos de forma personal.
+        </div>
+      </div>
     </section>
 
 
@@ -259,11 +259,8 @@
 
         <div class="cta-accent"></div>
 
-        <h2>
-          Tu siguiente paso
-          <br>
-          empieza aquí.
-        </h2>
+        <p class="final-cta-kicker">Tu siguiente paso empieza aquí.</p>
+        <h2>Hazlo realidad con <img src="./assets/Home/logo_eva_home.png" alt="EVA" width="190" height="88"></h2>
 
         <p>
           Cuéntanos qué tienes en mente.
