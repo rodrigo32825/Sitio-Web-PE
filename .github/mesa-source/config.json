@@ -34,20 +34,20 @@
     ]
   },
   "snippets": {
-    "HOME_NAV": "<a class=\"nav-link nav-logo-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\">\n          <img src=\"./assets/Home/logo_mesa_viajera.png\" alt=\"\" width=\"80\" height=\"80\">\n        </a>",
-    "HOME_MOBILE": "<a href=\"https://mesaviajera.proyectoeva.mx/\">Mesa Viajera</a>",
-    "HOME_CARD": "<!-- MESA VIAJERA -->\n          <article class=\"service-card\" id=\"mesa-viajera\">\n\n            <span class=\"service-number\">03</span>\n            <h3>\n              Mesa Viajera\n            </h3>\n\n            <p>\n              Celebraciones y regalos que se convierten en experiencias.\n            </p>\n\n            <a href=\"https://mesaviajera.proyectoeva.mx/\">\n              Conoce Mesa Viajera\n              <span aria-hidden=\"true\">↗</span>\n            </a>\n\n          </article>",
-    "STUDY_NAV": "<a class=\"study-nav-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"./assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
-    "STUDY_FOOTER": "<a href=\"https://mesaviajera.proyectoeva.mx/\">Mesa Viajera</a>",
-    "TRAVEL_NAV": "<a class=\"travel-nav-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"./assets/Home/logo_mesa_viajera.png\" width=\"62\" height=\"62\" alt=\"\"></a>",
-    "TRAVEL_FOOTER": "<a href=\"https://mesaviajera.proyectoeva.mx/\">Mesa Viajera</a>",
-    "PRIVACY_HEADER": "<a href=\"https://mesaviajera.proyectoeva.mx/\">Mesa Viajera</a>",
-    "PRIVACY_FOOTER": "<a href=\"https://mesaviajera.proyectoeva.mx/\">Mesa Viajera</a>",
-    "STUDY_DETAIL_NAV_ORIGINAL_CAMPUS": "<a class=\"study-nav-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
-    "STUDY_DETAIL_NAV_TORONTO_FILM_SCHOOL": "<a class=\"study-nav-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
-    "STUDY_DETAIL_NAV_TRENT_UNIVERSITY": "<a class=\"study-nav-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
-    "STUDY_DETAIL_NAV_YORKVILLE_UNIVERSITY": "<a class=\"study-nav-mesa\" href=\"https://mesaviajera.proyectoeva.mx/\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
-    "SITEMAP": ""
+    "HOME_NAV": "<a class=\"nav-link nav-logo-mesa\" href=\"./mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\">\n          <img src=\"./assets/Home/logo_mesa_viajera.png\" alt=\"\" width=\"80\" height=\"80\">\n        </a>",
+    "HOME_MOBILE": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "HOME_CARD": "<!-- MESA VIAJERA -->\n          <article class=\"service-card\" id=\"mesa-viajera\">\n\n            <span class=\"service-number\">03</span>\n            <h3>\n              Mesa Viajera\n            </h3>\n\n            <p>\n              Celebraciones y regalos que se convierten en experiencias.\n            </p>\n\n            <a href=\"./mesa-viajera.html\">\n              Conoce Mesa Viajera\n              <span aria-hidden=\"true\">↗</span>\n            </a>\n\n          </article>",
+    "STUDY_NAV": "<a class=\"study-nav-mesa\" href=\"./mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"./assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_FOOTER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "TRAVEL_NAV": "<a class=\"travel-nav-mesa\" href=\"./mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"./assets/Home/logo_mesa_viajera.png\" width=\"62\" height=\"62\" alt=\"\"></a>",
+    "TRAVEL_FOOTER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "PRIVACY_HEADER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "PRIVACY_FOOTER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "STUDY_DETAIL_NAV_ORIGINAL_CAMPUS": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_DETAIL_NAV_TORONTO_FILM_SCHOOL": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_DETAIL_NAV_TRENT_UNIVERSITY": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_DETAIL_NAV_YORKVILLE_UNIVERSITY": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "SITEMAP": "<url><loc>https://proyectoeva.mx/mesa-viajera.html</loc></url>"
   },
   "variants": {
     "index.html": [
@@ -89,5 +89,14 @@
       ]
     ]
   },
-  "source_files": []
+  "source_files": [
+    "mesa-viajera.html",
+    "css/mesa-viajera.css",
+    "assets/Home/logo_mesa_viajera.png",
+    "assets/Mesa/hero-mesa-viajera-v2.webp",
+    "assets/Mesa/hero-mesa-viajera.webp",
+    "assets/Mesa/regalo-meta.webp",
+    "assets/Mesa/regalo-repetible.webp",
+    "assets/Mesa/regalo-unico.webp"
+  ]
 }

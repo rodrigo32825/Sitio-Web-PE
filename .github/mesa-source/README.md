@@ -1,9 +1,12 @@
-# Mesa Viajera como sitio independiente
+# Mesa Viajera: sitio principal y sitio independiente
 
-La página pública se edita en `_mesaviajera/index.html`; sus estilos e imágenes están en esa misma carpeta. El sitio principal de EVA sigue en la raíz del repositorio.
+El interruptor está en **Actions → Visibilidad de Mesa Viajera en Proyecto EVA → Run workflow → visible / oculta**.
 
-El acceso desde `proyectoeva.mx` se controla en **Actions → Enlace de Mesa Viajera en Proyecto EVA → Run workflow → visible / oculta**. `Visible` muestra enlaces a `https://mesaviajera.proyectoeva.mx/` en el sitio principal. `Oculta` retira esos enlaces. La página independiente permanece publicada en ambos casos.
+- **visible** devuelve Mesa Viajera a `proyectoeva.mx` como estaba antes: menú y logo, tarjeta del inicio, enlaces, página `/mesa-viajera.html`, estilos, imágenes y entrada en el sitemap. Los enlaces del sitio principal llevan a esa página.
+- **oculta** retira esos elementos y la página del sitio principal. Es el estado actual.
 
-Cloudflare Pages debe conectarse a este repositorio, rama `main`, sin framework, con directorio de salida `_mesaviajera`. Tras obtener el dominio `<proyecto>.pages.dev`, agrega `mesaviajera.proyectoeva.mx` como dominio personalizado dentro de Cloudflare Pages y crea en GoDaddy el CNAME `mesaviajera` → `<proyecto>.pages.dev`. El subdominio principal y sus registros de correo no se modifican.
+La copia para `mesaviajera.proyectoeva.mx` vive por separado en `_mesaviajera/`. Cambiar el interruptor no la publica ni la apaga; el subdominio requiere configurar alojamiento y DNS. La carpeta `.github/mesa-source/` conserva los archivos de la página original que el interruptor vuelve a instalar en la raíz.
 
-Esta carpeta guarda una copia de la antigua página y los fragmentos del interruptor. El repositorio sigue siendo público.
+Para publicar el sitio independiente, conecta Cloudflare Pages a este repositorio y la rama `main`, sin framework, con directorio de salida `_mesaviajera`. Después añade `mesaviajera.proyectoeva.mx` como dominio personalizado y configura en GoDaddy el CNAME `mesaviajera` hacia el destino que indique Cloudflare Pages. El dominio principal y los registros de correo quedan aparte.
+
+El repositorio es público.
