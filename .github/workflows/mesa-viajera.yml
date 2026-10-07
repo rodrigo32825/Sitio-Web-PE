@@ -1,10 +1,10 @@
-name: Visibilidad de Mesa Viajera
+name: Enlace de Mesa Viajera en Proyecto EVA
 
 on:
   workflow_dispatch:
     inputs:
       estado:
-        description: "Mostrar u ocultar Mesa Viajera en proyectoeva.mx"
+        description: "Mostrar u ocultar el enlace desde proyectoeva.mx"
         type: choice
         required: true
         options:
@@ -27,7 +27,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Cambiar visibilidad
+      - name: Cambiar enlace en el sitio principal
         env:
           ESTADO: ${{ inputs.estado }}
         run: python3 .github/scripts/toggle_mesa.py "$ESTADO"

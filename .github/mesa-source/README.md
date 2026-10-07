@@ -1,13 +1,9 @@
-# Control de visibilidad: Mesa Viajera
+# Mesa Viajera como sitio independiente
 
-La sección está conservada en esta carpeta mientras no aparece en proyectoeva.mx.
+La página pública se edita en `_mesaviajera/index.html`; sus estilos e imágenes están en esa misma carpeta. El sitio principal de EVA sigue en la raíz del repositorio.
 
-Para cambiarla:
-1. Abre la pestaña **Actions** de este repositorio.
-2. Selecciona **Visibilidad de Mesa Viajera**.
-3. Pulsa **Run workflow** y elige **visible** u **oculta**.
-4. Espera a que la ejecución termine y GitHub Pages publique el cambio.
+El acceso desde `proyectoeva.mx` se controla en **Actions → Enlace de Mesa Viajera en Proyecto EVA → Run workflow → visible / oculta**. `Visible` muestra enlaces a `https://mesaviajera.proyectoeva.mx/` en el sitio principal. `Oculta` retira esos enlaces. La página independiente permanece publicada en ambos casos.
 
-Cuando está oculta, el menú, la tarjeta del Home, los enlaces internos y el sitemap dejan de mostrarla. Su dirección directa deja de publicar la página. Cuando está visible, el flujo restaura la página, su estilo, su logo y las imágenes desde esta carpeta.
+Cloudflare Pages debe conectarse a este repositorio, rama `main`, sin framework, con directorio de salida `_mesaviajera`. Tras obtener el dominio `<proyecto>.pages.dev`, agrega `mesaviajera.proyectoeva.mx` como dominio personalizado dentro de Cloudflare Pages y crea en GoDaddy el CNAME `mesaviajera` → `<proyecto>.pages.dev`. El subdominio principal y sus registros de correo no se modifican.
 
-Si actualizas la página de Mesa Viajera, edita el archivo guardado aquí: `mesa-viajera.html`. Los cambios en ese archivo se publican la próxima vez que elijas **visible**. El repositorio y su historial son públicos: este control cambia la web publicada, no constituye protección de acceso a los archivos de GitHub.
+Esta carpeta guarda una copia de la antigua página y los fragmentos del interruptor. El repositorio sigue siendo público.

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mesaviajera.proyectoeva.mx/sitemap.xml
