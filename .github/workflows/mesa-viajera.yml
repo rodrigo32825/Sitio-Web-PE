@@ -1,0 +1,45 @@
+name: Visibilidad de Mesa Viajera
+
+on:
+  workflow_dispatch:
+    inputs:
+      estado:
+        description: "Mostrar u ocultar Mesa Viajera en proyectoeva.mx"
+        type: choice
+        required: true
+        options:
+          - visible
+          - oculta
+
+permissions:
+  contents: write
+
+concurrency:
+  group: visibilidad-mesa-viajera
+  cancel-in-progress: false
+
+jobs:
+  cambiar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Cambiar visibilidad
+        env:
+          ESTADO: ${{ inputs.estado }}
+        run: python3 .github/scripts/toggle_mesa.py "$ESTADO"
+
+      - name: Publicar cambios
+        env:
+          ESTADO: ${{ inputs.estado }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Mesa Viajera: $ESTADO"
+            git push origin HEAD:main
+          fi

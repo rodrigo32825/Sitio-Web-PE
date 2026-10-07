@@ -1,0 +1,102 @@
+{
+  "pages": {
+    "index.html": [
+      "HOME_NAV",
+      "HOME_MOBILE",
+      "HOME_CARD"
+    ],
+    "estudia.html": [
+      "STUDY_NAV",
+      "STUDY_FOOTER"
+    ],
+    "viajes.html": [
+      "TRAVEL_NAV",
+      "TRAVEL_FOOTER"
+    ],
+    "aviso-de-privacidad.html": [
+      "PRIVACY_HEADER",
+      "PRIVACY_FOOTER"
+    ],
+    "estudia/original-campus.html": [
+      "STUDY_DETAIL_NAV_ORIGINAL_CAMPUS"
+    ],
+    "estudia/toronto-film-school.html": [
+      "STUDY_DETAIL_NAV_TORONTO_FILM_SCHOOL"
+    ],
+    "estudia/trent-university.html": [
+      "STUDY_DETAIL_NAV_TRENT_UNIVERSITY"
+    ],
+    "estudia/yorkville-university.html": [
+      "STUDY_DETAIL_NAV_YORKVILLE_UNIVERSITY"
+    ],
+    "sitemap.xml": [
+      "SITEMAP"
+    ]
+  },
+  "snippets": {
+    "HOME_NAV": "<a class=\"nav-link nav-logo-mesa\" href=\"./mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\">\n          <img src=\"./assets/Home/logo_mesa_viajera.png\" alt=\"\" width=\"80\" height=\"80\">\n        </a>",
+    "HOME_MOBILE": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "HOME_CARD": "<!-- MESA VIAJERA -->\n          <article class=\"service-card\" id=\"mesa-viajera\">\n\n            <span class=\"service-number\">03</span>\n            <h3>\n              Mesa Viajera\n            </h3>\n\n            <p>\n              Celebraciones y regalos que se convierten en experiencias.\n            </p>\n\n            <a href=\"./mesa-viajera.html\">\n              Conoce Mesa Viajera\n              <span aria-hidden=\"true\">↗</span>\n            </a>\n\n          </article>",
+    "STUDY_NAV": "<a class=\"study-nav-mesa\" href=\"./mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"./assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_FOOTER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "TRAVEL_NAV": "<a class=\"travel-nav-mesa\" href=\"./mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"./assets/Home/logo_mesa_viajera.png\" width=\"62\" height=\"62\" alt=\"\"></a>",
+    "TRAVEL_FOOTER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "PRIVACY_HEADER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "PRIVACY_FOOTER": "<a href=\"./mesa-viajera.html\">Mesa Viajera</a>",
+    "STUDY_DETAIL_NAV_ORIGINAL_CAMPUS": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_DETAIL_NAV_TORONTO_FILM_SCHOOL": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_DETAIL_NAV_TRENT_UNIVERSITY": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "STUDY_DETAIL_NAV_YORKVILLE_UNIVERSITY": "<a class=\"study-nav-mesa\" href=\"../mesa-viajera.html\" aria-label=\"Mesa Viajera\" title=\"Mesa Viajera\"><img src=\"../assets/Home/logo_mesa_viajera.png\" width=\"60\" height=\"60\" alt=\"\"></a>",
+    "SITEMAP": "<url><loc>https://proyectoeva.mx/mesa-viajera.html</loc></url>"
+  },
+  "variants": {
+    "index.html": [
+      [
+        "Proyecto EVA | Educación internacional, viajes y experiencias",
+        "Proyecto EVA | Educación internacional y viajes a medida"
+      ],
+      [
+        "Estudia en el extranjero, planea viajes corporativos, educativos o de placer y descubre experiencias para celebrar momentos especiales con Proyecto EVA.",
+        "Estudia en el extranjero y planea viajes corporativos, educativos o de placer con Proyecto EVA."
+      ],
+      [
+        "Educación · Viajes · Experiencias",
+        "Estudia · Viaja · Aprende"
+      ],
+      [
+        "Educación internacional, viajes a medida\n          <br>\n          y experiencias para celebrar grandes momentos.",
+        "Educación internacional y viajes a medida\n          <br>\n          para explorar nuevas posibilidades."
+      ],
+      [
+        "Tres formas de ir más lejos",
+        "Dos formas de ir más lejos"
+      ],
+      [
+        "Hoy también diseñamos viajes y experiencias para celebrar los momentos que importan. En cada camino, te acompañamos de forma personal.",
+        "Hoy también diseñamos viajes a medida para descubrir otros lugares. En cada camino, te acompañamos de forma personal."
+      ]
+    ],
+    "css/styles.css": [
+      [
+        ".services-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }",
+        ".services-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }"
+      ]
+    ],
+    "README.md": [
+      [
+        "- `index.html` presenta EVA como **Estudia, Viaja y Aprende**, con una entrada clara a Educación internacional, Viajes a medida y Mesa Viajera.",
+        "- `index.html` presenta EVA como **Estudia, Viaja y Aprende**, con entradas a Educación internacional y Viajes a medida."
+      ]
+    ]
+  },
+  "source_files": [
+    "mesa-viajera.html",
+    "css/mesa-viajera.css",
+    "assets/Home/logo_mesa_viajera.png",
+    "assets/Mesa/hero-mesa-viajera-v2.webp",
+    "assets/Mesa/hero-mesa-viajera.webp",
+    "assets/Mesa/regalo-meta.webp",
+    "assets/Mesa/regalo-repetible.webp",
+    "assets/Mesa/regalo-unico.webp"
+  ]
+}

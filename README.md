@@ -6,7 +6,7 @@ Educación, viajes y experiencias para llevarte más lejos.
 
 ## Inicio
 
-- `index.html` presenta EVA como **Estudia, Viaja y Aprende**, con una entrada clara a Educación internacional, Viajes a medida y Mesa Viajera.
+- `index.html` presenta EVA como **Estudia, Viaja y Aprende**, con entradas a Educación internacional y Viajes a medida.
 - `assets/Home/hero-home.webp`: fotografía del Home. Para cambiarla, reemplaza este archivo con otra imagen WebP y conserva el nombre; no afecta la portada de Estudia.
 - `assets/Home/logo_eva_home.png`: versión recortada del logo oficial para la portada y el cierre. Si lo actualizas, conserva el nombre y el fondo transparente.
 - `css/styles.css`: diseño del Home para computadora y celular. El menú móvil se abre sin JavaScript.
