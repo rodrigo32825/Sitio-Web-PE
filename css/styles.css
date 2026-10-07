@@ -339,7 +339,7 @@ select {
   font-weight: 700;
   letter-spacing: -.04em;
 }
-.services-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.services-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
 .service-card { border-top: 4px solid var(--eva-verde-azulado); padding-top: 18px; }
 .service-card:nth-child(2) { border-color: #C96F48; }
 .service-number { display: block; color: var(--eva-verde-azulado); font-size: 15px; font-weight: 700; }
