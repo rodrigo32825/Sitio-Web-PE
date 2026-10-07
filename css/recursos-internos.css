@@ -89,6 +89,7 @@ a { color:inherit; text-decoration:none; }
 .sheet-head img { width:170px; height:96px; object-fit:contain; object-position:left top; }
 .sheet-head > div { padding-top:4px; text-align:right; }
 .sheet-head h2 { margin:0; font-size:26px; line-height:1.2; letter-spacing:.02em; }
+.sheet-head .invoice-number { display:block; margin-top:2px; color:var(--teal); font-size:14px; line-height:1.15; letter-spacing:0; overflow-wrap:anywhere; }
 .sheet-head p { margin:12px 0 0; color:var(--teal); font-size:11px; font-weight:700; }
 .sheet-meta { display:grid; grid-template-columns:1.35fr 1fr .8fr; gap:15px; height:76px; align-items:center; }
 .sheet-meta span,.sheet-parties span,.sheet-service > span,.summary-title,.sheet-bank > span { display:block; color:var(--teal); font-size:10px; font-weight:800; }

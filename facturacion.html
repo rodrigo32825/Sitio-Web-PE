@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Facturación · Payment Request | Proyecto EVA</title>
+  <title>Invoice | Proyecto EVA</title>
   <link rel="icon" type="image/png" href="./favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/recursos-internos.css?v=2">
-  <script src="./js/facturacion.js?v=2" defer></script>
+  <link rel="stylesheet" href="./css/recursos-internos.css?v=3">
+  <script src="./js/facturacion.js?v=3" defer></script>
 </head>
 <body class="billing-page">
   <header class="resources-header no-print">
@@ -22,7 +22,7 @@
 
   <main>
     <div class="billing-intro no-print">
-      <div><p class="eyebrow">PAYMENT REQUEST / PROYECTO EVA</p><h1>Prepara el cobro.<br><em>El diseño ya está listo.</em></h1><p>Llena los datos, agrega los gastos y descarga tu solicitud de pago en PDF. El detalle comenzará en la segunda hoja.</p></div>
+      <div><p class="eyebrow">INVOICE / PROYECTO EVA</p><h1>Prepara el cobro.<br><em>El diseño ya está listo.</em></h1><p>Llena los datos, agrega los gastos y descarga tu solicitud de pago en PDF. El detalle comenzará en la segunda hoja.</p></div>
       <div class="billing-actions">
         <button type="button" class="action-primary" id="print-button">Generar PDF <span aria-hidden="true">↗</span></button>
         <p>En la ventana de impresión elige <strong>Guardar como PDF</strong>.</p>
@@ -38,10 +38,10 @@
           <button type="button" id="new-button">Nuevo</button>
         </div>
         <p class="editor-help">Los datos del formulario no se envían al sitio. Guarda el borrador como archivo si quieres retomarlo después.</p>
-        <p class="editor-help">Al reutilizar un borrador, cambia el folio, la fecha, el cliente y el enlace de pago.</p>
+        <p class="editor-help">Al reutilizar un borrador, cambia el folio, la fecha, el cliente y el enlace de pago. El folio es editable; conserva un registro de los números usados.</p>
 
         <fieldset><legend><span>01</span> Documento</legend>
-          <div class="field-grid"><label>Folio <input name="folio" required placeholder="PR-EVA-2026-09-001"></label><label>Fecha de emisión <input name="fecha" type="date" required></label></div>
+          <div class="field-grid"><label>Folio <input name="folio" required placeholder="EVA-2026-001"></label><label>Fecha de emisión <input name="fecha" type="date" required></label></div>
           <div class="field-grid"><label>Periodo de gastos <input name="periodo" placeholder="08–25 SEP 2026"></label><label>Ciudad / destino <input name="destino" placeholder="MONTERREY / TOLUCA"></label></div>
           <label>Concepto principal <input name="concepto" required placeholder="TRAVEL FOR ..."></label>
         </fieldset>
@@ -85,7 +85,7 @@
         <div id="print-area">
           <article class="sheet first-sheet">
             <div class="sheet-accent"></div>
-            <div class="sheet-head"><img src="./assets/Home/logo_eva.png" alt="Proyecto EVA"><div><h2>PAYMENT REQUEST</h2><p>TRAVEL EXPENSES <span id="p-periodo"></span></p></div></div>
+            <div class="sheet-head"><img src="./assets/Home/logo_eva.png" alt="Proyecto EVA"><div><h2>INVOICE <span class="invoice-number" id="p-heading-folio">—</span></h2><p>TRAVEL EXPENSES <span id="p-periodo"></span></p></div></div>
             <div class="sheet-meta"><div><span>REFERENCE / FOLIO</span><strong id="p-folio">—</strong></div><div><span>ISSUE DATE</span><strong id="p-fecha">—</strong></div><div><span>CURRENCY</span><strong>MXN</strong></div></div>
             <div class="sheet-parties"><div><span>ISSUED BY</span><strong id="p-emisor"></strong><p id="p-rfc"></p><p id="p-domicilio"></p><p id="p-telefono"></p></div><div><span>BILL TO</span><strong id="p-cliente">—</strong><p id="p-atencion"></p><p id="p-correoCliente"></p></div></div>
             <div class="sheet-service"><span>SERVICE DESCRIPTION</span><div><strong id="p-concepto">—</strong><small id="p-destino"></small></div></div>

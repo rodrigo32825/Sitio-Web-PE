@@ -112,6 +112,8 @@
     const adjustment = cents(value('ajuste'));
     const total = subtotal + fee + adjustment;
     put('p-folio', value('folio'));
+    put('p-heading-folio', value('folio') || '—');
+    document.title = value('folio') ? `Invoice ${value('folio')} | Proyecto EVA` : 'Invoice | Proyecto EVA';
     const date = value('fecha');
     put('p-fecha', date ? new Intl.DateTimeFormat('en-GB', { day:'2-digit', month:'long', year:'numeric', timeZone:'UTC' }).format(new Date(`${date}T12:00:00Z`)) : '');
     document.querySelector('#p-periodo').textContent = value('periodo') ? ` / ${value('periodo').toUpperCase()}` : '';
@@ -178,7 +180,7 @@
     const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = url; link.download = `${value('folio').replace(/[^a-z0-9_-]/gi,'_') || 'Payment_Request_EVA'}.json`;
+    link.href = url; link.download = `${value('folio').replace(/[^a-z0-9_-]/gi,'_') || 'Invoice_EVA'}.json`;
     link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
   document.querySelector('#load-file').addEventListener('change', async event => {
