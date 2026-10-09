@@ -147,7 +147,7 @@
     details.replaceChildren(...pages);
   }
 
-  function printRequest() {
+  async function printRequest() {
     if (!form.reportValidity()) return;
     if (!safeUrl(value('enlacePago'))) { alert('Agrega un enlace de pago válido que comience con https://.'); field('enlacePago').focus(); return; }
     const items = expenses();
@@ -159,12 +159,35 @@
     }
     const total = items.reduce((sum, item) => sum + cents(item.amount), 0) + cents(value('cargo')) + cents(value('ajuste'));
     if (total <= 0) { alert('El total debe ser mayor a cero.'); return; }
+    if (typeof html2pdf !== 'function') {
+      alert('No se pudo cargar el generador de PDF. Actualiza la página e inténtalo de nuevo.'); return;
+    }
     render();
-    window.print();
+    const button = document.querySelector('#print-button');
+    const printable = document.querySelector('#print-area');
+    const filename = `${value('folio').replace(/[^a-z0-9_-]/gi, '_') || 'Invoice_EVA'}.pdf`;
+    button.disabled = true;
+    printable.classList.add('pdf-export');
+    try {
+      await document.fonts.ready;
+      await html2pdf().set({
+        margin: 0,
+        filename,
+        image: { type:'jpeg', quality:0.98 },
+        html2canvas: { scale:2, useCORS:true, backgroundColor:'#fff' },
+        jsPDF: { unit:'pt', format:'letter', orientation:'portrait' },
+        enableLinks: true,
+        pagebreak: { mode:[], before:'.detail-sheet' }
+      }).from(printable).save();
+    } catch (error) {
+      alert('No pude descargar el PDF. Actualiza la página y vuelve a intentarlo.');
+    } finally {
+      printable.classList.remove('pdf-export');
+      button.disabled = false;
+    }
   }
 
   form.addEventListener('input', render);
-  window.addEventListener('beforeprint', render);
   rows.addEventListener('click', event => {
     if (event.target.closest('.remove-row')) { event.target.closest('.expense-row').remove(); render(); }
   });
