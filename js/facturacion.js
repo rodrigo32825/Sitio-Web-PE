@@ -159,9 +159,13 @@
     }
     const total = items.reduce((sum, item) => sum + cents(item.amount), 0) + cents(value('cargo')) + cents(value('ajuste'));
     if (total <= 0) { alert('El total debe ser mayor a cero.'); return; }
+    const status = document.querySelector('#pdf-status');
     if (typeof html2canvas !== 'function' || !window.jspdf?.jsPDF) {
-      alert('No se pudo cargar el generador de PDF. Actualiza la página e inténtalo de nuevo.'); return;
+      status.textContent = 'No se cargó el generador de PDF. Actualiza la página e inténtalo de nuevo.';
+      status.dataset.error = `html2canvas:${typeof html2canvas}, jsPDF:${typeof window.jspdf?.jsPDF}`;
+      return;
     }
+    status.textContent = 'Preparando el PDF…';
     render();
     const button = document.querySelector('#print-button');
     const sheets = [...document.querySelectorAll('#print-area .sheet')];
@@ -185,9 +189,11 @@
         }
       }
       pdf.save(filename);
+      status.textContent = 'PDF guardado. Revisa tu carpeta de descargas.';
     } catch (error) {
       console.error('PDF export failed', error);
-      alert('No pude descargar el PDF. Actualiza la página y vuelve a intentarlo.');
+      status.dataset.error = String(error?.message || error);
+      status.textContent = 'No pude guardar el PDF. Actualiza la página y vuelve a intentarlo.';
     } finally {
       button.firstChild.textContent = 'Guardar PDF ';
       button.disabled = false;
