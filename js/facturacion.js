@@ -159,30 +159,37 @@
     }
     const total = items.reduce((sum, item) => sum + cents(item.amount), 0) + cents(value('cargo')) + cents(value('ajuste'));
     if (total <= 0) { alert('El total debe ser mayor a cero.'); return; }
-    if (typeof html2pdf !== 'function') {
+    if (typeof html2canvas !== 'function' || !window.jspdf?.jsPDF) {
       alert('No se pudo cargar el generador de PDF. Actualiza la página e inténtalo de nuevo.'); return;
     }
     render();
     const button = document.querySelector('#print-button');
-    const printable = document.querySelector('#print-area');
+    const sheets = [...document.querySelectorAll('#print-area .sheet')];
     const filename = `${value('folio').replace(/[^a-z0-9_-]/gi, '_') || 'Invoice_EVA'}.pdf`;
     button.disabled = true;
-    printable.classList.add('pdf-export');
+    button.firstChild.textContent = 'Guardando PDF ';
     try {
       await document.fonts.ready;
-      await html2pdf().set({
-        margin: 0,
-        filename,
-        image: { type:'jpeg', quality:0.98 },
-        html2canvas: { scale:2, useCORS:true, backgroundColor:'#fff' },
-        jsPDF: { unit:'pt', format:'letter', orientation:'portrait' },
-        enableLinks: true,
-        pagebreak: { mode:[], before:'.detail-sheet' }
-      }).from(printable).save();
+      const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'letter', orientation:'portrait' });
+      for (const [index, sheet] of sheets.entries()) {
+        if (index) pdf.addPage('letter', 'portrait');
+        const canvas = await html2canvas(sheet, {
+          scale:1.5, useCORS:true, backgroundColor:'#fff', logging:false
+        });
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.94), 'JPEG', 0, 0, 612, 792);
+        const page = sheet.getBoundingClientRect();
+        for (const link of sheet.querySelectorAll('a[href^="https://"]')) {
+          const box = link.getBoundingClientRect();
+          pdf.link((box.left-page.left)*0.75, (box.top-page.top)*0.75,
+            box.width*0.75, box.height*0.75, { url:link.href });
+        }
+      }
+      pdf.save(filename);
     } catch (error) {
+      console.error('PDF export failed', error);
       alert('No pude descargar el PDF. Actualiza la página y vuelve a intentarlo.');
     } finally {
-      printable.classList.remove('pdf-export');
+      button.firstChild.textContent = 'Guardar PDF ';
       button.disabled = false;
     }
   }
