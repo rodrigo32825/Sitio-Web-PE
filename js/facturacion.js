@@ -3,6 +3,8 @@
   const rows = document.querySelector('#expense-rows');
   const details = document.querySelector('#detail-pages');
   const payLink = document.querySelector('#p-pay-link');
+  const paymentUrlBlock = document.querySelector('#p-payment-url');
+  const paymentUrl = document.querySelector('#p-pay-url');
   const fieldNames = ['folio','fecha','periodo','destino','concepto','cliente','atencion','correoCliente',
     'emisor','rfc','telefono','domicilio','correoEmisor','enlacePago','cargo','ajuste',
     'banco','beneficiario','clabe','cuenta','swift','direccionBanco'];
@@ -126,8 +128,17 @@
     for (const name of ['banco','beneficiario','clabe','cuenta','swift','direccionBanco']) put(`p-${name}`, value(name));
     document.querySelector('#p-payment').classList.toggle('no-bank', !value('banco') && !value('clabe'));
     const url = safeUrl(value('enlacePago'));
-    if (url) payLink.href = url; else payLink.removeAttribute('href');
+    if (url) {
+      payLink.href = url;
+      paymentUrl.href = url;
+      paymentUrl.textContent = url;
+    } else {
+      payLink.removeAttribute('href');
+      paymentUrl.removeAttribute('href');
+      paymentUrl.textContent = '';
+    }
     payLink.classList.toggle('is-disabled', !url);
+    paymentUrlBlock.hidden = !url;
     fillSummary(items, subtotal, fee, adjustment, total);
     const pageCount = Math.max(1, Math.ceil(items.length / 20));
     document.querySelector('.p-page-count').textContent = pageCount + 1;
@@ -153,6 +164,7 @@
   }
 
   form.addEventListener('input', render);
+  window.addEventListener('beforeprint', render);
   rows.addEventListener('click', event => {
     if (event.target.closest('.remove-row')) { event.target.closest('.expense-row').remove(); render(); }
   });

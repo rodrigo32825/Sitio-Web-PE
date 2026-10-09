@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/recursos-internos.css?v=3">
-  <script src="./js/facturacion.js?v=3" defer></script>
+  <link rel="stylesheet" href="./css/recursos-internos.css?v=4">
+  <script src="./js/facturacion.js?v=4" defer></script>
 </head>
 <body class="billing-page">
   <header class="resources-header no-print">
@@ -25,7 +25,7 @@
       <div><p class="eyebrow">INVOICE / PROYECTO EVA</p><h1>Prepara el cobro.<br><em>El diseño ya está listo.</em></h1><p>Llena los datos, agrega los gastos y descarga tu solicitud de pago en PDF. El detalle comenzará en la segunda hoja.</p></div>
       <div class="billing-actions">
         <button type="button" class="action-primary" id="print-button">Generar PDF <span aria-hidden="true">↗</span></button>
-        <p>En la ventana de impresión elige <strong>Guardar como PDF</strong>.</p>
+        <p>En Destino elige <strong>Guardar como PDF</strong> del navegador. <strong>Microsoft Print to PDF</strong> puede quitar los enlaces.</p>
       </div>
     </div>
 
@@ -92,6 +92,7 @@
             <div class="sheet-summary"><div class="summary-title"><span>EXPENSE SUMMARY</span><span>MXN</span></div><div id="p-summary-rows"></div><div class="summary-extra"><div><span>Expense subtotal</span><strong id="p-subtotal">0.00</strong></div><div><span>Payment processing fee</span><strong id="p-cargo">0.00</strong></div><div><span>Rounding adjustment</span><strong id="p-ajuste">0.00</strong></div></div></div>
             <div class="sheet-total"><span>TOTAL DUE</span><strong id="p-total">MXN 0.00</strong></div>
             <div class="sheet-payment" id="p-payment"><div class="sheet-bank"><span>BANK TRANSFER</span><strong id="p-banco"></strong><div><span>Beneficiary</span><b id="p-beneficiario"></b></div><div><span>CLABE</span><b id="p-clabe"></b></div><div><span>Account</span><b id="p-cuenta"></b></div><div><span>SWIFT</span><b id="p-swift"></b></div><small id="p-direccionBanco"></small></div><div class="sheet-card"><div class="card-heading"><strong>PAY WITH CARD</strong><svg viewBox="0 0 36 28" aria-hidden="true"><rect x="2" y="3" width="32" height="22" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 10h26" fill="none" stroke="currentColor" stroke-width="2"/><rect x="6" y="17" width="8" height="3" rx="1" fill="currentColor"/></svg></div><p>Secure online payment</p><a id="p-pay-link" href="#" target="_blank" rel="noopener noreferrer">PAY ONLINE <span aria-hidden="true">›</span></a><small>Opens your payment page</small></div></div>
+            <p class="sheet-payment-url" id="p-payment-url" hidden><strong>PAYMENT LINK</strong><a id="p-pay-url" target="_blank" rel="noopener noreferrer"></a></p>
             <footer class="sheet-footer"><strong>PROYECTOEVA.MX</strong><span id="p-correoEmisor"></span><span>1 / <span class="p-page-count">2</span></span></footer>
           </article>
           <div id="detail-pages"></div>
