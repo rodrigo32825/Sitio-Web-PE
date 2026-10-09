@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./css/recursos-internos.css?v=6">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-  <script src="./js/facturacion.js?v=6" defer></script>
+  <script src="./js/facturacion.js?v=7" defer></script>
 </head>
 <body class="billing-page">
   <header class="resources-header no-print">
@@ -27,7 +27,7 @@
       <div><p class="eyebrow">INVOICE / PROYECTO EVA</p><h1>Prepara el cobro.<br><em>El diseño ya está listo.</em></h1><p>Llena los datos, agrega los gastos y descarga tu solicitud de pago en PDF. El detalle comenzará en la segunda hoja.</p></div>
       <div class="billing-actions">
         <button type="button" class="action-primary" id="print-button">Guardar PDF <span aria-hidden="true">↗</span></button>
-        <p>Descarga el archivo con el enlace de pago integrado.</p>
+        <p id="pdf-status" role="status">Descarga el archivo con el enlace de pago integrado.</p>
       </div>
     </div>
 
