@@ -1,6 +1,6 @@
-# Mesa Viajera · Editor de personalización, etapa 4A
+# Mesa Viajera · Editor de personalización y conexión preparada
 
-Esta etapa incorpora `mesa-viajera-panel.html` a Recursos internos. El sitio de Proyecto EVA continúa alojado en su repositorio actual. No se modifica la mesa pública de Roberto y Fernanda ni su Apps Script.
+El editor publicado incorpora `mesa-viajera-panel.html` a Recursos internos. Se añadió la foto de experiencia a la vista del certificado y el código para conectar Google Sheets, pendiente de activación y prueba real. El sitio de Proyecto EVA continúa alojado en su repositorio actual. No se modifica la mesa pública de Roberto y Fernanda ni su Apps Script.
 
 ## Qué puede hacer el equipo
 
@@ -25,7 +25,7 @@ El guardado automático existe solamente en el navegador y origen actuales. No s
 
 ## Pendiente: etapa 4B y activación
 
-La página pública no tiene autenticación. Sus borradores locales no constituyen control de acceso. No introducir datos financieros o secretos en el código público. No exponer una llave de Apps Script en JavaScript ni publicar una hoja privada.
+La página pública y los borradores locales no constituyen un sistema de acceso. La conexión preparada utiliza autorización de Google por archivo y permisos de Drive. Los permisos por funciones comerciales dentro del panel siguen pendientes. No introducir datos financieros o secretos en el código público. No exponer una llave de Apps Script en JavaScript ni publicar una hoja privada.
 
 Para conectar operaciones reales:
 
@@ -44,3 +44,49 @@ Rodrigo autoriza precios, descuentos y plataformas. Para experiencias reales se 
 ## Certificado
 
 El titular confirmó el 26 de octubre de 2026 que el certificado generado funciona bien. El registro de ejecución compartido muestra recursos preparados, PDF de ejemplo y ejecución completada sin cobros ni envíos. La validación visual fue del titular; el agente no pudo abrir ese PDF privado. Esta aceptación no valida pagos ni la integración web.
+
+
+## Foto de la experiencia en el certificado
+
+El certificado debe incluir la foto correspondiente al ID de la experiencia comprada. La paleta y las fuentes pertenecen a la celebración; la foto pertenece al regalo. No guardar una única foto del certificado en CONFIG para reutilizarla en todas las experiencias.
+
+La vista previa utiliza una foto de ejemplo de los activos existentes de Mesa Viajera. Con un catálogo conectado, el selector cambia el nombre y la foto de la experiencia elegida. Si falta la foto o falla su carga, se muestra una indicación para corregirla. Esta comprobación visual no sustituye el control que debe realizar Apps Script al generar el PDF de una compra.
+
+El generador guardado en Google no se modificó en esta etapa: el navegador recibió una verificación de tráfico inusual. Queda pendiente comprobar con un regalo de prueba que la imagen real se resuelva por su ID y que no se emita un PDF sin esa foto. No se cambió la mesa de Roberto y Fernanda.
+
+## Conexión preparada con Google Sheets
+
+Archivos nuevos: `js/mesa-viajera-sheets.js` y `js/mesa-viajera-google-config.js`. La configuración publicada está vacía, por lo que no se inicia OAuth ni se accede a ninguna hoja hasta completar la activación inicial.
+
+Recorrido previsto después de activar:
+
+1. Pulsar Conectar con Sheets. La primera pulsación prepara las bibliotecas; la segunda abre el acceso de Google y el selector de archivos.
+2. Elegir la copia de desarrollo autorizada. El panel verifica la estructura de CONFIG y los permisos de edición que devuelve Drive. No reemplaza el borrador local automáticamente.
+3. Usar Cargar datos de Sheets para revisar y aceptar la configuración remota, o editar el borrador local.
+4. Pulsar Revisar cambios y guardar. Confirmar el nombre de la hoja y cada valor anterior/nuevo antes de escribir.
+5. El editor escribe únicamente las celdas B de las claves de personalización existentes, con `valueInputOption=RAW`. No inserta claves, no limpia rangos y no modifica pagos, bancos, catálogo ni operaciones.
+6. Volver a leer la hoja y comparar el resultado antes de mostrar Guardado verificado. Si la hoja cambia después de la lectura usada para revisión, se detiene el guardado. Esta comparación previa no es un bloqueo transaccional; durante el piloto debe editar una sola persona cada mesa.
+
+Los tokens se conservan únicamente en memoria durante la sesión. No se guardan en localStorage, JSON, URLs ni el repositorio. Desconectar sesión elimina la copia del token en el editor; no revoca el consentimiento de Google. Recargar o caducar la sesión exige volver a conectar. Cambiar o duplicar el borrador limpia el vínculo con la hoja para evitar guardar sobre el cliente anterior.
+
+El catálogo se lee de `EXPERIENCIAS!A1:Z1000`. La detección requiere ID, nombre y URL de imagen inequívocos. Si los encabezados reales no coinciden con los alias admitidos, se muestra un error y se debe ajustar el mapeo tras inspeccionarlos; no se adivinan columnas. El ID de experiencia es la referencia de la foto. Las imágenes deben estar disponibles como imágenes HTTPS cargables por el navegador; una página de vista de Drive no equivale necesariamente a una URL de imagen.
+
+## Activación inicial por Rodrigo
+
+Esta configuración se hace una sola vez para el sitio, antes de incorporar a Omar. No se aceptaron nuevos permisos ni se creó una aplicación de Google desde esta sesión.
+
+1. En un proyecto de Google Cloud de Proyecto EVA, habilitar Google Sheets API, Google Drive API y Google Picker API.
+2. Configurar la pantalla de consentimiento y un cliente OAuth de tipo Aplicación web. Registrar `https://proyectoeva.mx` como origen JavaScript autorizado. Empezar con el titular como usuario de prueba; añadir al equipo solo después de definir los accesos reales.
+3. Crear una clave de API para el uso del selector en navegador. Restringirla a Google Picker API y a las referencias HTTP del sitio `https://proyectoeva.mx/*`. No utilizar una clave de servidor ni un client_secret.
+4. Completar `clientId`, `pickerApiKey`, `projectNumber` y `allowedSpreadsheetIds` en el archivo de configuración público del editor. Para el piloto, registrar solamente la copia de desarrollo; no registrar la maestra original ni mesas con operaciones.
+5. Autorizar el permiso `https://www.googleapis.com/auth/drive.file`. El usuario elige el archivo en Google Picker; Drive decide si puede leerlo o editarlo. La lista del editor es una protección adicional de interfaz, no una autorización de servidor.
+6. Probar primero lectura y carga de CONFIG. Guardar un cambio reversible en un campo de ejemplo y comprobar la celda, la lectura posterior y que las banderas de pagos sigan en NO. Después verificar una foto del catálogo en la vista previa y en el PDF generado por Apps Script.
+7. Solo después de esa prueba habilitar otras hojas o usuarios. Las autorizaciones de precios, descuentos y plataformas necesitan su propio control de servidor antes de integrarse.
+
+Validación realizada: sintaxis JavaScript, pruebas de modelo, navegador para foto de ejemplo y estado de activación pendiente, y API simulada para guardado limitado, conflictos, solo lectura, caducidad y lectura posterior. No se realizó una conexión OAuth ni escritura real en Sheets desde este editor.
+
+Referencias oficiales de implementación:
+- https://developers.google.com/identity/oauth2/web/guides/use-token-model
+- https://developers.google.com/workspace/drive/picker/guides/overview
+- https://developers.google.com/workspace/sheets/api/scopes
+- https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
