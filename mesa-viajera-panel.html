@@ -10,8 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=1">
-  <script defer src="./js/mesa-viajera-panel.js?v=1"></script>
+  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=2">
+  <script defer src="./js/mesa-viajera-google-config.js?v=1"></script>
+  <script defer src="./js/mesa-viajera-sheets.js?v=1"></script>
+  <script defer src="./js/mesa-viajera-panel.js?v=2"></script>
 </head>
 <body>
   <a class="skip" href="#editor">Ir al editor</a>
@@ -24,14 +26,18 @@
       <div id="draft-list" class="draft-list"></div>
       <label class="import-button">↑ Cargar un borrador<input id="import-draft" type="file" accept=".json,application/json"></label>
       <p class="storage-note">Los borradores se guardan en este navegador. Descarga un respaldo para abrirlos en otro equipo.</p>
-      <div class="connection"><span class="dot"></span><strong>Sheets: pendiente de conexión</strong><p>Este editor prepara la personalización. Todavía no publica mesas ni consulta pagos.</p></div>
+      <div class="connection"><span class="dot"></span><strong id="sheets-state">Sheets: pendiente de activación</strong><p id="sheets-help">La conexión de Google requiere una configuración inicial. Los borradores locales siguen disponibles.</p><button id="connect-sheets" class="connect-button" type="button">Conectar con Sheets</button><button id="disconnect-sheets" class="connect-button" type="button" hidden>Desconectar sesión</button></div>
     </aside>
 
     <section class="workspace">
       <div class="page-heading"><div><p class="eyebrow">DE UNA IDEA A UNA CELEBRACIÓN</p><h1>Una mesa.<br><em>Toda su personalidad.</em></h1></div><div class="heading-actions"><button id="duplicate" class="secondary">Duplicar diseño</button><button id="download" class="dark">Descargar borrador ↓</button></div></div>
       <div id="status" role="status" class="status">Preparando editor…</div>
-      <div class="progress-strip"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Conexión con Sheets</strong><small>Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
+      <div class="progress-strip"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Conexión con Sheets</strong><small id="connection-progress">Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
 
+      <section id="sheet-link" class="sheet-link" hidden aria-label="Hoja conectada">
+        <div><p class="eyebrow">HOJA SELECCIONADA</p><strong id="sheet-title"></strong><p id="sheet-link-note">Revisa la configuración de la hoja antes de guardar.</p></div>
+        <div><button id="load-sheets" class="secondary" type="button">Cargar datos de Sheets</button><button id="save-sheets" class="dark" type="button">Revisar cambios y guardar</button></div>
+      </section>
       <div class="workbench">
         <section id="editor" class="editor" aria-label="Configuración de la mesa">
           <div class="tabs" role="tablist" aria-label="Secciones de configuración">
@@ -59,7 +65,9 @@
               <p class="eyebrow">UN REGALO PARA RECORDAR</p><h2>El certificado,<br>con su identidad.</h2><p class="help">Los nombres y el diseño se toman de la misma configuración de la celebración.</p>
               <label>Título<input name="CERT_TITULO" maxlength="80" required></label>
               <label>Frase del certificado<textarea name="CERT_SUBTITULO" rows="3" maxlength="180" required></textarea></label>
-              <div class="tip"><span aria-hidden="true">✧</span><p>El regalo, quien regala, el mensaje y el folio que ves a la derecha son datos de ejemplo. El PDF real se genera desde Apps Script.</p></div>
+              <label>Experiencia para la vista previa<select id="preview-experience"><option value="">Experiencia de ejemplo</option></select></label>
+              <p id="photo-source" class="help">La foto de ejemplo pertenece a esta experiencia. Al conectar el catálogo podrás revisar la foto de cada regalo. La foto no se guarda como un fondo general de la boda.</p>
+              <div class="tip"><span aria-hidden="true">✧</span><p>En cada certificado real debe aparecer la foto de la experiencia comprada. Si falta o no carga, Roberto deberá corregirla antes de emitirlo. El regalo, quien regala, el mensaje y el folio de esta vista son de ejemplo.</p></div>
               <button type="button" class="next-step" data-preview="certificate">Ver certificado de ejemplo →</button>
             </div>
           </form>
@@ -68,16 +76,17 @@
         <section class="preview-section" aria-label="Vista previa de la celebración">
           <div class="preview-toolbar"><span>VISTA PREVIA</span><div role="group" aria-label="Tipo de vista previa"><button id="view-table" aria-pressed="true">Mesa</button><button id="view-certificate" aria-pressed="false">Certificado</button></div></div>
           <div id="preview-surface" class="preview-surface">
-            <article id="table-preview" class="table-preview"><div class="preview-top"><strong>mesa viajera</strong><span>BY PROYECTO EVA</span></div><div class="celebration-hero"><p class="preview-kicker">CELEBREMOS LO QUE VIENE</p><h2 data-names>Alex y Dani</h2><p id="preview-date">Una historia que apenas comienza.</p><div class="hero-ornament" aria-hidden="true">✧</div></div><section class="gift-preview"><p class="preview-category">REGALOS QUE SE CONVIERTEN EN RECUERDOS</p><h3>Un viaje lleno de momentos</h3><p>Un detalle para acompañar esta nueva aventura.</p><div class="sample-experience"><span aria-hidden="true">✦</span><div><strong>Un momento para recordar</strong><small>Ejemplo de experiencia · sin precio asignado</small></div></div></section><p class="sample-label">VISTA DE EJEMPLO · MESA SIN PUBLICAR</p></article>
-            <article id="certificate-preview" class="certificate-preview" hidden><div class="certificate-brand">PROYECTO <strong>eva</strong></div><p class="certificate-kicker">MESA VIAJERA</p><h2 id="certificate-title">Certificado de regalo</h2><p id="certificate-subtitle">Un detalle para celebrar lo que viene</p><div class="certificate-rule"></div><h3 data-names>Alex y Dani</h3><p class="gift-name">Un momento para recordar</p><p class="giver">Con cariño, Invitado de ejemplo</p><p class="gift-message">Que disfruten cada momento de esta nueva aventura.</p><div class="certificate-footer"><span>Mesa Viajera · Proyecto EVA</span><strong id="example-folio">AD · EJEMPLO</strong></div></article>
+            <article id="table-preview" class="table-preview"><div class="preview-top"><strong>mesa viajera</strong><span>BY PROYECTO EVA</span></div><div class="celebration-hero"><p class="preview-kicker">CELEBREMOS LO QUE VIENE</p><h2 data-names>Alex y Dani</h2><p id="preview-date">Una historia que apenas comienza.</p><div class="hero-ornament" aria-hidden="true">✧</div></div><section class="gift-preview"><p class="preview-category">REGALOS QUE SE CONVIERTEN EN RECUERDOS</p><h3>Un viaje lleno de momentos</h3><p>Un detalle para acompañar esta nueva aventura.</p><div class="sample-experience"><span aria-hidden="true">✦</span><div><strong data-experience-name>Un momento para recordar</strong><small>Vista previa · sin precio asignado</small></div></div></section><p class="sample-label">VISTA DE EJEMPLO · MESA SIN PUBLICAR</p></article>
+            <article id="certificate-preview" class="certificate-preview" hidden><div class="certificate-brand">PROYECTO <strong>eva</strong></div><p class="certificate-kicker">MESA VIAJERA</p><h2 id="certificate-title">Certificado de regalo</h2><p id="certificate-subtitle">Un detalle para celebrar lo que viene</p><div class="certificate-rule"></div><h3 data-names>Alex y Dani</h3><figure class="certificate-photo"><img id="experience-photo" src="./assets/Mesa/regalo-meta.webp" alt="Foto de la experiencia de ejemplo" referrerpolicy="no-referrer"><figcaption id="photo-error" hidden>La foto de esta experiencia falta o no pudo cargarse. Revisarla antes de emitir el certificado.</figcaption></figure><p class="gift-name" data-experience-name>Un momento para recordar</p><p class="giver">Con cariño, Invitado de ejemplo</p><p class="gift-message">Que disfruten cada momento de esta nueva aventura.</p><div class="certificate-footer"><span>Mesa Viajera · Proyecto EVA</span><strong id="example-folio">AD · EJEMPLO</strong></div></article>
           </div>
           <p class="preview-note">Referencia visual. La distribución del PDF puede variar respecto a esta vista previa.</p>
-          <div class="checklist"><div><p class="eyebrow">ANTES DE ACTIVAR</p><h2>El siguiente paso, claro.</h2></div><ul><li><span id="identity-check">○</span><div><strong>Datos de la celebración</strong><small>Nombres, nombre de mesa y prefijo válidos.</small></div></li><li><span>○</span><div><strong>Conectar y crear la mesa en Sheets</strong><small>Pendiente de integrar al panel.</small></div></li><li><span>○</span><div><strong>Catálogo, precios y medios de pago</strong><small>Precios y excepciones autorizados por Rodrigo.</small></div></li><li><span>○</span><div><strong>Validar recorrido y publicar</strong><small>Revisar enlace, catálogo y certificado.</small></div></li></ul></div>
+          <div class="checklist"><div><p class="eyebrow">ANTES DE ACTIVAR</p><h2>El siguiente paso, claro.</h2></div><ul><li><span id="identity-check">○</span><div><strong>Datos de la celebración</strong><small>Nombres, nombre de mesa y prefijo válidos.</small></div></li><li><span>○</span><div><strong>Guardar personalización en Sheets</strong><small id="sheets-check">Pendiente de conectar y verificar.</small></div></li><li><span>○</span><div><strong>Catálogo, precios y medios de pago</strong><small>Precios y excepciones autorizados por Rodrigo.</small></div></li><li><span>○</span><div><strong>Validar recorrido y publicar</strong><small>Revisar enlace, catálogo y certificado.</small></div></li></ul></div>
         </section>
       </div>
       <details class="team"><summary>¿Quién participa en la preparación?</summary><div><p><strong>Omar</strong> · Datos de la celebración y seguimiento comercial.</p><p><strong>Fernanda</strong> · Apoyo comercial y asesoría de bodas.</p><p><strong>Roberto</strong> · Solicita las especificaciones y monta las imágenes generadas con IA.</p><p><strong>Rodrigo</strong> · Autoriza precios, descuentos, plataformas y excepciones. Experiencias reales: aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.</p></div></details>
       <footer>Proyecto EVA · Mesa Viajera <span>Personalización en borrador · Sin cobros ni publicación</span></footer>
     </section>
   </main>
+  <dialog id="sheets-dialog" aria-labelledby="sheets-dialog-title"><form method="dialog" class="dialog-inner"><button class="dialog-close" value="cancel" aria-label="Cerrar">×</button><p class="eyebrow">CONEXIÓN CON GOOGLE SHEETS</p><h2 id="sheets-dialog-title">Revisar antes de guardar</h2><p id="sheets-dialog-message"></p><ul id="sheets-changes"></ul><div class="dialog-actions"><button class="secondary" value="cancel">Volver al editor</button><button id="confirm-sheets" class="dark" value="confirm">Guardar estos cambios</button></div></form></dialog>
 </body>
 </html>

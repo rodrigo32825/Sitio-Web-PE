@@ -68,6 +68,11 @@ if (typeof document !== 'undefined') (() => {
   const $ = id => document.getElementById(id);
   const form = $('table-form');
   const status = $('status');
+  const sheets = new MesaSheets.Client(window.EVA_MESA_GOOGLE);
+  let sheetSnapshot = null;
+  let catalog = [];
+  let googleLoaded = false;
+  let busy = false;
   let state = { drafts: [], activeId: null };
   let previewMode = 'table';
   let saveTimer;
@@ -106,17 +111,22 @@ if (typeof document !== 'undefined') (() => {
       return false;
     }
   }
-  function scheduleSave() { clearTimeout(saveTimer); announce('Guardando borrador…'); saveTimer = setTimeout(persist, 400); }
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    if (sheetSnapshot) { $('connection-progress').textContent='Cambios locales'; $('sheets-check').textContent='Revisar y guardar los cambios locales.'; }
+    announce('Guardando borrador…'); saveTimer = setTimeout(persist, 400);
+  }
   function renderList() {
     const list = $('draft-list'); list.replaceChildren();
     state.drafts.forEach(draft => {
       const button = document.createElement('button'); button.type = 'button'; button.className = 'draft-button';
+      button.disabled = busy;
       button.classList.toggle('active', draft.id === state.activeId);
       button.setAttribute('aria-current', draft.id === state.activeId ? 'true' : 'false');
       const title = document.createElement('strong'); title.textContent = draft.config.NOMBRE_MESA.trim() || draft.config.NOMBRES.trim() || 'Nueva celebración';
       const sub = document.createElement('small'); sub.textContent = M.completeCount(draft.config) + '/3 datos básicos · Borrador local';
       button.append(title, sub);
-      button.addEventListener('click', () => { persist(); state.activeId = draft.id; renderForm(); persist(); });
+      button.addEventListener('click', () => { if (busy) return; persist(); state.activeId = draft.id; clearSheetLink(); renderForm(); persist(); });
       list.append(button);
     });
   }
@@ -213,8 +223,9 @@ if (typeof document !== 'undefined') (() => {
   $('view-table').addEventListener('click', () => setPreview('table'));
   $('view-certificate').addEventListener('click', () => setPreview('certificate'));
   function addDraft(draft) {
+    if (busy) return false;
     if (state.drafts.length >= 100) { announce('Este navegador tiene 100 borradores. Descarga un respaldo y utiliza otro navegador para continuar.', true); return false; }
-    persist(); state.drafts.unshift(draft); state.activeId = draft.id;
+    persist(); state.drafts.unshift(draft); state.activeId = draft.id; clearSheetLink();
     renderForm(); setSection('data', true); setPreview('table'); persist();
     form.elements.namedItem('NOMBRES').focus();
     return true;
@@ -234,6 +245,7 @@ if (typeof document !== 'undefined') (() => {
     announce('Descarga solicitada. El archivo contiene la personalización; no crea una mesa en Sheets.');
   });
   $('import-draft').addEventListener('change', async event => {
+    if (busy) return;
     const file = event.target.files[0];
     if (!file) return;
     try {
@@ -244,7 +256,103 @@ if (typeof document !== 'undefined') (() => {
     finally { event.target.value = ''; }
   });
   window.addEventListener('pagehide', () => { if (saveTimer) persist(); });
+
+  function setBusy(value) {
+    busy=value; form.inert=value;
+    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets']) $(key).disabled=value;
+    if (!value && sheetSnapshot) $('save-sheets').disabled=!sheetSnapshot.canEdit;
+    renderList();
+  }
+  function setExampleExperience() {
+    const selected=catalog.find(item => item.id === $('preview-experience').value);
+    const name=selected?.name || 'Un momento para recordar';
+    document.querySelectorAll('[data-experience-name]').forEach(el => {el.textContent=name;});
+    const photo=$('experience-photo');
+    const source=selected ? selected.image : './assets/Mesa/regalo-meta.webp';
+    const missing=!!selected && !source;
+    photo.hidden=missing; $('photo-error').hidden=!missing;
+    photo.alt='Foto de la experiencia: '+name;
+    if (source) photo.src=source; else photo.removeAttribute('src');
+    $('photo-source').textContent=selected ? (missing ? 'Esta experiencia no tiene una URL de foto válida. Roberto debe corregirla antes de emitir el certificado.' : 'Foto tomada de la experiencia seleccionada en el catálogo. Comprueba que corresponda al regalo comprado.') : 'Foto y regalo de ejemplo. Al conectar el catálogo podrás elegir una experiencia y revisar su propia imagen.';
+    $('photo-source').classList.toggle('photo-missing',missing);
+  }
+  $('experience-photo').addEventListener('error',() => { $('experience-photo').hidden=true; $('photo-error').hidden=false; $('photo-source').textContent='No se pudo cargar la foto de esta experiencia. Revisarla antes de emitir el certificado.'; $('photo-source').classList.add('photo-missing'); });
+  $('experience-photo').addEventListener('load',() => { $('experience-photo').hidden=false; $('photo-error').hidden=true; });
+  $('preview-experience').addEventListener('change',setExampleExperience);
+  function clearSheetLink() {
+    sheetSnapshot=null; catalog=[];
+    $('sheet-link').hidden=true;
+    $('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));
+    $('sheets-state').textContent=sheets.signedIn() ? 'Google conectado · elige una hoja' : 'Sheets: pendiente de conexión';
+    $('sheets-help').textContent=sheets.ready() ? 'Selecciona la hoja autorizada para esta celebración.' : 'Falta la activación inicial de Google. Los borradores locales siguen disponibles.';
+    $('connection-progress').textContent='Pendiente'; $('sheets-check').textContent='Pendiente de conectar y verificar.';
+    $('disconnect-sheets').hidden=!sheets.signedIn();
+    setExampleExperience();
+  }
+  function showReview(title,message,changes,confirmText) {
+    const dialog=$('sheets-dialog');
+    if (dialog.open) return Promise.resolve(false);
+    $('sheets-dialog-title').textContent=title; $('sheets-dialog-message').textContent=message;
+    $('confirm-sheets').hidden=!confirmText; $('confirm-sheets').textContent=confirmText || '';
+    const list=$('sheets-changes'); list.replaceChildren();
+    changes.forEach(change => {const item=document.createElement('li'), label=document.createElement('strong'), value=document.createElement('span');label.textContent=change.key;value.textContent=(change.before || '(vacío)')+' → '+(change.after || '(vacío)');item.append(label,value);list.append(item);});
+    dialog.returnValue='';
+    return new Promise(resolve => {dialog.addEventListener('close',() => resolve(dialog.returnValue === 'confirm'),{once:true});dialog.showModal();});
+  }
+  function describeSheet(snapshot) {
+    $('sheet-link').hidden=false; $('sheet-title').textContent=snapshot.title;
+    $('sheet-link-note').textContent=(snapshot.canEdit ? 'Revisa y guarda únicamente la personalización. ' : 'Tu cuenta tiene acceso de lectura. ')+'La fecha permanece en el borrador; catálogo, pagos y operaciones no se modifican.';
+    $('sheets-state').textContent='Hoja conectada · '+(snapshot.canEdit ? 'lectura y edición' : 'solo lectura');
+    $('sheets-help').textContent='La hoja se leyó correctamente. Los cambios locales se guardan en Sheets solo cuando los confirmas.';
+    $('connection-progress').textContent='Hoja leída'; $('save-sheets').disabled=!snapshot.canEdit;
+    $('disconnect-sheets').hidden=false;
+  }
+  $('connect-sheets').addEventListener('click',async () => {
+    if (busy) return;
+    if (!sheets.ready()) { await showReview('Activación inicial pendiente','Rodrigo debe registrar primero la aplicación de Google para proyectoeva.mx y habilitar la copia de desarrollo. Esta preparación es una sola vez; Omar usará su cuenta de Google y elegirá una hoja.',[],null); return; }
+    setBusy(true);
+    try {
+      if (!googleLoaded) {await MesaSheets.loadGoogle();googleLoaded=true;announce('Acceso de Google preparado. Pulsa Conectar con Sheets para elegir tu cuenta y la hoja.');return;}
+      if (!sheets.signedIn()) await sheets.authorize();
+      const chosen=await sheets.choose(); if (!chosen) {announce('Selección cancelada. El borrador local se conserva.');return;}
+      const snapshot=await sheets.read(chosen.id); sheetSnapshot=snapshot; describeSheet(snapshot);
+      catalog=[];$('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));setExampleExperience();
+      try {catalog=await sheets.catalog(chosen.id);catalog.forEach(item => $('preview-experience').append(new Option(item.name,item.id)));announce('Hoja leída. Revisa su configuración o prepara los cambios antes de guardar.');}
+      catch(error) {catalog=[];announce('La configuración se leyó, pero no se cargó el catálogo: '+error.message,true);}
+    } catch(error) {announce(error.message,true);}
+    finally {setBusy(false);}
+  });
+  $('disconnect-sheets').addEventListener('click',() => {sheets.clearSession();clearSheetLink();announce('Sesión cerrada en este editor. Los borradores locales se conservan.');});
+  $('load-sheets').addEventListener('click',async () => {
+    if (!sheetSnapshot || busy) return;
+    setBusy(true); persist();
+    try {
+      const snapshot=await sheets.read(sheetSnapshot.id);
+      const changes=MesaSheets.KEYS.filter(key => active().config[key] !== snapshot.config[key]).map(key => ({key,before:active().config[key],after:snapshot.config[key]}));
+      const accepted=await showReview('Cargar la configuración de Sheets','Hoja: '+snapshot.title+'. Estos datos reemplazarán la personalización del borrador actual. La fecha local se conserva.',changes,'Cargar estos datos');
+      if (!accepted) {announce('Carga cancelada. El borrador local se conserva.');return;}
+      active().config=M.cleanConfig(snapshot.config);active().updatedAt=now();sheetSnapshot=snapshot;renderForm();describeSheet(snapshot);persist();
+      $('sheets-check').textContent='Configuración leída desde Sheets; sin publicar la mesa.';announce('Configuración cargada desde Sheets y conservada en el borrador local.');
+    } catch(error) {announce(error.message,true);}
+    finally {setBusy(false);}
+  });
+  $('save-sheets').addEventListener('click',async () => {
+    if (!sheetSnapshot || busy) return;
+    setBusy(true);persist();
+    try {
+      const snapshot=await sheets.read(sheetSnapshot.id), config={...active().config};
+      const changes=MesaSheets.planWrite(snapshot,config);
+      if (!changes.length) {sheetSnapshot=snapshot;announce('La personalización ya coincide con la hoja leída.');return;}
+      const accepted=await showReview('Guardar personalización en Sheets','Hoja: '+snapshot.title+'. Se actualizarán solo estos campos de CONFIG. Catálogo, operaciones y pagos conservan sus valores.',changes,'Guardar estos cambios');
+      if (!accepted) {announce('Guardado cancelado. El borrador local se conserva.');return;}
+      sheetSnapshot=await sheets.save(snapshot,config);describeSheet(sheetSnapshot);
+      $('connection-progress').textContent='Guardado verificado';$('sheets-check').textContent='Personalización guardada y comprobada por lectura posterior.';
+      announce('Guardado en Sheets y verificado por una nueva lectura. La mesa todavía no está publicada.');
+    } catch(error) {announce(error.message,true);}
+    finally {setBusy(false);}
+  });
   renderForm();
+  clearSheetLink();
   // No sobrescribir un guardado ilegible hasta que el usuario haga un cambio.
   if (recoveryWarning) announce(recoveryWarning, true); else persist();
 })();
