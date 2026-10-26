@@ -1,0 +1,18 @@
+const assert = require('node:assert/strict');
+const M = require('../js/mesa-viajera-panel.js');
+const original = {...M.newDraft('one',1), fechaCelebracion:'2027-02-13', config:{...M.DEFAULTS, NOMBRES:'Alex y Dani',NOMBRE_MESA:'Mesa A',PREFIJO_FOLIO:'AD', COLOR_PRIMARIO:'#800020'}};
+const copy = M.cloneDesign(original,'two',2);
+assert.equal(copy.config.COLOR_PRIMARIO,'#800020');
+assert.equal(copy.config.NOMBRES,'');assert.equal(copy.config.NOMBRE_MESA,'');assert.equal(copy.config.PREFIJO_FOLIO,'');assert.equal(copy.fechaCelebracion,'');
+copy.config.COLOR_PRIMARIO='#123456';assert.equal(original.config.COLOR_PRIMARIO,'#800020');
+const hostile = JSON.parse('{"COLOR_PRIMARIO":"red; background:url(x)","COLOR_FONDO":"#fafafa","FUENTE_CUERPO":"evil","PREFIJO_FOLIO":"a-d 1","STRIPE_SECRET":"secret","__proto__":{"polluted":true}}');
+const c = M.cleanConfig(hostile);assert.equal(c.COLOR_PRIMARIO,M.DEFAULTS.COLOR_PRIMARIO);assert.equal(c.COLOR_FONDO,'#FAFAFA');assert.equal(c.FUENTE_CUERPO,'Poppins');assert.equal(c.PREFIJO_FOLIO,'AD1');assert.equal(c.STRIPE_SECRET,undefined);assert.equal({}.polluted,undefined);
+assert.throws(()=>M.importDraft({version:2,type:'eva.mesa-viajera.personalizacion',config:{}},'a',1));
+assert.throws(()=>M.importDraft({version:1,type:'eva.mesa-viajera.personalizacion',config:[]},'a',1));
+const exported = M.exportDraft({...original,credentials:'never-export',payments:[{amount:500}]});
+const imported = M.importDraft(exported,'three',3);assert.deepEqual(imported.config,original.config);assert.equal(imported.fechaCelebracion,'2027-02-13');assert.equal(imported.payments,undefined);assert.equal(exported.credentials,undefined);
+assert.equal(M.importDraft({...exported,fechaCelebracion:'2027-02-30'},'a',1).fechaCelebracion,'');
+assert.equal(M.completeCount(original.config),3);assert.equal(M.completeCount(copy.config),0);
+const restored=M.restore({version:1,activeId:'missing',drafts:[original,original,{id:'bad<script>'},copy]});assert.equal(restored.drafts.length,2);assert.equal(restored.activeId,'one');
+assert.equal(M.cleanConfig({NOMBRES:'a'.repeat(500)}).NOMBRES.length,100);
+console.log('OK: duplicación independiente, limpieza del cliente, importación/exportación, límites y exclusión de secretos/operaciones.');
