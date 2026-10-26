@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Prepara y duplica la identidad de cada celebración de Mesa Viajera.">
+  <title>Mesa Viajera · Recursos internos | Proyecto EVA</title>
+  <link rel="icon" href="./favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=1">
+  <script defer src="./js/mesa-viajera-panel.js?v=1"></script>
+</head>
+<body>
+  <a class="skip" href="#editor">Ir al editor</a>
+  <header class="topbar"><a href="./recursos-internos.html">← Recursos internos</a><span>PROYECTO EVA <b>/</b> MESA VIAJERA</span><span class="version">EDITOR · V1</span></header>
+  <main class="shell">
+    <aside class="sidebar" aria-label="Borradores de mesas">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">✧</span><div>Mesa Viajera<small>CADA HISTORIA, SU VIAJE</small></div></div>
+      <p class="sidebar-caption">TU ESPACIO DE TRABAJO</p>
+      <button id="new-table" class="primary">＋ Nueva mesa</button>
+      <div id="draft-list" class="draft-list"></div>
+      <label class="import-button">↑ Cargar un borrador<input id="import-draft" type="file" accept=".json,application/json"></label>
+      <p class="storage-note">Los borradores se guardan en este navegador. Descarga un respaldo para abrirlos en otro equipo.</p>
+      <div class="connection"><span class="dot"></span><strong>Sheets: pendiente de conexión</strong><p>Este editor prepara la personalización. Todavía no publica mesas ni consulta pagos.</p></div>
+    </aside>
+
+    <section class="workspace">
+      <div class="page-heading"><div><p class="eyebrow">DE UNA IDEA A UNA CELEBRACIÓN</p><h1>Una mesa.<br><em>Toda su personalidad.</em></h1></div><div class="heading-actions"><button id="duplicate" class="secondary">Duplicar diseño</button><button id="download" class="dark">Descargar borrador ↓</button></div></div>
+      <div id="status" role="status" class="status">Preparando editor…</div>
+      <div class="progress-strip"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Conexión con Sheets</strong><small>Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
+
+      <div class="workbench">
+        <section id="editor" class="editor" aria-label="Configuración de la mesa">
+          <div class="tabs" role="tablist" aria-label="Secciones de configuración">
+            <button role="tab" aria-selected="true" aria-controls="panel-data" id="tab-data" data-section="data">01 Datos</button>
+            <button role="tab" aria-selected="false" aria-controls="panel-style" id="tab-style" data-section="style" tabindex="-1">02 Diseño</button>
+            <button role="tab" aria-selected="false" aria-controls="panel-certificate" id="tab-certificate" data-section="certificate" tabindex="-1">03 Certificado</button>
+          </div>
+          <form id="table-form">
+            <div role="tabpanel" id="panel-data" aria-labelledby="tab-data" class="form-panel">
+              <p class="eyebrow">LOS PROTAGONISTAS</p><h2>¿Quiénes celebran?</h2><p class="help">Usa los nombres tal como quieren verlos en su mesa y certificado.</p>
+              <label>Nombres de la celebración<input name="NOMBRES" maxlength="100" placeholder="Alex y Dani" autocomplete="off" required></label>
+              <label>Nombre de la mesa<input name="NOMBRE_MESA" maxlength="120" placeholder="Mesa de Alex y Dani" autocomplete="off" required></label>
+              <div class="field-grid"><label>Fecha de la celebración<input name="fechaCelebracion" type="date"></label><label>Prefijo de folios<input name="PREFIJO_FOLIO" maxlength="16" pattern="[A-Za-z0-9]{1,16}" placeholder="AD" autocomplete="off" required><small>Entre 1 y 16 letras o números.</small></label></div>
+              <div class="tip"><span aria-hidden="true">↳</span><p><strong>Un diseño reutilizable.</strong> Duplica la mesa para conservar colores y tipografías. Los nombres, la fecha y el prefijo se limpian para el siguiente cliente.</p></div>
+              <button type="button" class="next-step" data-next="style">Elegir colores y tipografías →</button>
+            </div>
+            <div role="tabpanel" id="panel-style" aria-labelledby="tab-style" class="form-panel" hidden>
+              <p class="eyebrow">SU ESTILO, EN CADA DETALLE</p><h2>La misma gama.<br>En toda la mesa.</h2><p class="help">La vista previa de la página y del certificado comparte estos colores.</p>
+              <fieldset><legend>Paleta de la celebración</legend><div id="color-fields" class="color-fields"></div></fieldset>
+              <fieldset><legend>Tipografías</legend><div id="font-fields" class="font-fields"></div></fieldset>
+              <p class="help">El certificado utiliza las fuentes de nombres, títulos y cuerpo. Categorías y dorado se reservan para la página de la mesa.</p>
+              <button type="button" class="next-step" data-next="certificate">Personalizar el certificado →</button>
+            </div>
+            <div role="tabpanel" id="panel-certificate" aria-labelledby="tab-certificate" class="form-panel" hidden>
+              <p class="eyebrow">UN REGALO PARA RECORDAR</p><h2>El certificado,<br>con su identidad.</h2><p class="help">Los nombres y el diseño se toman de la misma configuración de la celebración.</p>
+              <label>Título<input name="CERT_TITULO" maxlength="80" required></label>
+              <label>Frase del certificado<textarea name="CERT_SUBTITULO" rows="3" maxlength="180" required></textarea></label>
+              <div class="tip"><span aria-hidden="true">✧</span><p>El regalo, quien regala, el mensaje y el folio que ves a la derecha son datos de ejemplo. El PDF real se genera desde Apps Script.</p></div>
+              <button type="button" class="next-step" data-preview="certificate">Ver certificado de ejemplo →</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="preview-section" aria-label="Vista previa de la celebración">
+          <div class="preview-toolbar"><span>VISTA PREVIA</span><div role="group" aria-label="Tipo de vista previa"><button id="view-table" aria-pressed="true">Mesa</button><button id="view-certificate" aria-pressed="false">Certificado</button></div></div>
+          <div id="preview-surface" class="preview-surface">
+            <article id="table-preview" class="table-preview"><div class="preview-top"><strong>mesa viajera</strong><span>BY PROYECTO EVA</span></div><div class="celebration-hero"><p class="preview-kicker">CELEBREMOS LO QUE VIENE</p><h2 data-names>Alex y Dani</h2><p id="preview-date">Una historia que apenas comienza.</p><div class="hero-ornament" aria-hidden="true">✧</div></div><section class="gift-preview"><p class="preview-category">REGALOS QUE SE CONVIERTEN EN RECUERDOS</p><h3>Un viaje lleno de momentos</h3><p>Un detalle para acompañar esta nueva aventura.</p><div class="sample-experience"><span aria-hidden="true">✦</span><div><strong>Un momento para recordar</strong><small>Ejemplo de experiencia · sin precio asignado</small></div></div></section><p class="sample-label">VISTA DE EJEMPLO · MESA SIN PUBLICAR</p></article>
+            <article id="certificate-preview" class="certificate-preview" hidden><div class="certificate-brand">PROYECTO <strong>eva</strong></div><p class="certificate-kicker">MESA VIAJERA</p><h2 id="certificate-title">Certificado de regalo</h2><p id="certificate-subtitle">Un detalle para celebrar lo que viene</p><div class="certificate-rule"></div><h3 data-names>Alex y Dani</h3><p class="gift-name">Un momento para recordar</p><p class="giver">Con cariño, Invitado de ejemplo</p><p class="gift-message">Que disfruten cada momento de esta nueva aventura.</p><div class="certificate-footer"><span>Mesa Viajera · Proyecto EVA</span><strong id="example-folio">AD · EJEMPLO</strong></div></article>
+          </div>
+          <p class="preview-note">Referencia visual. La distribución del PDF puede variar respecto a esta vista previa.</p>
+          <div class="checklist"><div><p class="eyebrow">ANTES DE ACTIVAR</p><h2>El siguiente paso, claro.</h2></div><ul><li><span id="identity-check">○</span><div><strong>Datos de la celebración</strong><small>Nombres, nombre de mesa y prefijo válidos.</small></div></li><li><span>○</span><div><strong>Conectar y crear la mesa en Sheets</strong><small>Pendiente de integrar al panel.</small></div></li><li><span>○</span><div><strong>Catálogo, precios y medios de pago</strong><small>Precios y excepciones autorizados por Rodrigo.</small></div></li><li><span>○</span><div><strong>Validar recorrido y publicar</strong><small>Revisar enlace, catálogo y certificado.</small></div></li></ul></div>
+        </section>
+      </div>
+      <details class="team"><summary>¿Quién participa en la preparación?</summary><div><p><strong>Omar</strong> · Datos de la celebración y seguimiento comercial.</p><p><strong>Fernanda</strong> · Apoyo comercial y asesoría de bodas.</p><p><strong>Roberto</strong> · Solicita las especificaciones y monta las imágenes generadas con IA.</p><p><strong>Rodrigo</strong> · Autoriza precios, descuentos, plataformas y excepciones. Experiencias reales: aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.</p></div></details>
+      <footer>Proyecto EVA · Mesa Viajera <span>Personalización en borrador · Sin cobros ni publicación</span></footer>
+    </section>
+  </main>
+</body>
+</html>
