@@ -95,3 +95,18 @@ La carga de las bibliotecas de Google se comprobó en el panel publicado despué
 
 ### Compatibilidad de tipografías
 El panel admite Cormorant Garamond para los cuatro campos de tipografía. Al leer CONFIG conserva esta fuente y la carga en ambas vistas previas; no requiere modificar la hoja. Si aparece otra fuente no admitida, registrar su nombre y añadir soporte antes de sustituirla.
+
+## Abrir una mesa sin pasos duplicados
+
+En Recursos internos → Mesa Viajera, pulsar **Abrir mesa**. Google solicita la cuenta solo si hace falta. Elegir la hoja autorizada carga automáticamente CONFIG y la vista previa; ya no hay un segundo paso obligatorio de carga. El acceso de Google se prepara al entrar, sin autorizar ni leer archivos hasta la acción del usuario. La apertura conserva el borrador anterior y crea uno independiente para la hoja elegida. Cancelar o fallar la lectura no reemplaza el trabajo anterior. La fecha local no se copia a otra mesa.
+
+**Actualizar datos** es una acción opcional para releer una mesa ya abierta; muestra las diferencias antes de reemplazar la personalización local. **Revisar cambios y guardar** mantiene la revisión del destino y la lectura posterior al guardado. Abrir no publica ni activa pagos. Durante el piloto solo está habilitada la copia de desarrollo.
+
+## Recorrido por responsable
+
+- **Fer — Comercial:** negociación, datos de quienes celebran, alcance y preferencias. Solicita a Rodrigo autorización de precios, descuentos y excepciones antes de comprometerlos.
+- **Roberto — Fotos y lista de experiencias:** prepara el catálogo acordado, pide especificaciones, monta imágenes y verifica que la foto de cada experiencia corresponda al regalo y su certificado.
+- **Rodrigo — Desarrollo y dineros:** configuración técnica, accesos, medios de pago, precios, descuentos y plataformas autorizadas. Experiencias reales con aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.
+- **Omar — Apoyo:** captura y seguimiento asignados, utilizando el instructivo sin editar código.
+
+El titular confirmó en su navegador carga real y guardado en Sheets, comprobando la celda directamente. Cormorant Garamond es compatible. El nuevo flujo unificado requiere aún una comprobación real del titular. El catálogo editable, los submenús, los permisos por rol, la duplicación de hojas, los pagos y la publicación de mesas siguen pendientes; estas responsabilidades describen la operación acordada y no permisos ya implementados.
