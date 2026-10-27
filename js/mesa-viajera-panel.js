@@ -4,7 +4,7 @@
 const MesaModel = (() => {
   const VERSION = 1;
   const KEY = 'eva.mesa-viajera.drafts.v1';
-  const FONTS = ['Poppins', 'Great Vibes', 'Bodoni Moda', 'Roboto'];
+  const FONTS = ['Poppins', 'Great Vibes', 'Cormorant Garamond', 'Bodoni Moda', 'Roboto'];
   const COLORS = [
     ['COLOR_PRIMARIO', 'Principal', 'Nombres y títulos', '#073F4C'],
     ['COLOR_FONDO', 'Fondo', 'Página y certificado', '#FFFFFF'],
