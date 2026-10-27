@@ -222,8 +222,8 @@ if (typeof document !== 'undefined') (() => {
   document.querySelectorAll('[data-preview]').forEach(button => button.addEventListener('click', () => setPreview(button.dataset.preview)));
   $('view-table').addEventListener('click', () => setPreview('table'));
   $('view-certificate').addEventListener('click', () => setPreview('certificate'));
-  function addDraft(draft) {
-    if (busy) return false;
+  function addDraft(draft, openingSheet = false) {
+    if (busy && !openingSheet) return false;
     if (state.drafts.length >= 100) { announce('Este navegador tiene 100 borradores. Descarga un respaldo y utiliza otro navegador para continuar.', true); return false; }
     persist(); state.drafts.unshift(draft); state.activeId = draft.id; clearSheetLink();
     renderForm(); setSection('data', true); setPreview('table'); persist();
@@ -283,8 +283,8 @@ if (typeof document !== 'undefined') (() => {
     sheetSnapshot=null; catalog=[];
     $('sheet-link').hidden=true;
     $('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));
-    $('sheets-state').textContent=sheets.signedIn() ? 'Google conectado · elige una hoja' : 'Sheets: pendiente de conexión';
-    $('sheets-help').textContent=sheets.ready() ? 'Selecciona la hoja autorizada para esta celebración.' : 'Falta la activación inicial de Google. Los borradores locales siguen disponibles.';
+    $('sheets-state').textContent=sheets.signedIn() ? 'Google disponible · abre una mesa' : 'Ninguna mesa abierta';
+    $('sheets-help').textContent=sheets.ready() ? 'Abre una mesa para cargar sus datos y su diseño automáticamente.' : 'Falta la activación inicial de Google. Los borradores locales siguen disponibles.';
     $('connection-progress').textContent='Pendiente'; $('sheets-check').textContent='Pendiente de conectar y verificar.';
     $('disconnect-sheets').hidden=!sheets.signedIn();
     setExampleExperience();
@@ -302,23 +302,45 @@ if (typeof document !== 'undefined') (() => {
   function describeSheet(snapshot) {
     $('sheet-link').hidden=false; $('sheet-title').textContent=snapshot.title;
     $('sheet-link-note').textContent=(snapshot.canEdit ? 'Revisa y guarda únicamente la personalización. ' : 'Tu cuenta tiene acceso de lectura. ')+'La fecha permanece en el borrador; catálogo, pagos y operaciones no se modifican.';
-    $('sheets-state').textContent='Hoja conectada · '+(snapshot.canEdit ? 'lectura y edición' : 'solo lectura');
-    $('sheets-help').textContent='La hoja se leyó correctamente. Los cambios locales se guardan en Sheets solo cuando los confirmas.';
+    $('sheets-state').textContent='Mesa abierta · '+(snapshot.canEdit ? 'lectura y edición' : 'solo lectura');
+    $('sheets-help').textContent='Datos y diseño cargados. Para abrir otra mesa, pulsa Abrir mesa. Los cambios se guardan en Sheets cuando los confirmas.';
     $('connection-progress').textContent='Hoja leída'; $('save-sheets').disabled=!snapshot.canEdit;
     $('disconnect-sheets').hidden=false;
   }
+  async function prepareGoogleAccess() {
+    $('connect-sheets').disabled=true;
+    $('connect-sheets').textContent='Preparando acceso…';
+    try {
+      await MesaSheets.loadGoogle(); googleLoaded=true;
+      $('connect-sheets').textContent='Abrir mesa';
+    } catch(error) {
+      $('connect-sheets').textContent='Reintentar acceso';
+      announce(error.message,true);
+    } finally { $('connect-sheets').disabled=busy; }
+  }
   $('connect-sheets').addEventListener('click',async () => {
     if (busy) return;
-    if (!sheets.ready()) { await showReview('Activación inicial pendiente','Rodrigo debe registrar primero la aplicación de Google para proyectoeva.mx y habilitar la copia de desarrollo. Esta preparación es una sola vez; Omar usará su cuenta de Google y elegirá una hoja.',[],null); return; }
+    if (!sheets.ready()) { await showReview('Activación inicial pendiente','Rodrigo debe completar la preparación de Google. Después, cada responsable usará Abrir mesa con su cuenta autorizada.',[],null); return; }
+    if (!googleLoaded) { await prepareGoogleAccess(); return; }
+    if (state.drafts.length >= 100) {announce('Se alcanzó el límite de 100 borradores. Descarga tus respaldos antes de continuar.',true);return;}
     setBusy(true);
     try {
-      if (!googleLoaded) {await MesaSheets.loadGoogle();googleLoaded=true;announce('Acceso de Google preparado. Pulsa Conectar con Sheets para elegir tu cuenta y la hoja.');return;}
       if (!sheets.signedIn()) await sheets.authorize();
-      const chosen=await sheets.choose(); if (!chosen) {announce('Selección cancelada. El borrador local se conserva.');return;}
-      const snapshot=await sheets.read(chosen.id); sheetSnapshot=snapshot; describeSheet(snapshot);
-      catalog=[];$('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));setExampleExperience();
-      try {catalog=await sheets.catalog(chosen.id);catalog.forEach(item => $('preview-experience').append(new Option(item.name,item.id)));announce('Hoja leída. Revisa su configuración o prepara los cambios antes de guardar.');}
-      catch(error) {catalog=[];announce('La configuración se leyó, pero no se cargó el catálogo: '+error.message,true);}
+      const chosen=await sheets.choose(); if (!chosen) {announce('Selección cancelada. El borrador anterior se conserva.');return;}
+      const snapshot=await sheets.read(chosen.id);
+      // Abrir la hoja crea un borrador independiente y conserva el trabajo anterior.
+      if (!addDraft(M.newDraft(id(),now(),snapshot.config),true)) return;
+      sheetSnapshot=snapshot; describeSheet(snapshot);
+      $('sheets-check').textContent='Datos y diseño cargados desde la mesa seleccionada.';
+      announce('Mesa abierta: '+snapshot.title+'. Datos y diseño cargados; el borrador anterior se conserva.');
+      try {
+        catalog=await sheets.catalog(chosen.id);
+        catalog.forEach(item => $('preview-experience').append(new Option(item.name,item.id)));
+        setExampleExperience();
+      } catch(error) {
+        catalog=[];
+        announce('Mesa abierta y datos cargados. No se pudo cargar el catálogo: '+error.message,true);
+      }
     } catch(error) {announce(error.message,true);}
     finally {setBusy(false);}
   });
@@ -329,7 +351,7 @@ if (typeof document !== 'undefined') (() => {
     try {
       const snapshot=await sheets.read(sheetSnapshot.id);
       const changes=MesaSheets.KEYS.filter(key => active().config[key] !== snapshot.config[key]).map(key => ({key,before:active().config[key],after:snapshot.config[key]}));
-      const accepted=await showReview('Cargar la configuración de Sheets','Hoja: '+snapshot.title+'. Estos datos reemplazarán la personalización del borrador actual. La fecha local se conserva.',changes,'Cargar estos datos');
+      const accepted=await showReview('Actualizar datos de la mesa','Hoja: '+snapshot.title+'. Estos datos reemplazarán la personalización del borrador actual. La fecha local se conserva.',changes,'Actualizar datos');
       if (!accepted) {announce('Carga cancelada. El borrador local se conserva.');return;}
       active().config=M.cleanConfig(snapshot.config);active().updatedAt=now();sheetSnapshot=snapshot;renderForm();describeSheet(snapshot);persist();
       $('sheets-check').textContent='Configuración leída desde Sheets; sin publicar la mesa.';announce('Configuración cargada desde Sheets y conservada en el borrador local.');
@@ -353,6 +375,7 @@ if (typeof document !== 'undefined') (() => {
   });
   renderForm();
   clearSheetLink();
+  if (sheets.ready()) void prepareGoogleAccess();
   // No sobrescribir un guardado ilegible hasta que el usuario haga un cambio.
   if (recoveryWarning) announce(recoveryWarning, true); else persist();
 })();
