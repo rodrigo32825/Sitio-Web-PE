@@ -92,3 +92,6 @@ Referencias oficiales de implementación:
 - https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
 
 La carga de las bibliotecas de Google se comprobó en el panel publicado después de instalar la configuración. No se completó una autorización OAuth ni una escritura en Sheets durante esa comprobación.
+
+### Compatibilidad de tipografías
+El panel admite Cormorant Garamond para los cuatro campos de tipografía. Al leer CONFIG conserva esta fuente y la carga en ambas vistas previas; no requiere modificar la hoja. Si aparece otra fuente no admitida, registrar su nombre y añadir soporte antes de sustituirla.
