@@ -109,4 +109,26 @@ En Recursos internos → Mesa Viajera, pulsar **Abrir mesa**. Google solicita la
 - **Rodrigo — Desarrollo y dineros:** configuración técnica, accesos, medios de pago, precios, descuentos y plataformas autorizadas. Experiencias reales con aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.
 - **Omar — Apoyo:** captura y seguimiento asignados, utilizando el instructivo sin editar código.
 
-El titular confirmó en su navegador carga real y guardado en Sheets, comprobando la celda directamente. Cormorant Garamond es compatible. El nuevo flujo unificado requiere aún una comprobación real del titular. El catálogo editable, los submenús, los permisos por rol, la duplicación de hojas, los pagos y la publicación de mesas siguen pendientes; estas responsabilidades describen la operación acordada y no permisos ya implementados.
+El titular confirmó en su navegador carga real y guardado en Sheets, comprobando la celda directamente. Cormorant Garamond es compatible. El nuevo flujo unificado requiere aún una comprobación real del titular. Las secciones Personalización y Experiencias ya están disponibles. Los permisos por rol, la duplicación de hojas, los pagos y la publicación de mesas siguen pendientes; estas responsabilidades describen la operación acordada y no permisos ya implementados.
+
+## Experiencias desde el panel
+
+El menú lateral separa Personalización y Experiencias. Solo muestra una sección a la vez; el nombre de la hoja seleccionada permanece visible. Roberto abre la mesa y entra en Experiencias para buscar, agregar o editar desde un panel lateral. Las fotografías se capturan mediante URL HTTPS directa, con vista previa y comprobación de carga; aún no se suben archivos desde el equipo.
+
+Se inspeccionaron en la copia real los encabezados: ID, EXPERIENCIA, DESCRIPCION, PRECIO, META, MONEDA, IMAGEN, TIPO, ESTADO, CATEGORIA, ORDEN y DESTINO. Apps Script utiliza IDs de texto y exige ESTADO=DISPONIBLE para cobrar. Las altas del panel crean un ID permanente y ESTADO=BORRADOR; el precio y la configuración comercial quedan pendientes de Rodrigo. El backend todavía puede incluir borradores en su listado: no publicar la copia de desarrollo.
+
+El adaptador detecta por encabezados ID, nombre, descripción, imagen y estado, y consulta precio y moneda. Nunca escribe precios, metas, monedas, tipos, categorías, orden, destino, vínculos de pago ni movimientos. En ediciones conserva ID y estado existentes. En altas solo crea ID, nombre, descripción, imagen y BORRADOR; no duplica otras columnas ni habilita venta. La descripción se deshabilita si no existe una columna inequívoca. Los encabezados ambiguos detienen la edición.
+
+Antes de guardar muestra la hoja y diferencias. Escribe celdas puntuales con RAW, rechaza campos que contienen fórmulas, relee la firma del catálogo y comprueba el resultado posterior. No hay borrado de experiencias, para conservar las referencias de regalos existentes. El catálogo se limita al piloto de hasta 1000 filas y 26 columnas leídas. Solo se habilita la copia de desarrollo.
+
+Pruebas: alta y edición, búsqueda, foto cargada y faltante, revisión de cambios y traslado al selector del certificado en navegador con datos simulados. Pruebas de API simulada verificaron columnas reordenadas, precios/pagos/fórmulas intactos, IDs conservados, BORRADOR en altas, conflictos, solo lectura y lectura posterior. La lectura y el guardado del catálogo desde una sesión real quedan pendientes de comprobación. La apertura automática de CONFIG ya fue confirmada por el titular.
+
+Recorrido de Roberto:
+1. Abrir mesa y elegir la copia de desarrollo; entrar en Experiencias.
+2. Agregar experiencia o buscar una existente y pulsar Editar.
+3. Capturar nombre y descripción, pegar la URL de la foto y comprobar que cargue.
+4. Pulsar Revisar y guardar experiencia, comprobar hoja y diferencias, confirmar Guardar experiencia.
+5. Volver a Personalización > Certificado, elegir la experiencia y comprobar su foto.
+6. Entregar a Rodrigo la lista para completar y autorizar configuración comercial antes de ofrecerla.
+
+La sesión real y los permisos de Drive determinan lectura o edición. Estos responsables no son un selector que conceda permisos: el control de precios por rol requiere implementación de servidor y no se sustituye con una casilla de autorización.

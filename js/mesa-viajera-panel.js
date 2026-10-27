@@ -1,6 +1,6 @@
 'use strict';
 
-// El editor de personalización todavía no escribe en Sheets ni procesa pagos.
+// El panel escribe personalización y catálogo limitado; no procesa pagos.
 const MesaModel = (() => {
   const VERSION = 1;
   const KEY = 'eva.mesa-viajera.drafts.v1';
@@ -71,6 +71,7 @@ if (typeof document !== 'undefined') (() => {
   const sheets = new MesaSheets.Client(window.EVA_MESA_GOOGLE);
   let sheetSnapshot = null;
   let catalog = [];
+  let catalogEditor = null;
   let googleLoaded = false;
   let busy = false;
   let state = { drafts: [], activeId: null };
@@ -126,7 +127,7 @@ if (typeof document !== 'undefined') (() => {
       const title = document.createElement('strong'); title.textContent = draft.config.NOMBRE_MESA.trim() || draft.config.NOMBRES.trim() || 'Nueva celebración';
       const sub = document.createElement('small'); sub.textContent = M.completeCount(draft.config) + '/3 datos básicos · Borrador local';
       button.append(title, sub);
-      button.addEventListener('click', () => { if (busy) return; persist(); state.activeId = draft.id; clearSheetLink(); renderForm(); persist(); });
+      button.addEventListener('click', () => { if (busy) return; persist(); state.activeId = draft.id; clearSheetLink(); setWorkspace('personalization'); renderForm(); persist(); });
       list.append(button);
     });
   }
@@ -226,6 +227,7 @@ if (typeof document !== 'undefined') (() => {
     if (busy && !openingSheet) return false;
     if (state.drafts.length >= 100) { announce('Este navegador tiene 100 borradores. Descarga un respaldo y utiliza otro navegador para continuar.', true); return false; }
     persist(); state.drafts.unshift(draft); state.activeId = draft.id; clearSheetLink();
+    if (!openingSheet) setWorkspace('personalization');
     renderForm(); setSection('data', true); setPreview('table'); persist();
     form.elements.namedItem('NOMBRES').focus();
     return true;
@@ -259,7 +261,7 @@ if (typeof document !== 'undefined') (() => {
 
   function setBusy(value) {
     busy=value; form.inert=value;
-    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets']) $(key).disabled=value;
+    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','nav-personalization','nav-experiences']) $(key).disabled=value;
     if (!value && sheetSnapshot) $('save-sheets').disabled=!sheetSnapshot.canEdit;
     renderList();
   }
@@ -281,6 +283,7 @@ if (typeof document !== 'undefined') (() => {
   $('preview-experience').addEventListener('change',setExampleExperience);
   function clearSheetLink() {
     sheetSnapshot=null; catalog=[];
+    if (catalogEditor) catalogEditor.clear();
     $('sheet-link').hidden=true;
     $('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));
     $('sheets-state').textContent=sheets.signedIn() ? 'Google disponible · abre una mesa' : 'Ninguna mesa abierta';
@@ -301,7 +304,8 @@ if (typeof document !== 'undefined') (() => {
   }
   function describeSheet(snapshot) {
     $('sheet-link').hidden=false; $('sheet-title').textContent=snapshot.title;
-    $('sheet-link-note').textContent=(snapshot.canEdit ? 'Revisa y guarda únicamente la personalización. ' : 'Tu cuenta tiene acceso de lectura. ')+'La fecha permanece en el borrador; catálogo, pagos y operaciones no se modifican.';
+    if (catalogEditor) catalogEditor.setSource(snapshot);
+    $('sheet-link-note').textContent=(snapshot.canEdit ? 'La personalización y el catálogo se guardan por separado. ' : 'Tu cuenta tiene acceso de lectura. ')+'La fecha permanece en el borrador; precios, pagos y movimientos no se modifican desde estos formularios.';
     $('sheets-state').textContent='Mesa abierta · '+(snapshot.canEdit ? 'lectura y edición' : 'solo lectura');
     $('sheets-help').textContent='Datos y diseño cargados. Para abrir otra mesa, pulsa Abrir mesa. Los cambios se guardan en Sheets cuando los confirmas.';
     $('connection-progress').textContent='Hoja leída'; $('save-sheets').disabled=!snapshot.canEdit;
@@ -333,14 +337,7 @@ if (typeof document !== 'undefined') (() => {
       sheetSnapshot=snapshot; describeSheet(snapshot);
       $('sheets-check').textContent='Datos y diseño cargados desde la mesa seleccionada.';
       announce('Mesa abierta: '+snapshot.title+'. Datos y diseño cargados; el borrador anterior se conserva.');
-      try {
-        catalog=await sheets.catalog(chosen.id);
-        catalog.forEach(item => $('preview-experience').append(new Option(item.name,item.id)));
-        setExampleExperience();
-      } catch(error) {
-        catalog=[];
-        announce('Mesa abierta y datos cargados. No se pudo cargar el catálogo: '+error.message,true);
-      }
+      await catalogEditor.load();
     } catch(error) {announce(error.message,true);}
     finally {setBusy(false);}
   });
@@ -372,6 +369,32 @@ if (typeof document !== 'undefined') (() => {
       announce('Guardado en Sheets y verificado por una nueva lectura. La mesa todavía no está publicada.');
     } catch(error) {announce(error.message,true);}
     finally {setBusy(false);}
+  });
+  function setWorkspace(section) {
+    const experiences=section === 'experiences';
+    $('personalization-content').hidden=experiences;
+    $('personal-progress').hidden=experiences;
+    $('personal-actions').hidden=experiences;
+    $('duplicate').hidden=experiences;
+    $('download').hidden=experiences;
+    $('catalog-panel').hidden=!experiences;
+    $('workspace-title').textContent=experiences ? 'Experiencias de esta mesa' : 'Personalización de la mesa';
+    $('nav-personalization').setAttribute('aria-pressed',String(!experiences));
+    $('nav-experiences').setAttribute('aria-pressed',String(experiences));
+    if (experiences && catalogEditor?.source && !catalogEditor.snapshot && !catalogEditor.busy) void catalogEditor.load();
+  }
+  $('nav-personalization').addEventListener('click',()=>{if(!busy)setWorkspace('personalization')});
+  $('nav-experiences').addEventListener('click',()=>{if(!busy)setWorkspace('experiences')});
+  catalogEditor=new MesaCatalog.Editor({
+    client:sheets,onBusy:setBusy,review:showReview,
+    onUpdated(items) {
+      const selected=$('preview-experience').value;
+      catalog=items.map(item=>({...item,image:MesaSheets.safeImage(item.image)}));
+      $('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));
+      catalog.forEach(item=>$('preview-experience').append(new Option(item.name,item.id)));
+      if(catalog.some(item=>item.id===selected))$('preview-experience').value=selected;
+      setExampleExperience();
+    }
   });
   renderForm();
   clearSheetLink();

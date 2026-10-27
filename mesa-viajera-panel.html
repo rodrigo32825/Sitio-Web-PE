@@ -10,10 +10,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=2">
+  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=catalog-1">
   <script defer src="./js/mesa-viajera-google-config.js?v=2"></script>
-  <script defer src="./js/mesa-viajera-sheets.js?v=font-cormorant-1"></script>
-  <script defer src="./js/mesa-viajera-panel.js?v=abrir-mesa-1"></script>
+  <script defer src="./js/mesa-viajera-catalog.js?v=1"></script>
+  <script defer src="./js/mesa-viajera-sheets.js?v=catalog-1"></script>
+  <script defer src="./js/mesa-viajera-panel.js?v=catalog-1"></script>
 </head>
 <body>
   <a class="skip" href="#editor">Ir al editor</a>
@@ -21,6 +22,7 @@
   <main class="shell">
     <aside class="sidebar" aria-label="Borradores de mesas">
       <div class="brand"><span class="brand-icon" aria-hidden="true">✧</span><div>Mesa Viajera<small>CADA HISTORIA, SU VIAJE</small></div></div>
+      <nav class="mesa-menu" aria-label="Secciones de la mesa"><button id="nav-personalization" type="button" aria-pressed="true">Personalización</button><button id="nav-experiences" type="button" aria-pressed="false">Experiencias</button></nav>
       <p class="sidebar-caption">TU ESPACIO DE TRABAJO</p>
       <button id="new-table" class="primary">＋ Nueva mesa</button>
       <div id="draft-list" class="draft-list"></div>
@@ -30,14 +32,15 @@
     </aside>
 
     <section class="workspace">
-      <div class="page-heading"><div><p class="eyebrow">DE UNA IDEA A UNA CELEBRACIÓN</p><h1>Una mesa.<br><em>Toda su personalidad.</em></h1></div><div class="heading-actions"><button id="duplicate" class="secondary">Duplicar diseño</button><button id="download" class="dark">Descargar borrador ↓</button></div></div>
+      <div class="page-heading"><div><p class="eyebrow">DE UNA IDEA A UNA CELEBRACIÓN</p><h1 id="workspace-title">Una mesa.<br><em>Toda su personalidad.</em></h1></div><div class="heading-actions"><button id="duplicate" class="secondary">Duplicar diseño</button><button id="download" class="dark">Descargar borrador ↓</button></div></div>
       <div id="status" role="status" class="status">Preparando editor…</div>
-      <div class="progress-strip"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Mesa seleccionada</strong><small id="connection-progress">Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
+      <div class="progress-strip" id="personal-progress"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Mesa seleccionada</strong><small id="connection-progress">Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
 
       <section id="sheet-link" class="sheet-link" hidden aria-label="Hoja conectada">
         <div><p class="eyebrow">HOJA SELECCIONADA</p><strong id="sheet-title"></strong><p id="sheet-link-note">Revisa la configuración de la hoja antes de guardar.</p></div>
-        <div><button id="load-sheets" class="secondary" type="button">Actualizar datos</button><button id="save-sheets" class="dark" type="button">Revisar cambios y guardar</button></div>
+        <div id="personal-actions"><button id="load-sheets" class="secondary" type="button">Actualizar datos</button><button id="save-sheets" class="dark" type="button">Revisar cambios y guardar</button></div>
       </section>
+      <div id="personalization-content">
       <div class="workbench">
         <section id="editor" class="editor" aria-label="Configuración de la mesa">
           <div class="tabs" role="tablist" aria-label="Secciones de configuración">
@@ -84,9 +87,28 @@
         </section>
       </div>
       <details class="team"><summary>¿Quién participa en la preparación?</summary><div><p><strong>Omar</strong> · Apoya con captura y seguimiento cuando se le asigne.</p><p><strong>Fer</strong> · Responsable comercial, negociación y asesoría de bodas.</p><p><strong>Roberto</strong> · Prepara la lista de experiencias, solicita las especificaciones y monta las fotos generadas con IA.</p><p><strong>Rodrigo</strong> · Desarrollo, configuración técnica y dineros. Autoriza precios, descuentos, plataformas y excepciones. Experiencias reales: aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.</p></div></details>
+      </div>
+      <section id="catalog-panel" hidden aria-label="Catálogo de experiencias">
+        <div class="catalog-heading"><div><p class="eyebrow">ROBERTO · FOTOS Y LISTA DE EXPERIENCIAS</p><h2>Catálogo y fotografías</h2><p id="catalog-current" class="help"></p></div><button id="catalog-add" class="dark" type="button" disabled>＋ Agregar experiencia</button></div>
+        <p class="catalog-notice">Prepara nombres, descripciones y fotografías. Los precios se consultan desde la hoja; Rodrigo autoriza y configura los importes antes de ofrecerlos.</p>
+        <div class="catalog-tools"><label>Buscar experiencia<input id="catalog-search" type="search" placeholder="Nombre o ID" maxlength="200"></label><button id="catalog-refresh" class="secondary" type="button">Actualizar catálogo</button></div>
+        <p id="catalog-count" class="help"></p><p id="catalog-status" class="status" role="status"></p>
+        <div id="catalog-list" class="catalog-list"></div>
+      </section>
       <footer>Proyecto EVA · Mesa Viajera <span>Personalización en borrador · Sin cobros ni publicación</span></footer>
     </section>
   </main>
+  <dialog id="experience-dialog" class="experience-drawer" aria-labelledby="experience-dialog-title">
+    <form id="experience-form"><header><div><p class="eyebrow">CATÁLOGO DE LA MESA</p><h2 id="experience-dialog-title">Nueva experiencia</h2></div><button type="button" id="experience-close" class="secondary">Cerrar</button></header>
+      <p class="help">ID permanente <strong id="experience-id"></strong>. Este ID vincula el regalo con su fotografía.</p>
+      <fieldset id="experience-fields"><label>Nombre de la experiencia<input id="experience-name" maxlength="200" required autocomplete="off"></label>
+      <label>Descripción<textarea id="experience-description" maxlength="3000" rows="4"></textarea><small id="experience-description-note"></small></label>
+      <label>URL de la foto<input id="experience-image" type="url" maxlength="2048" placeholder="https://…" required></label>
+      <img id="experience-image-preview" class="experience-image-preview" alt="Vista previa de la foto de la experiencia" hidden><p id="experience-image-state" class="help"></p></fieldset>
+      <div class="price-readonly"><strong>Precio en la hoja · solo consulta</strong><p id="experience-price"></p><small>Rodrigo configura el precio. Este formulario no modifica importes, plataformas ni pagos. Una experiencia nueva requiere completar esos datos antes de venderse.</small></div>
+      <p id="experience-save-state" class="status error" role="status"></p><button id="experience-save" type="submit" class="dark">Revisar y guardar experiencia</button>
+    </form>
+  </dialog>
   <dialog id="sheets-dialog" aria-labelledby="sheets-dialog-title"><form method="dialog" class="dialog-inner"><button class="dialog-close" value="cancel" aria-label="Cerrar">×</button><p class="eyebrow">CONEXIÓN CON GOOGLE SHEETS</p><h2 id="sheets-dialog-title">Revisar antes de guardar</h2><p id="sheets-dialog-message"></p><ul id="sheets-changes"></ul><div class="dialog-actions"><button class="secondary" value="cancel">Volver al editor</button><button id="confirm-sheets" class="dark" value="confirm">Guardar estos cambios</button></div></form></dialog>
 </body>
 </html>

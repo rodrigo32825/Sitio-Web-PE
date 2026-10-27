@@ -1,6 +1,7 @@
 'use strict';
 
 const MesaSheets = (() => {
+  const CATALOG = typeof module !== 'undefined' && module.exports ? require('./mesa-viajera-catalog.js') : MesaCatalog;
   const SCOPE = 'https://www.googleapis.com/auth/drive.file';
   const KEYS = ['NOMBRES','NOMBRE_MESA','PREFIJO_FOLIO','CERT_TITULO','CERT_SUBTITULO','COLOR_PRIMARIO','COLOR_FONDO','COLOR_SECUNDARIO','COLOR_ACENTO','COLOR_DORADO','FUENTE_NOMBRES','FUENTE_TITULOS','FUENTE_CATEGORIAS','FUENTE_CUERPO'];
   const FONTS = ['Poppins','Great Vibes','Cormorant Garamond', 'Bodoni Moda','Roboto'];
@@ -121,6 +122,31 @@ const MesaSheets = (() => {
       this.checkId(id);
       const values=await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(id)+'/values/'+encodeURIComponent("'EXPERIENCIAS'!A1:Z1000")+'?valueRenderOption=UNFORMATTED_VALUE');
       return readCatalog(values.values || []);
+    }
+    async catalogState(id) {
+      this.checkId(id);
+      const [file,meta,values]=await Promise.all([
+        this.#request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,mimeType,capabilities(canEdit)'),
+        this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(id)+'?fields=sheets(properties(title,gridProperties))'),
+        this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(id)+'/values/'+encodeURIComponent("'EXPERIENCIAS'!A1:Z1000")+'?valueRenderOption=FORMULA')
+      ]);
+      if(file.mimeType !== 'application/vnd.google-apps.spreadsheet')throw Error('El archivo no es una hoja de Google Sheets.');
+      const grid=meta.sheets?.find(sheet=>sheet.properties?.title==='EXPERIENCIAS')?.properties?.gridProperties;
+      if(!grid?.rowCount)throw Error('No se encontró la pestaña EXPERIENCIAS.');
+      return {...CATALOG.parse(values.values||[],grid.rowCount),id,title:file.name,canEdit:file.capabilities?.canEdit===true};
+    }
+    async saveExperience(snapshot,input) {
+      this.checkId(snapshot.id);
+      if(!snapshot.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
+      const planned=CATALOG.plan(snapshot,input,safeImage);
+      if(!planned.changes.length)return snapshot;
+      const fresh=await this.catalogState(snapshot.id);
+      if(!fresh.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
+      if(fresh.signature!==snapshot.signature||fresh.gridRows!==snapshot.gridRows)throw Error('El catálogo cambió. Actualízalo y revisa la experiencia antes de guardar.');
+      await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(snapshot.id)+'/values:batchUpdate',{method:'POST',body:JSON.stringify({valueInputOption:'RAW',data:planned.changes.map(({range,values})=>({range,values}))})});
+      const verified=await this.catalogState(snapshot.id);
+      if(planned.changes.some(change=>{const col=verified.columns[change.key];return String(verified.rows[planned.row-1]?.[col]??'')!==change.after;}))throw Error('No se confirmó el resultado del guardado. Actualiza el catálogo antes de repetir.');
+      return verified;
     }
     async save(snapshot, config) {
       this.checkId(snapshot.id);
