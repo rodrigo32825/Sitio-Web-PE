@@ -132,3 +132,5 @@ Recorrido de Roberto:
 6. Entregar a Rodrigo la lista para completar y autorizar configuración comercial antes de ofrecerla.
 
 La sesión real y los permisos de Drive determinan lectura o edición. Estos responsables no son un selector que conceda permisos: el control de precios por rol requiere implementación de servidor y no se sustituye con una casilla de autorización.
+
+La prueba de catálogo con la cuenta real llegó al selector de Google, pero este navegador no avanzó en «Permitir cookies». No se escribieron experiencias en la hoja durante ese intento. La comprobación del guardado real del catálogo sigue pendiente; el panel publicado y el flujo con datos simulados sí se verificaron.
