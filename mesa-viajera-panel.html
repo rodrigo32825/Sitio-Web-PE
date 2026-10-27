@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=2">
   <script defer src="./js/mesa-viajera-google-config.js?v=2"></script>
   <script defer src="./js/mesa-viajera-sheets.js?v=font-cormorant-1"></script>
-  <script defer src="./js/mesa-viajera-panel.js?v=font-cormorant-1"></script>
+  <script defer src="./js/mesa-viajera-panel.js?v=abrir-mesa-1"></script>
 </head>
 <body>
   <a class="skip" href="#editor">Ir al editor</a>
@@ -26,17 +26,17 @@
       <div id="draft-list" class="draft-list"></div>
       <label class="import-button">↑ Cargar un borrador<input id="import-draft" type="file" accept=".json,application/json"></label>
       <p class="storage-note">Los borradores se guardan en este navegador. Descarga un respaldo para abrirlos en otro equipo.</p>
-      <div class="connection"><span class="dot"></span><strong id="sheets-state">Sheets: pendiente de activación</strong><p id="sheets-help">La conexión de Google requiere una configuración inicial. Los borradores locales siguen disponibles.</p><button id="connect-sheets" class="connect-button" type="button">Conectar con Sheets</button><button id="disconnect-sheets" class="connect-button" type="button" hidden>Desconectar sesión</button></div>
+      <div class="connection"><span class="dot"></span><strong id="sheets-state">Ninguna mesa abierta</strong><p id="sheets-help">Abre una mesa para cargar sus datos, colores y tipografías.</p><button id="connect-sheets" class="connect-button" type="button">Abrir mesa</button><button id="disconnect-sheets" class="connect-button" type="button" hidden>Desconectar sesión</button></div>
     </aside>
 
     <section class="workspace">
       <div class="page-heading"><div><p class="eyebrow">DE UNA IDEA A UNA CELEBRACIÓN</p><h1>Una mesa.<br><em>Toda su personalidad.</em></h1></div><div class="heading-actions"><button id="duplicate" class="secondary">Duplicar diseño</button><button id="download" class="dark">Descargar borrador ↓</button></div></div>
       <div id="status" role="status" class="status">Preparando editor…</div>
-      <div class="progress-strip"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Conexión con Sheets</strong><small id="connection-progress">Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
+      <div class="progress-strip"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Mesa seleccionada</strong><small id="connection-progress">Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
 
       <section id="sheet-link" class="sheet-link" hidden aria-label="Hoja conectada">
         <div><p class="eyebrow">HOJA SELECCIONADA</p><strong id="sheet-title"></strong><p id="sheet-link-note">Revisa la configuración de la hoja antes de guardar.</p></div>
-        <div><button id="load-sheets" class="secondary" type="button">Cargar datos de Sheets</button><button id="save-sheets" class="dark" type="button">Revisar cambios y guardar</button></div>
+        <div><button id="load-sheets" class="secondary" type="button">Actualizar datos</button><button id="save-sheets" class="dark" type="button">Revisar cambios y guardar</button></div>
       </section>
       <div class="workbench">
         <section id="editor" class="editor" aria-label="Configuración de la mesa">
@@ -83,7 +83,7 @@
           <div class="checklist"><div><p class="eyebrow">ANTES DE ACTIVAR</p><h2>El siguiente paso, claro.</h2></div><ul><li><span id="identity-check">○</span><div><strong>Datos de la celebración</strong><small>Nombres, nombre de mesa y prefijo válidos.</small></div></li><li><span>○</span><div><strong>Guardar personalización en Sheets</strong><small id="sheets-check">Pendiente de conectar y verificar.</small></div></li><li><span>○</span><div><strong>Catálogo, precios y medios de pago</strong><small>Precios y excepciones autorizados por Rodrigo.</small></div></li><li><span>○</span><div><strong>Validar recorrido y publicar</strong><small>Revisar enlace, catálogo y certificado.</small></div></li></ul></div>
         </section>
       </div>
-      <details class="team"><summary>¿Quién participa en la preparación?</summary><div><p><strong>Omar</strong> · Datos de la celebración y seguimiento comercial.</p><p><strong>Fernanda</strong> · Apoyo comercial y asesoría de bodas.</p><p><strong>Roberto</strong> · Solicita las especificaciones y monta las imágenes generadas con IA.</p><p><strong>Rodrigo</strong> · Autoriza precios, descuentos, plataformas y excepciones. Experiencias reales: aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.</p></div></details>
+      <details class="team"><summary>¿Quién participa en la preparación?</summary><div><p><strong>Omar</strong> · Apoya con captura y seguimiento cuando se le asigne.</p><p><strong>Fer</strong> · Responsable comercial, negociación y asesoría de bodas.</p><p><strong>Roberto</strong> · Prepara la lista de experiencias, solicita las especificaciones y monta las fotos generadas con IA.</p><p><strong>Rodrigo</strong> · Desarrollo, configuración técnica y dineros. Autoriza precios, descuentos, plataformas y excepciones. Experiencias reales: aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.</p></div></details>
       <footer>Proyecto EVA · Mesa Viajera <span>Personalización en borrador · Sin cobros ni publicación</span></footer>
     </section>
   </main>
