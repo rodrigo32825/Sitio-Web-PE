@@ -1,6 +1,6 @@
-# Mesa Viajera · Editor de personalización y conexión preparada
+# Mesa Viajera · Panel y operación por responsable
 
-El editor publicado incorpora `mesa-viajera-panel.html` a Recursos internos. Se añadió la foto de experiencia a la vista del certificado y el código para conectar Google Sheets, con configuración Google instalada y pendiente de prueba real. El sitio de Proyecto EVA continúa alojado en su repositorio actual. No se modifica la mesa pública de Roberto y Fernanda ni su Apps Script.
+El editor publicado incorpora `mesa-viajera-panel.html` a Recursos internos. Se añadió la foto de experiencia a la vista del certificado y el código para conectar Google Sheets, con configuración Google instalada y lectura y guardado reales confirmados por el titular. El sitio de Proyecto EVA continúa alojado en su repositorio actual. No se modifica la mesa pública de Roberto y Fernanda ni su Apps Script.
 
 ## Qué puede hacer el equipo
 
@@ -17,19 +17,19 @@ El guardado automático existe solamente en el navegador y origen actuales. No s
 
 - Almacenamiento: `eva.mesa-viajera.drafts.v1` en localStorage; máximo 100 borradores.
 - Exportación: `type=eva.mesa-viajera.personalizacion`, `version=1`, fecha y CONFIG de personalización.
-- Las importaciones aceptan solo claves permitidas, colores hexadecimales de seis cifras y cuatro fuentes. No aceptan URLs, credenciales, código o parámetros de pagos.
+- Las importaciones aceptan solo claves permitidas, colores hexadecimales de seis cifras y las fuentes admitidas. No aceptan URLs, credenciales, código o parámetros de pagos.
 - La vista usa texto DOM y una lista cerrada de estilos; no interpreta HTML del cliente.
 - La fecha es un dato provisional del editor, separado de CONFIG hasta verificar la clave definitiva en el backend.
 - Los prefijos se normalizan a letras y números, máximo 16; la unicidad entre mesas se validará al conectarse al registro central.
 - CONFIG prevista: NOMBRES, NOMBRE_MESA, PREFIJO_FOLIO, CERT_TITULO, CERT_SUBTITULO, COLOR_PRIMARIO, COLOR_FONDO, COLOR_SECUNDARIO, COLOR_ACENTO, COLOR_DORADO, FUENTE_NOMBRES, FUENTE_TITULOS, FUENTE_CATEGORIAS y FUENTE_CUERPO. Antes de escribir en Sheets, cotejar estos nombres con PANEL_CAMPOS y conservar las demás claves.
 
-## Pendiente: etapa 4B y activación
+## Operación y funciones pendientes
 
 La página pública y los borradores locales no constituyen un sistema de acceso. La conexión preparada utiliza autorización de Google por archivo y permisos de Drive. Los permisos por funciones comerciales dentro del panel siguen pendientes. No introducir datos financieros o secretos en el código público. No exponer una llave de Apps Script en JavaScript ni publicar una hoja privada.
 
 Para conectar operaciones reales:
 
-1. Implementar identidad y autorización en el servidor, con usuarios y permisos verificados: Rodrigo administración/autorizaciones; Roberto imágenes; Fernanda y Omar preparación comercial. No usar un selector de rol del navegador como autorización.
+1. Implementar identidad y autorización en el servidor, con usuarios y permisos verificados: Rodrigo administración/autorizaciones; Roberto fotos y catálogo; Fer comercial; Omar apoyo asignado. No usar un selector de rol del navegador como autorización.
 2. Conectar un registro central privado de mesas, cada una con identificador, hoja, proyecto, estado, configuración y responsables. Separar el folio visible del identificador único.
 3. Crear/duplicar la mesa de forma idempotente y validar los datos en servidor. No heredar operaciones, cuentas bancarias, credenciales ni aprobaciones al duplicar.
 4. Guardar cambios autorizados en CONFIG mediante una lista permitida y una revisión/versionado para evitar sobreescrituras. Confirmar el guardado leyendo el resultado del servidor. Mantener registro de autor y fecha.
@@ -39,7 +39,7 @@ Para conectar operaciones reales:
 
 ## Responsables
 
-Rodrigo autoriza precios, descuentos y plataformas. Para experiencias reales se trabaja con aerolíneas directamente y Expedia TAAP; servicios fuera de ese marco requieren su autorización. Roberto solicita especificaciones y monta fotos generadas con IA. Fernanda aporta asesoría de bodas. Omar captura datos y realiza seguimiento comercial.
+Rodrigo dirige desarrollo y dineros, y autoriza precios, descuentos y plataformas. Para experiencias reales se trabaja con aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización. Roberto prepara la lista de experiencias, solicita especificaciones y monta fotos generadas con IA. Fer lleva la negociación y el seguimiento comercial. Omar apoya con captura y seguimiento asignados.
 
 ## Certificado
 
@@ -56,13 +56,13 @@ El generador guardado en Google no se modificó en esta etapa: el navegador reci
 
 ## Conexión preparada con Google Sheets
 
-Archivos nuevos: `js/mesa-viajera-sheets.js` y `js/mesa-viajera-google-config.js`. El titular facilitó los datos de la aplicación Google y se completó la configuración pública. Solo se habilitó la copia de desarrollo. El panel carga el acceso de Google; la autorización de usuario, la lectura y el guardado reales siguen pendientes de prueba.
+Archivos nuevos: `js/mesa-viajera-sheets.js` y `js/mesa-viajera-google-config.js`. El titular facilitó los datos de la aplicación Google y se completó la configuración pública. Solo se habilitó la copia de desarrollo. El titular confirmó autorización, lectura y guardado reales desde el panel, comprobando los valores en Sheets.
 
-Recorrido previsto después de activar:
+Recorrido actual:
 
-1. Pulsar Conectar con Sheets. La primera pulsación prepara las bibliotecas; la segunda abre el acceso de Google y el selector de archivos.
-2. Elegir la copia de desarrollo autorizada. El panel verifica la estructura de CONFIG y los permisos de edición que devuelve Drive. No reemplaza el borrador local automáticamente.
-3. Usar Cargar datos de Sheets para revisar y aceptar la configuración remota, o editar el borrador local.
+1. Pulsar Abrir mesa. Las bibliotecas se preparan al entrar; el botón inicia el acceso de Google cuando hace falta y abre el selector.
+2. Elegir la copia de desarrollo autorizada. El panel verifica CONFIG y los permisos de Drive y carga automáticamente la personalización en un borrador independiente. El borrador anterior se conserva.
+3. Editar los datos cargados. Actualizar datos permite releer opcionalmente la misma hoja, revisando antes las diferencias; no se necesita para abrir la mesa.
 4. Pulsar Revisar cambios y guardar. Confirmar el nombre de la hoja y cada valor anterior/nuevo antes de escribir.
 5. El editor escribe únicamente las celdas B de las claves de personalización existentes, con `valueInputOption=RAW`. No inserta claves, no limpia rangos y no modifica pagos, bancos, catálogo ni operaciones.
 6. Volver a leer la hoja y comparar el resultado antes de mostrar Guardado verificado. Si la hoja cambia después de la lectura usada para revisión, se detiene el guardado. Esta comparación previa no es un bloqueo transaccional; durante el piloto debe editar una sola persona cada mesa.
@@ -73,7 +73,7 @@ El catálogo se lee de `EXPERIENCIAS!A1:Z1000`. La detección requiere ID, nombr
 
 ## Activación inicial por Rodrigo
 
-Esta configuración se hace una sola vez para el sitio, antes de incorporar a Omar. El titular creó el proyecto Mesa Viajera EVA, habilitó las tres API y creó el cliente OAuth web y la clave de navegador restringida. Se instalaron esos datos en el panel, sin incorporar un client_secret. Falta completar la autorización y la prueba real.
+Esta configuración se hace una sola vez para el sitio, antes de incorporar a Omar. El titular creó el proyecto Mesa Viajera EVA, habilitó las tres API y creó el cliente OAuth web y la clave de navegador restringida. Se instalaron esos datos en el panel, sin incorporar un client_secret. El titular completó la autorización y confirmó lectura y guardado reales.
 
 1. En un proyecto de Google Cloud de Proyecto EVA, habilitar Google Sheets API, Google Drive API y Google Picker API.
 2. Configurar la pantalla de consentimiento y un cliente OAuth de tipo Aplicación web. Registrar `https://proyectoeva.mx` como origen JavaScript autorizado. Empezar con el titular como usuario de prueba; añadir al equipo solo después de definir los accesos reales.
@@ -83,7 +83,7 @@ Esta configuración se hace una sola vez para el sitio, antes de incorporar a Om
 6. Probar primero lectura y carga de CONFIG. Guardar un cambio reversible en un campo de ejemplo y comprobar la celda, la lectura posterior y que las banderas de pagos sigan en NO. Después verificar una foto del catálogo en la vista previa y en el PDF generado por Apps Script.
 7. Solo después de esa prueba habilitar otras hojas o usuarios. Las autorizaciones de precios, descuentos y plataformas necesitan su propio control de servidor antes de integrarse.
 
-Validación realizada: sintaxis JavaScript, pruebas de modelo, navegador para foto de ejemplo y estado de activación pendiente, y API simulada para guardado limitado, conflictos, solo lectura, caducidad y lectura posterior. No se realizó una conexión OAuth ni escritura real en Sheets desde este editor.
+Validación: sintaxis y modelo; navegador para foto de ejemplo; API simulada para guardado limitado, conflictos, solo lectura, caducidad y lectura posterior. El titular confirmó OAuth, lectura y guardado reales. La apertura unificada se probó con datos simulados, incluyendo cancelación, errores y conservación del borrador; requiere confirmación con la cuenta real.
 
 Referencias oficiales de implementación:
 - https://developers.google.com/identity/oauth2/web/guides/use-token-model
@@ -91,7 +91,7 @@ Referencias oficiales de implementación:
 - https://developers.google.com/workspace/sheets/api/scopes
 - https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
 
-La carga de las bibliotecas de Google se comprobó en el panel publicado después de instalar la configuración. No se completó una autorización OAuth ni una escritura en Sheets durante esa comprobación.
+La carga de las bibliotecas de Google se comprobó en el panel publicado después de instalar la configuración. Después, el titular confirmó en su navegador autorización, carga y escritura reales.
 
 ### Compatibilidad de tipografías
 El panel admite Cormorant Garamond para los cuatro campos de tipografía. Al leer CONFIG conserva esta fuente y la carga en ambas vistas previas; no requiere modificar la hoja. Si aparece otra fuente no admitida, registrar su nombre y añadir soporte antes de sustituirla.
