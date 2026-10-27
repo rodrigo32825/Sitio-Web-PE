@@ -1,6 +1,6 @@
 # Mesa Viajera · Editor de personalización y conexión preparada
 
-El editor publicado incorpora `mesa-viajera-panel.html` a Recursos internos. Se añadió la foto de experiencia a la vista del certificado y el código para conectar Google Sheets, pendiente de activación y prueba real. El sitio de Proyecto EVA continúa alojado en su repositorio actual. No se modifica la mesa pública de Roberto y Fernanda ni su Apps Script.
+El editor publicado incorpora `mesa-viajera-panel.html` a Recursos internos. Se añadió la foto de experiencia a la vista del certificado y el código para conectar Google Sheets, con configuración Google instalada y pendiente de prueba real. El sitio de Proyecto EVA continúa alojado en su repositorio actual. No se modifica la mesa pública de Roberto y Fernanda ni su Apps Script.
 
 ## Qué puede hacer el equipo
 
@@ -56,7 +56,7 @@ El generador guardado en Google no se modificó en esta etapa: el navegador reci
 
 ## Conexión preparada con Google Sheets
 
-Archivos nuevos: `js/mesa-viajera-sheets.js` y `js/mesa-viajera-google-config.js`. La configuración publicada está vacía, por lo que no se inicia OAuth ni se accede a ninguna hoja hasta completar la activación inicial.
+Archivos nuevos: `js/mesa-viajera-sheets.js` y `js/mesa-viajera-google-config.js`. El titular facilitó los datos de la aplicación Google y se completó la configuración pública. Solo se habilitó la copia de desarrollo. El panel carga el acceso de Google; la autorización de usuario, la lectura y el guardado reales siguen pendientes de prueba.
 
 Recorrido previsto después de activar:
 
@@ -73,13 +73,13 @@ El catálogo se lee de `EXPERIENCIAS!A1:Z1000`. La detección requiere ID, nombr
 
 ## Activación inicial por Rodrigo
 
-Esta configuración se hace una sola vez para el sitio, antes de incorporar a Omar. No se aceptaron nuevos permisos ni se creó una aplicación de Google desde esta sesión.
+Esta configuración se hace una sola vez para el sitio, antes de incorporar a Omar. El titular creó el proyecto Mesa Viajera EVA, habilitó las tres API y creó el cliente OAuth web y la clave de navegador restringida. Se instalaron esos datos en el panel, sin incorporar un client_secret. Falta completar la autorización y la prueba real.
 
 1. En un proyecto de Google Cloud de Proyecto EVA, habilitar Google Sheets API, Google Drive API y Google Picker API.
 2. Configurar la pantalla de consentimiento y un cliente OAuth de tipo Aplicación web. Registrar `https://proyectoeva.mx` como origen JavaScript autorizado. Empezar con el titular como usuario de prueba; añadir al equipo solo después de definir los accesos reales.
-3. Crear una clave de API para el uso del selector en navegador. Restringirla a Google Picker API y a las referencias HTTP del sitio `https://proyectoeva.mx/*`. No utilizar una clave de servidor ni un client_secret.
+3. Crear una clave de API para el uso del selector en navegador. Restringirla a Google Picker API y Google Drive API; autorizar las referencias HTTP `https://proyectoeva.mx/*` y `https://docs.google.com/*`. No utilizar una clave de servidor ni un client_secret.
 4. Completar `clientId`, `pickerApiKey`, `projectNumber` y `allowedSpreadsheetIds` en el archivo de configuración público del editor. Para el piloto, registrar solamente la copia de desarrollo; no registrar la maestra original ni mesas con operaciones.
-5. Autorizar el permiso `https://www.googleapis.com/auth/drive.file`. El usuario elige el archivo en Google Picker; Drive decide si puede leerlo o editarlo. La lista del editor es una protección adicional de interfaz, no una autorización de servidor.
+5. Si la aplicación está en pruebas, añadir primero el correo del titular en Google Auth Platform > Audiencia > Usuarios de prueba. Autorizar el permiso `https://www.googleapis.com/auth/drive.file`. El usuario elige el archivo en Google Picker; Drive decide si puede leerlo o editarlo. La lista del editor es una protección adicional de interfaz, no una autorización de servidor.
 6. Probar primero lectura y carga de CONFIG. Guardar un cambio reversible en un campo de ejemplo y comprobar la celda, la lectura posterior y que las banderas de pagos sigan en NO. Después verificar una foto del catálogo en la vista previa y en el PDF generado por Apps Script.
 7. Solo después de esa prueba habilitar otras hojas o usuarios. Las autorizaciones de precios, descuentos y plataformas necesitan su propio control de servidor antes de integrarse.
 
@@ -90,3 +90,5 @@ Referencias oficiales de implementación:
 - https://developers.google.com/workspace/drive/picker/guides/overview
 - https://developers.google.com/workspace/sheets/api/scopes
 - https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
+
+La carga de las bibliotecas de Google se comprobó en el panel publicado después de instalar la configuración. No se completó una autorización OAuth ni una escritura en Sheets durante esa comprobación.
