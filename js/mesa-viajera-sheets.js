@@ -3,7 +3,7 @@
 const MesaSheets = (() => {
   const SCOPE = 'https://www.googleapis.com/auth/drive.file';
   const KEYS = ['NOMBRES','NOMBRE_MESA','PREFIJO_FOLIO','CERT_TITULO','CERT_SUBTITULO','COLOR_PRIMARIO','COLOR_FONDO','COLOR_SECUNDARIO','COLOR_ACENTO','COLOR_DORADO','FUENTE_NOMBRES','FUENTE_TITULOS','FUENTE_CATEGORIAS','FUENTE_CUERPO'];
-  const FONTS = ['Poppins','Great Vibes','Bodoni Moda','Roboto'];
+  const FONTS = ['Poppins','Great Vibes','Cormorant Garamond', 'Bodoni Moda','Roboto'];
   const LIMITS = {NOMBRES:100,NOMBRE_MESA:120,PREFIJO_FOLIO:16,CERT_TITULO:80,CERT_SUBTITULO:180};
   const validId = value => typeof value === 'string' && /^[A-Za-z0-9_-]{20,150}$/.test(value);
   function readConfig(rows) {
