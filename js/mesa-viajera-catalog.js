@@ -60,14 +60,15 @@ const MesaCatalog = (() => {
       this.$('experience-close').addEventListener('click',()=>{if(!this.busy)this.$('experience-dialog').close()});
       this.$('experience-dialog').addEventListener('cancel',e=>{if(this.busy)e.preventDefault()});
       this.$('experience-image').addEventListener('input',()=>this.photo());
-      this.$('experience-image-preview').addEventListener('error',()=>{this.$('experience-image-preview').hidden=true;this.$('experience-image-state').textContent='La imagen no cargó. Usa un enlace directo a una imagen disponible.';this.photoLoaded=false;});
-      this.$('experience-image-preview').addEventListener('load',()=>{this.photoLoaded=true;this.$('experience-image-state').textContent='Imagen cargada. Comprueba que corresponda a esta experiencia.';});
+      this.$('experience-drive').addEventListener('click',()=>this.choosePhoto());
+      this.$('experience-image-preview').addEventListener('error',()=>{this.$('experience-image-preview').hidden=true;this.$('experience-image-state').textContent='La foto no cargó. Si es de Drive, revisa el acceso con enlace y vuelve a seleccionarla. Si el archivo ya es público, Drive puede haber limitado su visualización; no guardes hasta que cargue.';this.photoLoaded=false;});
+      this.$('experience-image-preview').addEventListener('load',()=>{this.photoLoaded=true;this.$('experience-image-state').textContent='Imagen cargada. Comprueba que corresponda a esta experiencia. Los permisos de Drive se revisan al seleccionar o guardar una foto nueva.';});
       this.clear();
     }
     clear(){this.source=null;this.snapshot=null;this.item=null;this.$('catalog-current').textContent='Abre una mesa para ver sus experiencias.';this.message('Selecciona Abrir mesa en el menú.');this.render();}
     setSource(source){if(this.source?.id!==source.id)this.snapshot=null;this.source=source;this.$('catalog-current').textContent=source.title;this.render();}
     message(text,error=false){this.$('catalog-status').textContent=text;this.$('catalog-status').classList.toggle('error',error);}
-    setBusy(value){this.busy=value;this.onBusy(value);this.$('experience-save').disabled=value;this.$('experience-close').disabled=value;this.$('experience-fields').disabled=value;this.render();}
+    setBusy(value){this.busy=value;this.onBusy(value);this.$('experience-save').disabled=value;this.$('experience-close').disabled=value;this.$('experience-fields').disabled=value||this.snapshot?.canEdit===false;this.$('experience-description').disabled=this.snapshot?.columns.description===null;this.render();}
     async load(){
       if(!this.source||this.busy)return;
       this.setBusy(true);this.message('Leyendo experiencias…');
@@ -107,8 +108,21 @@ const MesaCatalog = (() => {
     }
     photo(){
       const url=MesaSheets.safeImage(this.$('experience-image').value.trim()),img=this.$('experience-image-preview');this.photoLoaded=false;img.hidden=!url;
-      this.$('experience-image-state').textContent=url?'Cargando imagen…':'Pega una URL HTTPS directa. Un enlace a la página de Drive puede no funcionar como imagen.';
+      this.$('experience-image-state').textContent=url?'Cargando imagen…':'Selecciona una foto de Drive o pega el enlace del archivo. También se admiten imágenes HTTPS directas.';
       if(url)img.src=url;else img.removeAttribute('src');
+    }
+    async choosePhoto(){
+      if(this.busy||!this.snapshot?.canEdit)return;
+      // El selector de Google debe quedar fuera de la capa superior del dialog nativo.
+      this.$('experience-dialog').close();this.setBusy(true);this.message('Seleccionando foto en Drive…');
+      let notice='';
+      try{
+        const file=await this.client.chooseImage();
+        if(file){this.$('experience-image').value=file.link;this.photo();notice='Foto seleccionada: '+file.name+'. Revisa la vista previa y guarda la experiencia para vincularla.';}
+        else notice='Selección cancelada. La foto y los datos anteriores se conservan.';
+        this.$('experience-save-state').textContent='';this.message(notice);
+      }catch(error){this.$('experience-save-state').textContent=error.message;this.message('No se cambió la foto de la experiencia.',true);}
+      finally{this.setBusy(false);this.$('experience-dialog').showModal();this.$('experience-drive').focus();}
     }
     async save(){
       if(this.busy||!this.snapshot||!this.item||!this.snapshot.canEdit)return;

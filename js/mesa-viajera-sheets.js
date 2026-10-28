@@ -35,11 +35,24 @@ const MesaSheets = (() => {
     validate(config);
     return KEYS.filter(key => snapshot.config[key] !== config[key]).map(key => ({key,before:snapshot.config[key],after:config[key],range:"'CONFIG'!B"+snapshot.positions[key],values:[[config[key]]]}));
   }
+  function driveImage(value) {
+    try {
+      const url=new URL(value);
+      if(url.protocol!=='https:'||url.username||url.password||!['drive.google.com','docs.google.com'].includes(url.hostname))return null;
+      const match=url.pathname.match(/^\/file\/d\/([A-Za-z0-9_-]+)(?:\/|$)/);
+      const id=match?.[1]||(/^\/(?:open|uc|thumbnail)\/?$/.test(url.pathname)?url.searchParams.get('id'):null);
+      if(!validId(id))return null;
+      const resourceKey=url.searchParams.get('resourcekey');
+      const key=resourceKey&&/^[A-Za-z0-9_-]{1,200}$/.test(resourceKey)?resourceKey:'';
+      return {id,resourceKey:key,link:'https://drive.google.com/file/d/'+id+'/view'+(key?'?resourcekey='+key:''),preview:'https://drive.google.com/thumbnail?id='+id+'&sz=w1600'+(key?'&resourcekey='+key:'')};
+    } catch{return null;}
+  }
   function safeImage(value) {
     try {
       if (typeof value !== 'string' || value.length > 2048) return '';
       const url = new URL(value);
       if (url.protocol !== 'https:' || url.username || url.password || /^(localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|\[)/i.test(url.hostname)) return '';
+      if(['drive.google.com','docs.google.com'].includes(url.hostname))return driveImage(value)?.preview||'';
       return url.href;
     } catch { return ''; }
   }
@@ -96,16 +109,41 @@ const MesaSheets = (() => {
         }).build().setVisible(true);
       });
     }
+    async chooseImage() {
+      if(!this.signedIn())throw Error('La sesión venció. Abre de nuevo la mesa para conectar Google; conserva antes los cambios pendientes.');
+      if(!globalThis.google?.picker)throw Error('El selector de Google todavía no está disponible.');
+      const p=globalThis.google.picker;
+      const selected=await new Promise((resolve,reject)=>{
+        const view=new p.DocsView(p.ViewId.DOCS).setMimeTypes('image/jpeg,image/png,image/webp').setMode(p.DocsViewMode.LIST).setIncludeFolders(true).setSelectFolderEnabled(false);
+        new p.PickerBuilder().addView(view).setOAuthToken(this.#token).setDeveloperKey(this.#settings.pickerApiKey).setAppId(this.#settings.projectNumber).setOrigin(location.origin).setLocale('es').setTitle('Selecciona la foto de esta experiencia').setCallback(data=>{
+          if(data.action===p.Action.CANCEL)resolve(null);
+          if(data.action===p.Action.PICKED){const doc=data.docs?.[0];if(!validId(doc?.id))reject(Error('Google no devolvió una foto válida.'));else resolve({id:doc.id,resourceKey:doc.resourceKey});}
+        }).build().setVisible(true);
+      });
+      if(!selected)return null;
+      const link='https://drive.google.com/file/d/'+selected.id+'/view'+(selected.resourceKey?'?resourcekey='+encodeURIComponent(selected.resourceKey):'');
+      return this.drivePhoto(link);
+    }
+    async drivePhoto(value) {
+      const image=driveImage(value);
+      if(!image)throw Error('Usa el enlace de un archivo de imagen de Drive, no el de una carpeta.');
+      const file=await this.#request('https://www.googleapis.com/drive/v3/files/'+image.id+'?supportsAllDrives=true&fields=id,name,mimeType,trashed,resourceKey,permissions(type,role,deleted,expirationTime)',{headers:image.resourceKey?{'X-Goog-Drive-Resource-Keys':image.id+'/'+image.resourceKey}:{}});
+      if(file.trashed||!['image/jpeg','image/png','image/webp'].includes(file.mimeType))throw Error('Selecciona una imagen JPG, PNG o WebP que no esté en la papelera.');
+      const visible=file.permissions?.some(p=>p.type==='anyone'&&!p.deleted&&['reader','commenter','writer'].includes(p.role)&&(!p.expirationTime||Date.parse(p.expirationTime)>Date.now()));
+      if(!visible)throw Error('No se confirmó acceso para los invitados. En Drive abre Compartir → Acceso general → Cualquier persona con el enlace → Lector. Después vuelve a seleccionar la foto. El panel no cambia permisos.');
+      const key=file.resourceKey||image.resourceKey;
+      return {...driveImage('https://drive.google.com/file/d/'+image.id+'/view'+(key?'?resourcekey='+encodeURIComponent(key):'')),name:String(file.name||'Foto de Drive')};
+    }
     checkId(id) { if (!this.ready() || !validId(id) || !this.#settings.allowedSpreadsheetIds.includes(id)) throw new Error('Hoja no habilitada para este editor.'); }
     async #request(url, options = {}) {
       if (!this.signedIn()) {this.clearSession();throw new Error('La sesión de Google venció. Vuelve a conectar; los borradores locales se conservan.');}
       let response;
       const controller=new AbortController(), timeout=setTimeout(() => controller.abort(),20000);
-      try { response=await this.#fetch(url,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+this.#token},cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:controller.signal}); }
+      try { response=await this.#fetch(url,{...options,headers:{'Content-Type':'application/json',...options.headers,Authorization:'Bearer '+this.#token},cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:controller.signal}); }
       catch {throw new Error(options.method === 'POST' ? 'No se pudo confirmar el guardado. Vuelve a leer la hoja antes de intentar guardar otra vez.' : 'No se pudo leer Google Sheets. Revisa la conexión y vuelve a intentarlo.');}
       finally {clearTimeout(timeout);}
       if (response.status === 401) {this.clearSession();throw new Error('La sesión de Google venció. Vuelve a conectar.');}
-      if (!response.ok) throw new Error(response.status === 403 ? 'Google no permite esta operación. Revisa los permisos de la hoja o la activación de la aplicación.' : 'Google no completó la operación (HTTP '+response.status+').');
+      if (!response.ok) throw new Error(response.status === 403 ? 'Google no permite esta operación. Si pegaste una foto, usa Seleccionar foto de Drive para autorizar ese archivo; para la hoja revisa sus permisos o la activación de la aplicación.' : 'Google no completó la operación (HTTP '+response.status+').');
       return response.json();
     }
     async read(id) {
@@ -140,6 +178,7 @@ const MesaSheets = (() => {
       if(!snapshot.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
       const planned=CATALOG.plan(snapshot,input,safeImage);
       if(!planned.changes.length)return snapshot;
+      if(planned.changes.some(change=>change.key==='image')&&driveImage(input.image))await this.drivePhoto(input.image);
       const fresh=await this.catalogState(snapshot.id);
       if(!fresh.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
       if(fresh.signature!==snapshot.signature||fresh.gridRows!==snapshot.gridRows)throw Error('El catálogo cambió. Actualízalo y revisa la experiencia antes de guardar.');
@@ -168,6 +207,6 @@ const MesaSheets = (() => {
     loading=Promise.all([script('https://accounts.google.com/gsi/client'),script('https://apis.google.com/js/api.js')]).then(() => new Promise((resolve,reject) => globalThis.gapi.load('picker',{callback:resolve,onerror:() => reject(new Error('No se pudo cargar el selector de Google.')),timeout:15000,ontimeout:() => reject(new Error('El selector de Google tardó demasiado.'))}))).catch(error => {loading=undefined;throw error;});
     return loading;
   }
-  return {SCOPE,KEYS,Client,readConfig,planWrite,readCatalog,safeImage,loadGoogle};
+  return {SCOPE,KEYS,Client,readConfig,planWrite,readCatalog,driveImage,safeImage,loadGoogle};
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports=MesaSheets;

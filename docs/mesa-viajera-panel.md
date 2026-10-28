@@ -113,7 +113,7 @@ El titular confirmó en su navegador carga real y guardado en Sheets, comproband
 
 ## Experiencias desde el panel
 
-El menú lateral separa Personalización y Experiencias. Solo muestra una sección a la vez; el nombre de la hoja seleccionada permanece visible. Roberto abre la mesa y entra en Experiencias para buscar, agregar o editar desde un panel lateral. Las fotografías se capturan mediante URL HTTPS directa, con vista previa y comprobación de carga; aún no se suben archivos desde el equipo.
+El menú lateral separa Personalización y Experiencias. Solo muestra una sección a la vez; el nombre de la hoja seleccionada permanece visible. Roberto abre la mesa y entra en Experiencias para buscar, agregar o editar desde un panel lateral. Las fotografías se seleccionan desde Google Drive o se capturan mediante enlace del archivo, con vista previa y comprobación de carga. También se conservan las imágenes HTTPS directas existentes. No se suben archivos desde el equipo.
 
 Se inspeccionaron en la copia real los encabezados: ID, EXPERIENCIA, DESCRIPCION, PRECIO, META, MONEDA, IMAGEN, TIPO, ESTADO, CATEGORIA, ORDEN y DESTINO. Apps Script utiliza IDs de texto y exige ESTADO=DISPONIBLE para cobrar. Las altas del panel crean un ID permanente y ESTADO=BORRADOR; el precio y la configuración comercial quedan pendientes de Rodrigo. El backend todavía puede incluir borradores en su listado: no publicar la copia de desarrollo.
 
@@ -126,7 +126,7 @@ Pruebas: alta y edición, búsqueda, foto cargada y faltante, revisión de cambi
 Recorrido de Roberto:
 1. Abrir mesa y elegir la copia de desarrollo; entrar en Experiencias.
 2. Agregar experiencia o buscar una existente y pulsar Editar.
-3. Capturar nombre y descripción, pegar la URL de la foto y comprobar que cargue.
+3. Capturar nombre y descripción. Pulsar Seleccionar foto de Drive, elegir una imagen JPG/PNG/WebP y comprobar la vista previa. También se puede pegar su enlace; si falta autorización por archivo, volver a seleccionarla con el botón de Drive.
 4. Pulsar Revisar y guardar experiencia, comprobar hoja y diferencias, confirmar Guardar experiencia.
 5. Volver a Personalización > Certificado, elegir la experiencia y comprobar su foto.
 6. Entregar a Rodrigo la lista para completar y autorizar configuración comercial antes de ofrecerla.
@@ -134,3 +134,18 @@ Recorrido de Roberto:
 La sesión real y los permisos de Drive determinan lectura o edición. Estos responsables no son un selector que conceda permisos: el control de precios por rol requiere implementación de servidor y no se sustituye con una casilla de autorización.
 
 La prueba de catálogo con la cuenta real llegó al selector de Google, pero este navegador no avanzó en «Permitir cookies». No se escribieron experiencias en la hoja durante ese intento. La comprobación del guardado real del catálogo sigue pendiente; el panel publicado y el flujo con datos simulados sí se verificaron.
+
+
+## Fotografías desde Google Drive
+
+El editor utiliza el mismo acceso drive.file de la sesión; no se amplían los scopes ni se pide acceso completo al Drive. El selector muestra imágenes JPG/PNG/WebP y carpetas para navegación, sin permitir seleccionar carpetas. Seleccionar solo vincula: no copia, mueve, borra ni cambia permisos. La selección no escribe en Sheets hasta revisar y guardar.
+
+El adaptador admite enlaces file/d/ID/view, open?id=ID, uc?id=ID y thumbnail?id=ID. Conserva la clave de recurso cuando existe; elimina parámetros ajenos a la referencia. La vista previa, las tarjetas y el certificado del panel convierten el ID a una URL de visualización de Drive; no guardan tokens ni enlaces de miniaturas temporales devueltos por la API. Los enlaces que apuntan a carpetas se rechazan.
+
+Al seleccionar, y antes de guardar una foto nueva de Drive, se consulta el archivo y se exige MIME admitido, que no esté en papelera y permiso vigente de lectura para anyone. Si no se puede confirmar, se detiene el vínculo/guardado. Para fotos destinadas a invitados: en Drive → Compartir → Acceso general → Cualquier persona con el enlace → Lector. Esta acción la realiza el titular; el panel nunca publica el archivo por sí mismo. Un permiso de dominio o solo del propietario no basta. Un enlace pegado puede requerir selección con Picker para autorizar el archivo con drive.file.
+
+La vista previa debe cargar antes de guardar. Drive puede limitar la visualización aunque el archivo tenga permiso público; no se considera un CDN ni se garantiza disponibilidad permanente. El certificado PDF de Apps Script y la mesa pública aún requieren verificación conjunta con una imagen real del titular; el ajuste de este bloque corresponde al panel, no modifica el Apps Script ni la mesa activa.
+
+El diálogo lateral se cierra temporalmente al abrir Picker para evitar que el modal nativo oculte el selector. Cancelar conserva foto y campos. Una imagen privada, incorrecta o en papelera no reemplaza la foto previa. La sesión vencida pide abrir de nuevo la mesa conservando antes los cambios pendientes.
+
+Verificación de este bloque: pruebas automatizadas con API/Picker simulados para formatos de enlace, claves de recurso, selección/cancelación, permisos privados/públicos, MIME, papelera y ausencia de mutaciones de Drive. La comprobación real con la foto del titular se registra por separado, sin presentar la simulación como un guardado real.

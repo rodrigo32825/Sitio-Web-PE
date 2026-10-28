@@ -12,8 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=catalog-1">
   <script defer src="./js/mesa-viajera-google-config.js?v=2"></script>
-  <script defer src="./js/mesa-viajera-catalog.js?v=1"></script>
-  <script defer src="./js/mesa-viajera-sheets.js?v=catalog-1"></script>
+  <script defer src="./js/mesa-viajera-catalog.js?v=drive-1"></script>
+  <script defer src="./js/mesa-viajera-sheets.js?v=drive-1"></script>
   <script defer src="./js/mesa-viajera-panel.js?v=catalog-1"></script>
 </head>
 <body>
@@ -103,7 +103,9 @@
       <p class="help">ID permanente <strong id="experience-id"></strong>. Este ID vincula el regalo con su fotografía.</p>
       <fieldset id="experience-fields"><label>Nombre de la experiencia<input id="experience-name" maxlength="200" required autocomplete="off"></label>
       <label>Descripción<textarea id="experience-description" maxlength="3000" rows="4"></textarea><small id="experience-description-note"></small></label>
-      <label>URL de la foto<input id="experience-image" type="url" maxlength="2048" placeholder="https://…" required></label>
+      <button id="experience-drive" type="button" class="secondary">Seleccionar foto de Drive</button>
+      <label>Enlace de la foto<input id="experience-image" type="url" maxlength="2048" placeholder="https://drive.google.com/file/d/…/view" required></label>
+      <p class="help">Usa una imagen JPG, PNG o WebP. Para que la vean los invitados, el archivo debe estar compartido como “Cualquier persona con el enlace · Lector”. Solo se vincula la foto; el panel no la copia, no la mueve ni cambia sus permisos.</p>
       <img id="experience-image-preview" class="experience-image-preview" alt="Vista previa de la foto de la experiencia" hidden><p id="experience-image-state" class="help"></p></fieldset>
       <div class="price-readonly"><strong>Precio en la hoja · solo consulta</strong><p id="experience-price"></p><small>Rodrigo configura el precio. Este formulario no modifica importes, plataformas ni pagos. Una experiencia nueva requiere completar esos datos antes de venderse.</small></div>
       <p id="experience-save-state" class="status error" role="status"></p><button id="experience-save" type="submit" class="dark">Revisar y guardar experiencia</button>
