@@ -78,6 +78,7 @@ if (typeof document !== 'undefined') (() => {
   let sheetSnapshot = null;
   let catalog = [];
   let catalogEditor = null;
+  let paymentsEditor = null;
   let googleLoaded = false;
   let busy = false;
   let state = { drafts: [], activeId: null };
@@ -267,7 +268,7 @@ if (typeof document !== 'undefined') (() => {
 
   function setBusy(value) {
     busy=value; form.inert=value;
-    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','create-sheets','continue-experiences','nav-personalization','nav-experiences']) $(key).disabled=value;
+    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','create-sheets','continue-experiences','nav-personalization','nav-experiences','nav-payments']) $(key).disabled=value;
     if (!value && sheetSnapshot) $('save-sheets').disabled=!sheetSnapshot.canEdit;
     renderList();
   }
@@ -290,6 +291,7 @@ if (typeof document !== 'undefined') (() => {
   function clearSheetLink() {
     sheetSnapshot=null; catalog=[];
     if (catalogEditor) catalogEditor.clear();
+    if (paymentsEditor) paymentsEditor.clear();
     $('sheet-link').hidden=true;
     $('preview-experience').replaceChildren(new Option('Experiencia de ejemplo',''));
     $('sheets-state').textContent=sheets.signedIn() ? 'Google disponible · abre una mesa' : 'Ninguna mesa abierta';
@@ -321,7 +323,8 @@ if (typeof document !== 'undefined') (() => {
   function describeSheet(snapshot) {
     $('sheet-link').hidden=false; $('sheet-title').textContent=snapshot.title;
     if (catalogEditor) catalogEditor.setSource(snapshot);
-    $('sheet-link-note').textContent=(snapshot.canEdit ? 'La personalización y el catálogo se guardan por separado. ' : 'Tu cuenta tiene acceso de lectura. ')+'La fecha permanece en el borrador; precios, pagos y movimientos no se modifican desde estos formularios.';
+    if (paymentsEditor) paymentsEditor.setSource(snapshot);
+    $('sheet-link-note').textContent=(snapshot.canEdit ? 'Diseño, catálogo y datos de cobro se guardan por separado. ' : 'Tu cuenta tiene acceso de lectura. ')+'La fecha permanece en el borrador. Estos formularios no ejecutan cobros ni modifican movimientos.';
     $('sheets-state').textContent='Mesa abierta · '+(snapshot.canEdit ? 'lectura y edición' : 'solo lectura');
     $('sheets-help').textContent='Datos y diseño cargados. Para abrir otra mesa, pulsa Abrir mesa. Los cambios se guardan en Sheets cuando los confirmas.';
     $('connection-progress').textContent='Hoja leída'; $('save-sheets').disabled=!snapshot.canEdit;
@@ -425,19 +428,24 @@ if (typeof document !== 'undefined') (() => {
   });
   function setWorkspace(section) {
     const experiences=section === 'experiences';
-    $('personalization-content').hidden=experiences;
-    $('personal-progress').hidden=experiences;
-    $('personal-actions').hidden=experiences;
-    $('duplicate').hidden=experiences;
-    $('download').hidden=experiences;
+    const payments=section==='payments',personal=!experiences&&!payments;
+    $('personalization-content').hidden=!personal;
+    $('personal-progress').hidden=!personal;
+    $('personal-actions').hidden=!personal;
+    $('duplicate').hidden=!personal;
+    $('download').hidden=!personal;
     $('catalog-panel').hidden=!experiences;
-    $('workspace-title').textContent=experiences ? 'Experiencias de esta mesa' : 'Personalización de la mesa';
-    $('nav-personalization').setAttribute('aria-pressed',String(!experiences));
+    $('payments-panel').hidden=!payments;
+    $('workspace-title').textContent=experiences ? 'Experiencias de esta mesa' : payments?'Pagos de esta mesa':'Personalización de la mesa';
+    $('nav-personalization').setAttribute('aria-pressed',String(personal));
     $('nav-experiences').setAttribute('aria-pressed',String(experiences));
+    $('nav-payments').setAttribute('aria-pressed',String(payments));
     if (experiences && catalogEditor?.source && !catalogEditor.snapshot && !catalogEditor.busy) void catalogEditor.load();
+    if(payments&&paymentsEditor?.source&&!paymentsEditor.snapshot&&!paymentsEditor.busy)void paymentsEditor.load();
   }
   $('nav-personalization').addEventListener('click',()=>{if(!busy)setWorkspace('personalization')});
   $('nav-experiences').addEventListener('click',()=>{if(!busy)setWorkspace('experiences')});
+  $('nav-payments').addEventListener('click',()=>{if(!busy)setWorkspace('payments')});
   catalogEditor=new MesaCatalog.Editor({
     client:sheets,onBusy:setBusy,review:showReview,
     onUpdated(items) {
@@ -449,6 +457,7 @@ if (typeof document !== 'undefined') (() => {
       setExampleExperience();
     }
   });
+  paymentsEditor=new MesaPayments.Editor({client:sheets,onBusy:setBusy,review:showReview});
   renderForm();
   clearSheetLink();
   if (sheets.ready()) void prepareGoogleAccess();

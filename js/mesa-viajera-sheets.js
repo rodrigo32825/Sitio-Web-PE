@@ -2,6 +2,7 @@
 
 const MesaSheets = (() => {
   const CATALOG = typeof module !== 'undefined' && module.exports ? require('./mesa-viajera-catalog.js') : MesaCatalog;
+  const PAYMENTS = typeof module !== 'undefined' && module.exports ? require('./mesa-viajera-payments.js') : MesaPayments;
   const SCOPE = 'https://www.googleapis.com/auth/drive.file';
   const KEYS = ['NOMBRES','NOMBRE_MESA','PREFIJO_FOLIO','CERT_TITULO','CERT_SUBTITULO','COLOR_PRIMARIO','COLOR_FONDO','COLOR_SECUNDARIO','COLOR_ACENTO','COLOR_DORADO','FUENTE_NOMBRES','FUENTE_TITULOS','FUENTE_CATEGORIAS','FUENTE_CUERPO'];
   const FONTS = ['Poppins','Great Vibes','Cormorant Garamond', 'Bodoni Moda','Roboto'];
@@ -269,6 +270,27 @@ const MesaSheets = (() => {
       const verified=await this.catalogState(snapshot.id);
       if(planned.changes.some(change=>{const col=verified.columns[change.key];return String(verified.rows[planned.row-1]?.[col]??'')!==change.after;}))throw Error('No se confirmó el resultado del guardado. Actualiza el catálogo antes de repetir.');
       return verified;
+    }
+    async paymentState(id){
+      await this.checkId(id);
+      const file=await this.#request('https://www.googleapis.com/drive/v3/files/'+id+'?fields=id,name,mimeType,capabilities(canEdit),permissions(type)');
+      if(file.mimeType!=='application/vnd.google-apps.spreadsheet')throw Error('El archivo no es una hoja de Google Sheets.');
+      if(!Array.isArray(file.permissions))throw Error('No se pudieron comprobar los permisos de la hoja. Rodrigo debe revisarlos antes de configurar pagos.');
+      if(file.permissions.some(p=>['anyone','domain'].includes(p.type)))throw Error('Esta hoja tiene acceso general por enlace o dominio. Usa la copia privada de la boda y restringe su acceso antes de cargar datos de cobro. El panel no cambia permisos.');
+      const data=await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+id+'/values/'+encodeURIComponent("'CONFIG'!A1:B500")+'?valueRenderOption=FORMULA');
+      return {...PAYMENTS.parse(data.values||[]),id,title:file.name,canEdit:file.capabilities?.canEdit===true};
+    }
+    async savePayments(snapshot,input){
+      await this.checkId(snapshot.id);
+      if(!snapshot.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
+      const changes=PAYMENTS.plan(snapshot,input);if(!changes.length)return snapshot;
+      const fresh=await this.paymentState(snapshot.id);
+      if(!fresh.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
+      if(fresh.signature!==snapshot.signature)throw Error('La configuración de pagos cambió. Actualiza los datos y revisa las diferencias antes de guardar.');
+      await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+snapshot.id+'/values:batchUpdate',{method:'POST',body:JSON.stringify({valueInputOption:'RAW',data:changes.map(({range,values})=>({range,values}))})});
+      const result=await this.paymentState(snapshot.id);
+      if(changes.some(c=>result.values[c.key]!==c.after)||PAYMENTS.FLAGS.some(k=>result.values[k]!=='NO'))throw Error('No se confirmó el resultado del guardado. Actualiza los datos antes de repetir.');
+      return result;
     }
     async save(snapshot, config) {
       await this.checkId(snapshot.id);
