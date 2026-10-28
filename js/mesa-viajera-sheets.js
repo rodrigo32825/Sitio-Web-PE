@@ -7,6 +7,25 @@ const MesaSheets = (() => {
   const FONTS = ['Poppins','Great Vibes','Cormorant Garamond', 'Bodoni Moda','Roboto'];
   const LIMITS = {NOMBRES:100,NOMBRE_MESA:120,PREFIJO_FOLIO:16,CERT_TITULO:80,CERT_SUBTITULO:180};
   const validId = value => typeof value === 'string' && /^[A-Za-z0-9_-]{20,150}$/.test(value);
+  const MESA_MARKER='mesa-viajera-v2';
+  const MESA_TABS=['CONFIG','EXPERIENCIAS','REGALOS','TRANSACCIONES','PANEL_CAMPOS'];
+  function cleanMesaRequests(meta,keys,config){
+    validate(config);
+    if(!Array.isArray(meta.sheets)||!meta.sheets.length)throw Error('La plantilla no contiene pestañas legibles.');
+    const seen=new Set();
+    for(const sheet of meta.sheets){const p=sheet.properties;if(!MESA_TABS.includes(p?.title)||seen.has(p.title)||!Number.isInteger(p.sheetId)||!p.gridProperties?.rowCount||!p.gridProperties.columnCount)throw Error('Rodrigo debe revisar las pestañas de la plantilla antes de duplicarla.');seen.add(p.title);}
+    if(!['CONFIG','EXPERIENCIAS','REGALOS','TRANSACCIONES'].every(t=>seen.has(t)))throw Error('La plantilla no tiene la estructura V2 completa.');
+    const configKeys=keys.map(row=>String(row?.[0]||'').trim());
+    if(!['CLAVE','KEY'].includes(configKeys[0]))throw Error('Revisa el encabezado de CONFIG en la plantilla.');
+    const names=configKeys.slice(1).filter(Boolean);
+    if(new Set(names).size!==names.length||names.some(k=>!/^[_A-Z0-9]{1,100}$/.test(k))||![...KEYS,'PAYPAL_ACTIVO','TARJETAS_ACTIVAS','TRANSFERENCIA_ACTIVA'].every(k=>names.includes(k)))throw Error('Revisa las claves de CONFIG antes de crear una mesa.');
+    const off=new Set(['PAYPAL_ACTIVO','TARJETAS_ACTIVAS','TRANSFERENCIA_ACTIVA']);
+    const rows=configKeys.map((key,i)=>({values:[{userEnteredValue:{stringValue:key}},{userEnteredValue:{stringValue:i===0?'VALOR':KEYS.includes(key)?config[key]:off.has(key)?'NO':key==='MODO_PAGO'?'ONLINE':''}}]}));
+    return meta.sheets.filter(s=>s.properties.title!=='PANEL_CAMPOS').map(s=>{
+      const p=s.properties;
+      return {updateCells:{range:{sheetId:p.sheetId,startRowIndex:p.title==='CONFIG'?0:1,endRowIndex:p.gridProperties.rowCount,startColumnIndex:0,endColumnIndex:p.gridProperties.columnCount},rows:p.title==='CONFIG'?rows:[],fields:'userEnteredValue,note'}};
+    });
+  }
   function readConfig(rows) {
     if (!Array.isArray(rows)) throw new Error('CONFIG no contiene una tabla legible.');
     const config = {}, positions = {};
@@ -77,7 +96,7 @@ const MesaSheets = (() => {
     });
   }
   class Client {
-    #token = ''; #expires = 0; #fetch; #settings;
+    #token = ''; #expires = 0; #fetch; #settings; #mesaIds=new Set();
     constructor(settings, fetcher = globalThis.fetch.bind(globalThis)) { this.#settings = settings || {}; this.#fetch = fetcher; }
     ready() { const s=this.#settings; return /^[\w-]+\.apps\.googleusercontent\.com$/.test(s.clientId || '') && !!s.pickerApiKey && /^\d+$/.test(s.projectNumber || '') && Array.isArray(s.allowedSpreadsheetIds) && s.allowedSpreadsheetIds.length > 0 && s.allowedSpreadsheetIds.every(validId); }
     signedIn() { return !!this.#token && Date.now() < this.#expires; }
@@ -103,9 +122,9 @@ const MesaSheets = (() => {
       if (!globalThis.google?.picker) throw new Error('El selector de Google todavía no está disponible.');
       const p=globalThis.google.picker;
       return new Promise((resolve,reject) => {
-        new p.PickerBuilder().addView(new p.DocsView(p.ViewId.SPREADSHEETS)).setOAuthToken(this.#token).setDeveloperKey(this.#settings.pickerApiKey).setAppId(this.#settings.projectNumber).setOrigin(location.origin).setLocale('es').setTitle('Selecciona la copia de desarrollo de Mesa Viajera').setCallback(data => {
+        new p.PickerBuilder().addView(new p.DocsView(p.ViewId.SPREADSHEETS)).setOAuthToken(this.#token).setDeveloperKey(this.#settings.pickerApiKey).setAppId(this.#settings.projectNumber).setOrigin(location.origin).setLocale('es').setTitle('Selecciona una mesa de Mesa Viajera').setCallback(data => {
           if (data.action === p.Action.CANCEL) resolve(null);
-          if (data.action === p.Action.PICKED) { const doc=data.docs?.[0]; if (!doc || !this.#settings.allowedSpreadsheetIds.includes(doc.id)) reject(new Error('Esta hoja no está habilitada para el panel. Selecciona la copia de desarrollo autorizada.')); else resolve({id:doc.id,name:doc.name}); }
+          if (data.action === p.Action.PICKED) { const doc=data.docs?.[0];if(!doc){reject(Error('Google no devolvió una hoja válida.'));return;}this.checkId(doc.id).then(()=>resolve({id:doc.id,name:doc.name}),reject); }
         }).build().setVisible(true);
       });
     }
@@ -139,7 +158,63 @@ const MesaSheets = (() => {
       const key=file.resourceKey||image.resourceKey;
       return {...driveImage('https://drive.google.com/file/d/'+image.id+'/view'+(key?'?resourcekey='+encodeURIComponent(key):'')),name:String(file.name||'Foto de Drive')};
     }
-    checkId(id) { if (!this.ready() || !validId(id) || !this.#settings.allowedSpreadsheetIds.includes(id)) throw new Error('Hoja no habilitada para este editor.'); }
+    async checkId(id) {
+      if(!this.ready()||!validId(id))throw Error('Hoja no habilitada para este editor.');
+      if(this.#settings.allowedSpreadsheetIds.includes(id)||this.#mesaIds.has(id))return;
+      const file=await this.#request('https://www.googleapis.com/drive/v3/files/'+id+'?fields=id,mimeType,appProperties');
+      if(file.mimeType!=='application/vnd.google-apps.spreadsheet'||file.appProperties?.evaMesa!==MESA_MARKER||file.appProperties?.evaMesaState!=='ready')throw Error('Hoja no habilitada para el panel. Elige la plantilla autorizada o una mesa creada desde este panel.');
+      this.#mesaIds.add(id);
+    }
+    async createMesa(draftId,config,{onCreated=()=>{},pendingId='',uncertain=false}={}) {
+      validate(config);
+      if(!this.ready()||!this.signedIn())throw Error('Conecta Google para crear la mesa.');
+      if(typeof draftId!=='string'||!/^[-A-Za-z0-9]{1,80}$/.test(draftId))throw Error('El borrador no tiene un identificador válido.');
+      const templateId=this.#settings.allowedSpreadsheetIds[0];
+      const marker={evaMesa:MESA_MARKER,evaMesaDraft:draftId,evaMesaState:'preparing'};
+      let target=null;
+      if(pendingId){
+        if(!validId(pendingId)||this.#settings.allowedSpreadsheetIds.includes(pendingId))throw Error('El destino pendiente no es una copia nueva válida.');
+        target=await this.#request('https://www.googleapis.com/drive/v3/files/'+pendingId+'?fields=id,name,mimeType,appProperties');
+        if(target.appProperties?.evaMesa!==MESA_MARKER||target.appProperties?.evaMesaDraft!==draftId)throw Error('La copia pendiente no corresponde a este borrador.');
+      }else{
+        const q="trashed = false and appProperties has { key='evaMesaDraft' and value='"+draftId+"' } and appProperties has { key='evaMesa' and value='"+MESA_MARKER+"' }";
+        const found=await this.#request('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&pageSize=2&fields=files(id,name,mimeType,appProperties)');
+        if(found.files?.length>1)throw Error('Hay más de una copia para este borrador. Rodrigo debe revisar el destino antes de continuar.');
+        target=found.files?.[0]||null;
+        if(!target&&uncertain)throw Error('La creación anterior no pudo confirmarse. No se creará otra copia automáticamente. Revisa tu Drive y vuelve a intentar continuar para localizarla.');
+      }
+      if(target&&(!validId(target.id)||this.#settings.allowedSpreadsheetIds.includes(target.id)||target.mimeType!=='application/vnd.google-apps.spreadsheet'||target.appProperties?.evaMesa!==MESA_MARKER||target.appProperties?.evaMesaDraft!==draftId))throw Error('La copia localizada no corresponde a este borrador.');
+      if(target?.appProperties?.evaMesaState==='ready'){await onCreated({id:target.id,title:target.name,state:'ready'});return this.read(target.id);}
+      let meta,keys;
+      try{
+        [meta,keys]=await Promise.all([
+          this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+templateId+'?fields=sheets(properties(sheetId,title,gridProperties))'),
+          this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+templateId+'/values/'+encodeURIComponent("'CONFIG'!A1:A2000")+'?valueRenderOption=UNFORMATTED_VALUE')
+        ]);
+      }catch(error){if(error.status===403||error.status===404)throw Object.assign(Error('Selecciona Mesa Viajera Maestra V2 - Desarrollo para autorizar la plantilla. Tu diseño actual se conserva.'),{templateAccess:true});throw error;}
+      if(meta.sheets.find(s=>s.properties?.title==='CONFIG')?.properties?.gridProperties?.rowCount>2000)throw Error('CONFIG excede el tamaño admitido para la plantilla.');
+      cleanMesaRequests(meta,keys.values||[],config);
+      if(!target){
+        // La marca se guarda en la misma creación. Permite localizar la copia tras una respuesta perdida.
+        try{target=await this.#request('https://www.googleapis.com/drive/v3/files/'+templateId+'/copy?fields=id,name,mimeType,appProperties',{method:'POST',body:JSON.stringify({name:'Mesa Viajera · '+config.NOMBRE_MESA,parents:['root'],appProperties:marker})});}
+        catch(error){if(error.status>=400&&error.status<500)throw Error('Google rechazó la copia de la plantilla (HTTP '+error.status+'). Comprueba la cuenta y que permita crear copias; puedes volver a intentarlo.');throw Object.assign(Error('Google no confirmó la creación. Conservamos este intento para buscar la copia antes de crear otra.'),{creationUncertain:true});}
+      }
+      if(!validId(target.id)||this.#settings.allowedSpreadsheetIds.includes(target.id))throw Error('Google no devolvió una copia nueva válida.');
+      await onCreated({id:target.id,title:target.name,state:'preparing'});
+      const targetMeta=await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+target.id+'?fields=sheets(properties(sheetId,title,gridProperties))');
+      const requests=cleanMesaRequests(targetMeta,keys.values||[],config);
+      await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+target.id+':batchUpdate',{method:'POST',body:JSON.stringify({requests})});
+      // No se habilita la mesa hasta verificar configuración, operaciones vacías y pagos apagados.
+      const columnName=index=>{let name='';for(let n=index;n;n=Math.floor((n-1)/26))name=String.fromCharCode(65+(n-1)%26)+name;return name;};
+      const ranges=["'CONFIG'!A1:B2000",...['EXPERIENCIAS','REGALOS','TRANSACCIONES'].map(title=>{const grid=targetMeta.sheets.find(s=>s.properties.title===title).properties.gridProperties;return "'"+title+"'!A2:"+columnName(grid.columnCount)+grid.rowCount;})];
+      const check=await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+target.id+'/values:batchGet?'+ranges.map(r=>'ranges='+encodeURIComponent(r)).join('&')+'&valueRenderOption=UNFORMATTED_VALUE');
+      const values=check.valueRanges?.[0]?.values||[];const parsed=readConfig(values);
+      if(KEYS.some(k=>parsed.config[k]!==config[k])||['PAYPAL_ACTIVO','TARJETAS_ACTIVAS','TRANSFERENCIA_ACTIVA'].some(k=>!values.some(r=>r[0]===k&&r[1]==='NO'))||check.valueRanges?.length!==4||check.valueRanges.slice(1).some(r=>r.values?.some(row=>row.some(v=>String(v)!==''))))throw Error('No se confirmó la preparación completa. La copia queda pendiente; usa Continuar preparación.');
+      await this.#request('https://www.googleapis.com/drive/v3/files/'+target.id+'?fields=id,appProperties',{method:'PATCH',body:JSON.stringify({appProperties:{...marker,evaMesaState:'ready'}})});
+      this.#mesaIds.add(target.id);
+      await onCreated({id:target.id,title:target.name,state:'ready'});
+      return this.read(target.id);
+    }
     async #request(url, options = {}) {
       if (!this.signedIn()) {this.clearSession();throw new Error('La sesión de Google venció. Vuelve a conectar; los borradores locales se conservan.');}
       let response;
@@ -155,7 +230,7 @@ const MesaSheets = (() => {
       return response.json();
     }
     async read(id) {
-      this.checkId(id);
+      await this.checkId(id);
       const [file,values]=await Promise.all([
         this.#request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,mimeType,capabilities(canEdit)'),
         this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(id)+'/values/'+encodeURIComponent("'CONFIG'!A1:B500")+'?valueRenderOption=UNFORMATTED_VALUE')
@@ -165,12 +240,12 @@ const MesaSheets = (() => {
       return {...parsed,id,title:file.name,canEdit:file.capabilities?.canEdit === true};
     }
     async catalog(id) {
-      this.checkId(id);
+      await this.checkId(id);
       const values=await this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(id)+'/values/'+encodeURIComponent("'EXPERIENCIAS'!A1:Z1000")+'?valueRenderOption=UNFORMATTED_VALUE');
       return readCatalog(values.values || []);
     }
     async catalogState(id) {
-      this.checkId(id);
+      await this.checkId(id);
       const [file,meta,values]=await Promise.all([
         this.#request('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?fields=id,name,mimeType,capabilities(canEdit)'),
         this.#request('https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(id)+'?fields=sheets(properties(title,gridProperties))'),
@@ -182,7 +257,7 @@ const MesaSheets = (() => {
       return {...CATALOG.parse(values.values||[],grid.rowCount),id,title:file.name,canEdit:file.capabilities?.canEdit===true};
     }
     async saveExperience(snapshot,input) {
-      this.checkId(snapshot.id);
+      await this.checkId(snapshot.id);
       if(!snapshot.canEdit)throw Error('Tu cuenta solo tiene acceso de lectura.');
       const planned=CATALOG.plan(snapshot,input,safeImage);
       if(!planned.changes.length)return snapshot;
@@ -196,7 +271,7 @@ const MesaSheets = (() => {
       return verified;
     }
     async save(snapshot, config) {
-      this.checkId(snapshot.id);
+      await this.checkId(snapshot.id);
       const changes=planWrite(snapshot,config);
       if (!changes.length) return snapshot;
       if (!snapshot.canEdit) throw new Error('Tu cuenta solo tiene acceso de lectura a esta hoja.');
@@ -215,6 +290,6 @@ const MesaSheets = (() => {
     loading=Promise.all([script('https://accounts.google.com/gsi/client'),script('https://apis.google.com/js/api.js')]).then(() => new Promise((resolve,reject) => globalThis.gapi.load('picker',{callback:resolve,onerror:() => reject(new Error('No se pudo cargar el selector de Google.')),timeout:15000,ontimeout:() => reject(new Error('El selector de Google tardó demasiado.'))}))).catch(error => {loading=undefined;throw error;});
     return loading;
   }
-  return {SCOPE,KEYS,Client,readConfig,planWrite,readCatalog,driveImage,safeImage,loadGoogle};
+  return {SCOPE,KEYS,Client,readConfig,planWrite,readCatalog,driveImage,safeImage,cleanMesaRequests,validateConfig:validate,loadGoogle};
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports=MesaSheets;

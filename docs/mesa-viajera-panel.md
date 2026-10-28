@@ -9,7 +9,8 @@ El editor publicado incorpora `mesa-viajera-panel.html` a Recursos internos. Se 
 3. En Datos, completar ¿Quiénes celebran?, nombre de mesa y prefijo; añadir fecha si está confirmada.
 4. En Diseño, elegir cinco colores y cuatro tipografías. La vista previa usa esos valores.
 5. En Certificado, editar título y frase; revisar la vista de ejemplo. La maquetación del PDF real se valida por separado en Apps Script.
-6. Descargar el borrador JSON como respaldo. Cargar un borrador lo agrega como un registro independiente; no sustituye otro.
+6. Pulsar Crear mesa en Sheets para preparar su copia independiente con el diseño actual y continuar a Experiencias. Si ya está conectada, usar Revisar cambios y guardar.
+7. Descargar el borrador JSON como respaldo. Cargar un borrador lo agrega como un registro independiente; no sustituye otro ni arrastra su vínculo a Sheets.
 
 El guardado automático existe solamente en el navegador y origen actuales. No se comparte entre equipos ni con Sheets. No guarda bancos, credenciales, pagos ni transacciones. El borrado de datos del navegador elimina sus copias locales. Si el navegador impide guardar o se alcanza su cuota, la interfaz informa que se debe descargar el respaldo.
 
@@ -67,7 +68,7 @@ Recorrido actual:
 5. El editor escribe únicamente las celdas B de las claves de personalización existentes, con `valueInputOption=RAW`. No inserta claves, no limpia rangos y no modifica pagos, bancos, catálogo ni operaciones.
 6. Volver a leer la hoja y comparar el resultado antes de mostrar Guardado verificado. Si la hoja cambia después de la lectura usada para revisión, se detiene el guardado. Esta comparación previa no es un bloqueo transaccional; durante el piloto debe editar una sola persona cada mesa.
 
-Los tokens se conservan únicamente en memoria durante la sesión. No se guardan en localStorage, JSON, URLs ni el repositorio. Desconectar sesión elimina la copia del token en el editor; no revoca el consentimiento de Google. Recargar o caducar la sesión exige volver a conectar. Cambiar o duplicar el borrador limpia el vínculo con la hoja para evitar guardar sobre el cliente anterior.
+Los tokens se conservan únicamente en memoria durante la sesión. No se guardan en localStorage, JSON, URLs ni el repositorio. Desconectar sesión elimina la copia del token en el editor; no revoca el consentimiento de Google. Recargar o caducar la sesión exige volver a conectar. Cambiar el borrador suspende la conexión activa y conserva la referencia a su propia hoja para reconectarla. Duplicar diseño no copia esa referencia; evita guardar sobre el cliente anterior.
 
 El catálogo se lee de `EXPERIENCIAS!A1:Z1000`. La detección requiere ID, nombre y URL de imagen inequívocos. Si los encabezados reales no coinciden con los alias admitidos, se muestra un error y se debe ajustar el mapeo tras inspeccionarlos; no se adivinan columnas. El ID de experiencia es la referencia de la foto. Las imágenes deben estar disponibles como imágenes HTTPS cargables por el navegador; una página de vista de Drive no equivale necesariamente a una URL de imagen.
 
@@ -100,7 +101,7 @@ El panel admite Cormorant Garamond para los cuatro campos de tipografía. Al lee
 
 En Recursos internos → Mesa Viajera, pulsar **Abrir mesa**. Google solicita la cuenta solo si hace falta. Elegir la hoja autorizada carga automáticamente CONFIG y la vista previa; ya no hay un segundo paso obligatorio de carga. El acceso de Google se prepara al entrar, sin autorizar ni leer archivos hasta la acción del usuario. La apertura conserva el borrador anterior y crea uno independiente para la hoja elegida. Cancelar o fallar la lectura no reemplaza el trabajo anterior. La fecha local no se copia a otra mesa.
 
-**Actualizar datos** es una acción opcional para releer una mesa ya abierta; muestra las diferencias antes de reemplazar la personalización local. **Revisar cambios y guardar** mantiene la revisión del destino y la lectura posterior al guardado. Abrir no publica ni activa pagos. Durante el piloto solo está habilitada la copia de desarrollo.
+**Actualizar datos** es una acción opcional para releer una mesa ya abierta; muestra las diferencias antes de reemplazar la personalización local. **Revisar cambios y guardar** mantiene la revisión del destino y la lectura posterior al guardado. Abrir no publica ni activa pagos. Se pueden abrir la plantilla de desarrollo y las mesas creadas desde este panel.
 
 ## Recorrido por responsable
 
@@ -109,7 +110,7 @@ En Recursos internos → Mesa Viajera, pulsar **Abrir mesa**. Google solicita la
 - **Rodrigo — Desarrollo y dineros:** configuración técnica, accesos, medios de pago, precios, descuentos y plataformas autorizadas. Experiencias reales con aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.
 - **Omar — Apoyo:** captura y seguimiento asignados, utilizando el instructivo sin editar código.
 
-El titular confirmó en su navegador carga real y guardado en Sheets, comprobando la celda directamente. Cormorant Garamond es compatible. El nuevo flujo unificado requiere aún una comprobación real del titular. Las secciones Personalización y Experiencias ya están disponibles. Los permisos por rol, la duplicación de hojas, los pagos y la publicación de mesas siguen pendientes; estas responsabilidades describen la operación acordada y no permisos ya implementados.
+El titular confirmó en su navegador carga real y guardado en Sheets, comprobando la celda directamente. Cormorant Garamond es compatible. El nuevo flujo unificado requiere aún una comprobación real del titular. Las secciones Personalización y Experiencias ya están disponibles. Los permisos por rol, los pagos y la publicación de mesas siguen pendientes; estas responsabilidades describen la operación acordada y no permisos ya implementados.
 
 ## Experiencias desde el panel
 
@@ -119,12 +120,12 @@ Se inspeccionaron en la copia real los encabezados: ID, EXPERIENCIA, DESCRIPCION
 
 El adaptador detecta por encabezados ID, nombre, descripción, imagen y estado, y consulta precio y moneda. Nunca escribe precios, metas, monedas, tipos, categorías, orden, destino, vínculos de pago ni movimientos. En ediciones conserva ID y estado existentes. En altas solo crea ID, nombre, descripción, imagen y BORRADOR; no duplica otras columnas ni habilita venta. La descripción se deshabilita si no existe una columna inequívoca. Los encabezados ambiguos detienen la edición.
 
-Antes de guardar muestra la hoja y diferencias. Escribe celdas puntuales con RAW, rechaza campos que contienen fórmulas, relee la firma del catálogo y comprueba el resultado posterior. No hay borrado de experiencias, para conservar las referencias de regalos existentes. El catálogo se limita al piloto de hasta 1000 filas y 26 columnas leídas. Solo se habilita la copia de desarrollo.
+Antes de guardar muestra la hoja y diferencias. Escribe celdas puntuales con RAW, rechaza campos que contienen fórmulas, relee la firma del catálogo y comprueba el resultado posterior. No hay borrado de experiencias, para conservar las referencias de regalos existentes. El catálogo se limita al piloto de hasta 1000 filas y 26 columnas leídas. Se habilitan la plantilla de desarrollo y las mesas creadas por el panel, identificadas mediante su marca privada y permisos de Drive.
 
 Pruebas: alta y edición, búsqueda, foto cargada y faltante, revisión de cambios y traslado al selector del certificado en navegador con datos simulados. Pruebas de API simulada verificaron columnas reordenadas, precios/pagos/fórmulas intactos, IDs conservados, BORRADOR en altas, conflictos, solo lectura y lectura posterior. La lectura y el guardado del catálogo desde una sesión real quedan pendientes de comprobación. La apertura automática de CONFIG ya fue confirmada por el titular.
 
 Recorrido de Roberto:
-1. Abrir mesa y elegir la copia de desarrollo; entrar en Experiencias.
+1. Abrir la mesa correspondiente, o crear su hoja desde el borrador y pulsar Continuar a Experiencias.
 2. Agregar experiencia o buscar una existente y pulsar Editar.
 3. Capturar nombre y descripción. Pulsar Seleccionar foto de Drive, elegir una imagen JPG/PNG/WebP y comprobar la vista previa. También se puede pegar su enlace; si falta autorización por archivo, volver a seleccionarla con el botón de Drive.
 4. Pulsar Revisar y guardar experiencia, comprobar hoja y diferencias, confirmar Guardar experiencia.
@@ -154,3 +155,20 @@ Verificación de este bloque: pruebas automatizadas con API/Picker simulados par
 ### Error 404 al guardar una foto
 
 El titular reportó HTTP 404 al guardar una experiencia. No se conoce todavía la solicitud concreta que falló. Una foto pública puede verse en el navegador sin que el panel tenga autorización drive.file para consultar su metadata. La lectura de fotos ahora diferencia 403/404 y pide seleccionar el archivo mediante Picker con la cuenta de la mesa. Si el error es de la hoja, mantiene un mensaje separado y recomienda actualizar el catálogo antes de repetir un guardado no confirmado. No se amplían scopes ni permisos. Pruebas simuladas reproducen 403/404 de fotos y 404 de hoja; el caso real requiere nueva comprobación del titular.
+
+
+## Crear una mesa desde un borrador personalizado
+
+El bloque Guardar mesa está visible en Personalización aunque no exista una hoja conectada. Nueva mesa y Duplicar diseño conservan su funcionamiento local; al terminar datos, colores, fuentes y certificado, usar Crear mesa en Sheets. El botón confirma el nombre y la celebración, conecta Google si hace falta y solicita seleccionar la plantilla únicamente cuando falta acceso por archivo. No reemplaza el diseño por los valores de la plantilla.
+
+La fuente es el primer ID de plantilla configurado, actualmente Mesa Viajera Maestra V2 - Desarrollo (19nLAPkUkRIyAbTRkvu1GdFvCPOHGdjc2o6FG574jlzk). Se verificaron en lectura de la hoja real las pestañas EXPERIENCIAS, REGALOS, TRANSACCIONES, PANEL_CAMPOS y CONFIG; CONFIG tiene encabezado CLAVE y 42 claves. Se lee exclusivamente su columna de claves para construir el reinicio; no se leen sus valores bancarios para reutilizarlos.
+
+Drive files.copy crea una copia en Mi unidad con marca privada evaMesa=mesa-viajera-v2, evaMesaDraft=ID del borrador y estado preparing. El original no se escribe. La copia conserva formato, encabezados y código vinculado. Antes de habilitarla, Sheets batchUpdate reinicia todas las celdas de CONFIG con las claves originales, los 15 valores de personalización actuales, los tres flags de pago en NO y MODO_PAGO=ONLINE; los demás valores quedan vacíos. Se borran valores y notas de todas las filas desde la 2 en EXPERIENCIAS, REGALOS y TRANSACCIONES, incluyendo todas sus columnas. PANEL_CAMPOS se conserva como diccionario. No se admiten pestañas inesperadas para evitar copiar tablas desconocidas sin revisión.
+
+Se verifica por lectura CONFIG, los flags NO y el rango completo de datos de las tres tablas vacías. Solo después se marca ready y se conecta la hoja al borrador. Si hay un fallo tras crear la copia, su referencia se conserva y Continuar preparación reutiliza esa copia. Si la respuesta de creación se pierde, se busca por la marca del borrador antes de duplicar; si no se confirma su existencia, se detiene la nueva copia automática. Las respuestas 4xx explícitas permiten reintentar tras corregir permisos. Una marca de otro borrador o una copia ambigua se rechaza.
+
+El diseño y la referencia de la hoja se guardan en el navegador, sin credenciales. Exportar JSON lleva solo diseño y fecha; importar o duplicar no arrastra el vínculo a otra mesa. Después de recargar, Conectar esta mesa vuelve a abrir el destino sin crear otro y conserva los cambios locales pendientes. Desde otro navegador se puede usar Abrir mesa y elegir el archivo con Picker: la marca privada permite admitirlo sin editar la lista pública de IDs. Esta marca no sustituye la autorización ni los permisos de Drive; no hay roles comerciales de servidor todavía.
+
+Al terminar aparece el enlace de la nueva hoja, Revisar cambios y guardar, Actualizar datos y Continuar a Experiencias. Esta última acción abre el catálogo vacío y permite preparar las fotos y descripciones de la siguiente etapa. La fecha aún permanece local; el despliegue de Apps Script, los recursos propios de certificados/comprobantes, la configuración de precios y medios de pago y la publicación siguen pendientes. Crear la hoja no equivale a activar la mesa pública.
+
+Pruebas automatizadas con Google simulado: copia con destino independiente, limpieza de CONFIG y tablas completas, exclusión de datos financieros heredados, pagos NO, reapertura por marca, permisos por archivo, referencias del navegador sin secretos, cancelación, copia pendiente, respuesta perdida, verificación fallida y prevención de duplicados. Prueba de navegador con fixture rotulado: datos y color conservados al cancelar y crear, referencia recuperada tras recarga y paso directo a Experiencias. No se creó una mesa real durante estas pruebas; la creación real queda pendiente de comprobación con el titular.

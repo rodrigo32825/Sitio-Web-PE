@@ -10,11 +10,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=catalog-1">
+  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=create-1">
   <script defer src="./js/mesa-viajera-google-config.js?v=2"></script>
   <script defer src="./js/mesa-viajera-catalog.js?v=drive-1"></script>
-  <script defer src="./js/mesa-viajera-sheets.js?v=drive-2"></script>
-  <script defer src="./js/mesa-viajera-panel.js?v=catalog-1"></script>
+  <script defer src="./js/mesa-viajera-sheets.js?v=create-1"></script>
+  <script defer src="./js/mesa-viajera-panel.js?v=create-1"></script>
 </head>
 <body>
   <a class="skip" href="#editor">Ir al editor</a>
@@ -38,8 +38,11 @@
 
       <section id="sheet-link" class="sheet-link" hidden aria-label="Hoja conectada">
         <div><p class="eyebrow">HOJA SELECCIONADA</p><strong id="sheet-title"></strong><p id="sheet-link-note">Revisa la configuración de la hoja antes de guardar.</p></div>
-        <div id="personal-actions"><button id="load-sheets" class="secondary" type="button">Actualizar datos</button><button id="save-sheets" class="dark" type="button">Revisar cambios y guardar</button></div>
       </section>
+      <div id="personal-actions" class="sheet-link" aria-label="Guardar mesa">
+        <div><strong id="save-destination">Guarda esta mesa en tu Google Drive</strong><p id="save-destination-help">Tu diseño se conserva aquí. Crea su hoja independiente para continuar con experiencias.</p><a id="created-sheet-link" target="_blank" rel="noopener noreferrer" hidden>Ver hoja en Google Sheets ↗</a></div>
+        <div><button id="create-sheets" class="dark" type="button">Crear mesa en Sheets</button><button id="load-sheets" class="secondary" type="button" hidden>Actualizar datos</button><button id="save-sheets" class="dark" type="button" hidden>Revisar cambios y guardar</button><button id="continue-experiences" class="secondary" type="button" hidden>Continuar a Experiencias →</button></div>
+      </div>
       <div id="personalization-content">
       <div class="workbench">
         <section id="editor" class="editor" aria-label="Configuración de la mesa">

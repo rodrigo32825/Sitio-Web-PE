@@ -49,16 +49,22 @@ const MesaModel = (() => {
   }
   function exportDraft(draft) { return { type: 'eva.mesa-viajera.personalizacion', version: VERSION, fechaCelebracion: cleanDate(draft.fechaCelebracion), config: cleanConfig(draft.config) }; }
   function completeCount(config) { return [config.NOMBRES.trim(), config.NOMBRE_MESA.trim(), /^[A-Z0-9]{1,16}$/.test(config.PREFIJO_FOLIO)].filter(Boolean).length; }
+  function cleanSheetRef(ref){
+    if(!ref||!['preparing','ready','checking'].includes(ref.state))return undefined;
+    if(ref.state==='checking'&&!ref.id)return {id:'',state:'checking',title:''};
+    if(typeof ref.id!=='string'||!/^[-A-Za-z0-9]{20,150}$/.test(ref.id))return undefined;
+    return {id:ref.id,state:ref.state,title:cleanText(ref.title,200)};
+  }
   function restore(raw) {
     if (!raw || raw.version !== VERSION || !Array.isArray(raw.drafts)) return { drafts: [], activeId: null };
     const seen = new Set();
     const drafts = raw.drafts.slice(0, 100).filter(d => {
       if (!d || typeof d.id !== 'string' || !/^[A-Za-z0-9-]{1,80}$/.test(d.id) || seen.has(d.id)) return false;
       seen.add(d.id); return true;
-    }).map(d => ({ id: d.id, updatedAt: Number.isFinite(d.updatedAt) ? d.updatedAt : 0, fechaCelebracion: cleanDate(d.fechaCelebracion), config: cleanConfig(d.config) }));
+    }).map(d => ({ id: d.id, updatedAt: Number.isFinite(d.updatedAt) ? d.updatedAt : 0, fechaCelebracion: cleanDate(d.fechaCelebracion), config: cleanConfig(d.config),...(cleanSheetRef(d.sheetRef)?{sheetRef:cleanSheetRef(d.sheetRef)}:{}) }));
     return { drafts, activeId: drafts.some(d => d.id === raw.activeId) ? raw.activeId : drafts[0]?.id || null };
   }
-  return { VERSION, KEY, FONTS, COLORS, FONT_FIELDS, DEFAULTS, cleanConfig, newDraft, cloneDesign, importDraft, exportDraft, completeCount, restore };
+  return { VERSION, KEY, FONTS, COLORS, FONT_FIELDS, DEFAULTS, cleanConfig, newDraft, cloneDesign, importDraft, exportDraft, completeCount, restore,cleanSheetRef };
 })();
 
 if (typeof module !== 'undefined' && module.exports) module.exports = MesaModel;
@@ -125,7 +131,7 @@ if (typeof document !== 'undefined') (() => {
       button.classList.toggle('active', draft.id === state.activeId);
       button.setAttribute('aria-current', draft.id === state.activeId ? 'true' : 'false');
       const title = document.createElement('strong'); title.textContent = draft.config.NOMBRE_MESA.trim() || draft.config.NOMBRES.trim() || 'Nueva celebración';
-      const sub = document.createElement('small'); sub.textContent = M.completeCount(draft.config) + '/3 datos básicos · Borrador local';
+      const sub = document.createElement('small'); sub.textContent = M.completeCount(draft.config) + '/3 datos básicos · '+(draft.sheetRef?.state==='ready'?'Con hoja en Sheets':draft.sheetRef?'Preparación pendiente':'Borrador local');
       button.append(title, sub);
       button.addEventListener('click', () => { if (busy) return; persist(); state.activeId = draft.id; clearSheetLink(); setWorkspace('personalization'); renderForm(); persist(); });
       list.append(button);
@@ -261,7 +267,7 @@ if (typeof document !== 'undefined') (() => {
 
   function setBusy(value) {
     busy=value; form.inert=value;
-    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','nav-personalization','nav-experiences']) $(key).disabled=value;
+    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','create-sheets','continue-experiences','nav-personalization','nav-experiences']) $(key).disabled=value;
     if (!value && sheetSnapshot) $('save-sheets').disabled=!sheetSnapshot.canEdit;
     renderList();
   }
@@ -290,7 +296,17 @@ if (typeof document !== 'undefined') (() => {
     $('sheets-help').textContent=sheets.ready() ? 'Abre una mesa para cargar sus datos y su diseño automáticamente.' : 'Falta la activación inicial de Google. Los borradores locales siguen disponibles.';
     $('connection-progress').textContent='Pendiente'; $('sheets-check').textContent='Pendiente de conectar y verificar.';
     $('disconnect-sheets').hidden=!sheets.signedIn();
+    describeDestination();
     setExampleExperience();
+  }
+  function describeDestination(){
+    const ref=active()?.sheetRef,linked=!!sheetSnapshot;
+    $('create-sheets').hidden=linked;$('load-sheets').hidden=!linked;$('save-sheets').hidden=!linked;$('continue-experiences').hidden=!linked;
+    $('create-sheets').textContent=ref?.state==='ready'?'Conectar esta mesa':ref?'Continuar preparación':'Crear mesa en Sheets';
+    $('save-destination').textContent=linked?'Mesa guardada en Google Sheets':ref?.state==='ready'?'Esta mesa ya tiene una hoja':ref?'Preparación pendiente en Google':'Guarda esta mesa en tu Google Drive';
+    $('save-destination-help').textContent=linked?'Usa Revisar cambios y guardar para enviar los ajustes de personalización. Continúa con las experiencias cuando termines.':ref?.state==='ready'?'Conéctala para guardar tus ajustes locales; no se creará otra hoja.':ref?'El panel buscará la copia de este intento y continuará su preparación, sin duplicarla.':'Se creará una copia independiente de la plantilla V2 con este diseño. Los pagos quedan desactivados.';
+    const link=$('created-sheet-link'),fileId=sheetSnapshot?.id||ref?.id;link.hidden=!fileId;
+    if(fileId)link.href='https://docs.google.com/spreadsheets/d/'+fileId+'/edit';else link.removeAttribute('href');
   }
   function showReview(title,message,changes,confirmText) {
     const dialog=$('sheets-dialog');
@@ -310,6 +326,7 @@ if (typeof document !== 'undefined') (() => {
     $('sheets-help').textContent='Datos y diseño cargados. Para abrir otra mesa, pulsa Abrir mesa. Los cambios se guardan en Sheets cuando los confirmas.';
     $('connection-progress').textContent='Hoja leída'; $('save-sheets').disabled=!snapshot.canEdit;
     $('disconnect-sheets').hidden=false;
+    describeDestination();
   }
   async function prepareGoogleAccess() {
     $('connect-sheets').disabled=true;
@@ -335,6 +352,7 @@ if (typeof document !== 'undefined') (() => {
       // Abrir la hoja crea un borrador independiente y conserva el trabajo anterior.
       if (!addDraft(M.newDraft(id(),now(),snapshot.config),true)) return;
       sheetSnapshot=snapshot; describeSheet(snapshot);
+      active().sheetRef={id:snapshot.id,title:snapshot.title,state:'ready'};persist();describeDestination();
       $('sheets-check').textContent='Datos y diseño cargados desde la mesa seleccionada.';
       announce('Mesa abierta: '+snapshot.title+'. Datos y diseño cargados; el borrador anterior se conserva.');
       await catalogEditor.load();
@@ -342,6 +360,41 @@ if (typeof document !== 'undefined') (() => {
     finally {setBusy(false);}
   });
   $('disconnect-sheets').addEventListener('click',() => {sheets.clearSession();clearSheetLink();announce('Sesión cerrada en este editor. Los borradores locales se conservan.');});
+  $('create-sheets').addEventListener('click',async()=>{
+    if(busy)return;
+    if(!sheets.ready()){announce('Rodrigo debe completar la activación de Google antes de crear la mesa.',true);return;}
+    if(!googleLoaded){await prepareGoogleAccess();return;}
+    const draft=active(),config={...draft.config};
+    try{MesaSheets.validateConfig(config);}catch(error){announce(error.message,true);return;}
+    if(!persist()){announce('Para crear la mesa necesitamos conservar su referencia en este navegador. Descarga el borrador y permite el almacenamiento local antes de continuar.',true);return;}setBusy(true);
+    try{
+      if(!sheets.signedIn())await sheets.authorize();
+      let snapshot;
+      if(draft.sheetRef?.state==='ready')snapshot=await sheets.read(draft.sheetRef.id);
+      else{
+        const accepted=await showReview(draft.sheetRef?'Continuar preparación de la mesa':'Crear mesa en Google Sheets','Se preparará una copia independiente de la plantilla V2 en Mi unidad con este diseño. Se limpian las experiencias, regalos, movimientos y datos de cobro heredados; los pagos quedan en NO. No se publica la mesa ni se despliega su Apps Script. La fecha permanece en este borrador.',[{key:'Mesa',before:'',after:config.NOMBRE_MESA},{key:'Celebración',before:'',after:config.NOMBRES}],draft.sheetRef?'Continuar preparación':'Crear mesa');
+        if(!accepted){announce('Creación cancelada. Tu diseño se conserva.');return;}
+        const create=()=>sheets.createMesa(draft.id,config,{pendingId:draft.sheetRef?.id||'',uncertain:draft.sheetRef?.state==='checking',onCreated:ref=>{draft.sheetRef=ref;describeDestination();if(!persist())throw Error('Google creó la copia, pero no pudimos guardar su referencia en este navegador. Conserva el enlace visible y no inicies otra creación.');}});
+        try{snapshot=await create();}
+        catch(error){
+          if(!error.templateAccess)throw error;
+          announce(error.message);
+          const template=await sheets.choose();
+          if(!template){announce('Selección cancelada. Tu diseño se conserva.');return;}
+          if(template.id!==window.EVA_MESA_GOOGLE.allowedSpreadsheetIds[0])throw Error('Para crear una mesa debes seleccionar Mesa Viajera Maestra V2 - Desarrollo como plantilla.');
+          snapshot=await create();
+        }
+      }
+      draft.sheetRef={id:snapshot.id,title:snapshot.title,state:'ready'};sheetSnapshot=snapshot;describeSheet(snapshot);persist();renderList();
+      $('connection-progress').textContent='Mesa creada y verificada';$('sheets-check').textContent='Hoja independiente preparada. Catálogo y pagos pendientes.';
+      announce('Mesa lista en Sheets: '+snapshot.title+'. Tu diseño se conserva. Ya puedes continuar a Experiencias. La mesa sigue sin publicar.');
+      await catalogEditor.load();
+    }catch(error){
+      if(error.creationUncertain){draft.sheetRef={id:'',title:'',state:'checking'};persist();}
+      describeDestination();announce(error.message,true);
+    }finally{setBusy(false);}
+  });
+  $('continue-experiences').addEventListener('click',()=>{if(!busy&&sheetSnapshot)setWorkspace('experiences')});
   $('load-sheets').addEventListener('click',async () => {
     if (!sheetSnapshot || busy) return;
     setBusy(true); persist();
