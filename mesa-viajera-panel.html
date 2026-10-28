@@ -10,47 +10,57 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=payments-1">
+  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=order-1">
   <script defer src="./js/mesa-viajera-google-config.js?v=2"></script>
   <script defer src="./js/mesa-viajera-catalog.js?v=drive-1"></script>
   <script defer src="./js/mesa-viajera-payments.js?v=1"></script>
-  <script defer src="./js/mesa-viajera-sheets.js?v=payments-1"></script>
-  <script defer src="./js/mesa-viajera-panel.js?v=payments-1"></script>
+  <script defer src="./js/mesa-viajera-sheets.js?v=order-1"></script>
+  <script defer src="./js/mesa-viajera-panel.js?v=order-1"></script>
 </head>
 <body>
   <a class="skip" href="#editor">Ir al editor</a>
   <header class="topbar"><a href="./recursos-internos.html">← Recursos internos</a><span>PROYECTO EVA <b>/</b> MESA VIAJERA</span><span class="version">EDITOR · V1</span></header>
   <main class="shell">
-    <aside class="sidebar" aria-label="Borradores de mesas">
+    <aside class="sidebar" aria-label="Selector de mesas">
       <div class="brand"><span class="brand-icon" aria-hidden="true">✧</span><div>Mesa Viajera<small>CADA HISTORIA, SU VIAJE</small></div></div>
-      <nav class="mesa-menu" aria-label="Secciones de la mesa"><button id="nav-personalization" type="button" aria-pressed="true">Personalización</button><button id="nav-experiences" type="button" aria-pressed="false">Experiencias</button><button id="nav-payments" type="button" aria-pressed="false">Pagos</button></nav>
-      <p class="sidebar-caption">TU ESPACIO DE TRABAJO</p>
-      <button id="new-table" class="primary">＋ Nueva mesa</button>
+      <p class="sidebar-caption">MIS MESAS</p>
+      <details class="mesa-actions" id="mesa-actions"><summary>＋ Crear o abrir mesa</summary><div>
+        <button id="new-table" class="primary" type="button">Nueva mesa · borrador</button>
+        <button id="open-existing" class="secondary" type="button">Abrir mesa de Sheets</button>
+        <button id="duplicate" class="secondary" type="button">Duplicar diseño actual</button>
+        <details class="backup-actions"><summary>Respaldos JSON</summary><button id="download" class="secondary" type="button">Descargar diseño (.json)</button><label class="import-button">Importar diseño (.json)<input id="import-draft" type="file" accept=".json,application/json"></label><p class="storage-note">El JSON contiene el diseño. No incluye experiencias ni datos de pagos y no crea una hoja.</p></details>
+      </div></details>
+      <label class="mesa-search">Buscar mesa<input id="mesa-search" type="search" placeholder="Nombre de la celebración"></label>
+      <label class="mesa-filter">Mostrar<select id="mesa-filter"><option value="all">Todas las mesas</option><option value="draft">Borradores</option><option value="live">Productivas · clasificación manual</option><option value="sheets">Con referencia a Sheets</option><option value="local">Sin Sheets</option></select></label>
+      <p id="mesa-count" class="storage-note"></p>
       <div id="draft-list" class="draft-list"></div>
-      <label class="import-button">↑ Cargar un borrador<input id="import-draft" type="file" accept=".json,application/json"></label>
-      <p class="storage-note">Los borradores se guardan en este navegador. Descarga un respaldo para abrirlos en otro equipo.</p>
+      <details class="sidebar-legend"><summary>¿Qué significa cada estado?</summary><p><b>Borrador:</b> mesa en preparación. La tarjeta indica si tiene referencia a Sheets o solo diseño local.</p><p><b>Con Sheets:</b> existe una referencia a una hoja; su publicación aún no está verificada.</p><p><b>Productiva:</b> etiqueta que asignas para organizarte; no activa pagos ni publica la mesa. La publicación debe verificarse por separado.</p></details>
       <div class="connection"><span class="dot"></span><strong id="sheets-state">Ninguna mesa abierta</strong><p id="sheets-help">Abre una mesa para cargar sus datos, colores y tipografías.</p><button id="connect-sheets" class="connect-button" type="button">Abrir mesa</button><button id="disconnect-sheets" class="connect-button" type="button" hidden>Desconectar sesión</button></div>
     </aside>
 
     <section class="workspace">
-      <div class="page-heading"><div><p class="eyebrow">DE UNA IDEA A UNA CELEBRACIÓN</p><h1 id="workspace-title">Una mesa.<br><em>Toda su personalidad.</em></h1></div><div class="heading-actions"><button id="duplicate" class="secondary">Duplicar diseño</button><button id="download" class="dark">Descargar borrador ↓</button></div></div>
+      <div class="page-heading"><div><p class="eyebrow">CONFIGURACIÓN PASO A PASO</p><h1 id="workspace-title">Datos de la celebración</h1><p id="active-mesa-name" class="active-mesa-name"></p></div><span id="active-mesa-state" class="mesa-badge">Borrador</span></div>
+      <nav class="setup-steps" aria-label="Pasos para preparar la mesa">
+        <button id="nav-personalization" type="button" aria-pressed="true"><span>01</span><strong>Datos</strong><small>Quiénes celebran</small></button>
+        <button id="nav-design" type="button" aria-pressed="false"><span>02</span><strong>Diseño</strong><small>Colores y certificado</small></button>
+        <button id="nav-experiences" type="button" aria-pressed="false"><span>03</span><strong>Experiencias</strong><small>Lista y fotografías</small></button>
+        <button id="nav-payments" type="button" aria-pressed="false"><span>04</span><strong>Pagos</strong><small>Datos de cobro</small></button>
+        <button id="nav-connection" type="button" aria-pressed="false"><span>05</span><strong>Conexión</strong><small>Enlace y publicación</small></button>
+      </nav>
+      <details class="classification"><summary>Clasificación de la mesa</summary><label>Estado de trabajo<select id="mesa-work-status"><option value="draft">Borrador</option><option value="productive">Productiva</option></select></label><p>Solo organiza esta lista en este navegador. No publica la mesa ni modifica Sheets o los pagos. Para marcar Productiva debe haber una referencia a su hoja; verifica su operación antes de clasificarla.</p></details>
       <div id="status" role="status" class="status">Preparando editor…</div>
-      <div class="progress-strip" id="personal-progress"><div><span>01</span><strong>Personalización</strong><small id="progress-count">0 de 3 datos básicos</small></div><div><span>02</span><strong>Mesa seleccionada</strong><small id="connection-progress">Pendiente</small></div><div><span>03</span><strong>Revisión y publicación</strong><small>Pendiente</small></div></div>
+      <div id="personal-progress" class="compact-progress"><span id="progress-count">0 de 3 datos básicos</span><span id="connection-progress">Pendiente</span></div>
 
       <section id="sheet-link" class="sheet-link" hidden aria-label="Hoja conectada">
         <div><p class="eyebrow">HOJA SELECCIONADA</p><strong id="sheet-title"></strong><p id="sheet-link-note">Revisa la configuración de la hoja antes de guardar.</p></div>
       </section>
-      <div id="personal-actions" class="sheet-link" aria-label="Guardar mesa">
-        <div><strong id="save-destination">Guarda esta mesa en tu Google Drive</strong><p id="save-destination-help">Tu diseño se conserva aquí. Crea su hoja independiente para continuar con experiencias.</p><a id="created-sheet-link" target="_blank" rel="noopener noreferrer" hidden>Ver hoja en Google Sheets ↗</a></div>
-        <div><button id="create-sheets" class="dark" type="button">Crear mesa en Sheets</button><button id="load-sheets" class="secondary" type="button" hidden>Actualizar datos</button><button id="save-sheets" class="dark" type="button" hidden>Revisar cambios y guardar</button><button id="continue-experiences" class="secondary" type="button" hidden>Continuar a Experiencias →</button></div>
-      </div>
       <div id="personalization-content">
       <div class="workbench">
         <section id="editor" class="editor" aria-label="Configuración de la mesa">
-          <div class="tabs" role="tablist" aria-label="Secciones de configuración">
-            <button role="tab" aria-selected="true" aria-controls="panel-data" id="tab-data" data-section="data">01 Datos</button>
-            <button role="tab" aria-selected="false" aria-controls="panel-style" id="tab-style" data-section="style" tabindex="-1">02 Diseño</button>
-            <button role="tab" aria-selected="false" aria-controls="panel-certificate" id="tab-certificate" data-section="certificate" tabindex="-1">03 Certificado</button>
+          <div class="tabs" role="tablist" aria-label="Detalles del diseño">
+            <button role="tab" aria-selected="true" aria-controls="panel-data" id="tab-data" data-section="data" hidden>Datos</button>
+            <button role="tab" aria-selected="false" aria-controls="panel-style" id="tab-style" data-section="style" tabindex="-1">Colores y tipografías</button>
+            <button role="tab" aria-selected="false" aria-controls="panel-certificate" id="tab-certificate" data-section="certificate" tabindex="-1">Certificado</button>
           </div>
           <form id="table-form">
             <div role="tabpanel" id="panel-data" aria-labelledby="tab-data" class="form-panel">
@@ -58,7 +68,7 @@
               <label>Nombres de la celebración<input name="NOMBRES" maxlength="100" placeholder="Alex y Dani" autocomplete="off" required></label>
               <label>Nombre de la mesa<input name="NOMBRE_MESA" maxlength="120" placeholder="Mesa de Alex y Dani" autocomplete="off" required></label>
               <div class="field-grid"><label>Fecha de la celebración<input name="fechaCelebracion" type="date"></label><label>Prefijo de folios<input name="PREFIJO_FOLIO" maxlength="16" pattern="[A-Za-z0-9]{1,16}" placeholder="AD" autocomplete="off" required><small>Entre 1 y 16 letras o números.</small></label></div>
-              <div class="tip"><span aria-hidden="true">↳</span><p><strong>Un diseño reutilizable.</strong> Duplica la mesa para conservar colores y tipografías. Los nombres, la fecha y el prefijo se limpian para el siguiente cliente.</p></div>
+              <p class="help">Se guarda automáticamente como borrador en este navegador. Al terminar el diseño podrás guardarlo en Sheets.</p>
               <button type="button" class="next-step" data-next="style">Elegir colores y tipografías →</button>
             </div>
             <div role="tabpanel" id="panel-style" aria-labelledby="tab-style" class="form-panel" hidden>
@@ -75,7 +85,7 @@
               <label>Experiencia para la vista previa<select id="preview-experience"><option value="">Experiencia de ejemplo</option></select></label>
               <p id="photo-source" class="help">La foto de ejemplo pertenece a esta experiencia. Al conectar el catálogo podrás revisar la foto de cada regalo. La foto no se guarda como un fondo general de la boda.</p>
               <div class="tip"><span aria-hidden="true">✧</span><p>En cada certificado real debe aparecer la foto de la experiencia comprada. Si falta o no carga, Roberto deberá corregirla antes de emitirlo. El regalo, quien regala, el mensaje y el folio de esta vista son de ejemplo.</p></div>
-              <button type="button" class="next-step" data-preview="certificate">Ver certificado de ejemplo →</button>
+              <button type="button" class="next-step" data-preview="certificate">Ver certificado de ejemplo</button><button type="button" class="next-step" data-workspace="experiences">Continuar a Experiencias →</button>
             </div>
           </form>
         </section>
@@ -90,18 +100,25 @@
           <div class="checklist"><div><p class="eyebrow">ANTES DE ACTIVAR</p><h2>El siguiente paso, claro.</h2></div><ul><li><span id="identity-check">○</span><div><strong>Datos de la celebración</strong><small>Nombres, nombre de mesa y prefijo válidos.</small></div></li><li><span>○</span><div><strong>Guardar personalización en Sheets</strong><small id="sheets-check">Pendiente de conectar y verificar.</small></div></li><li><span>○</span><div><strong>Catálogo, precios y medios de pago</strong><small>Precios y excepciones autorizados por Rodrigo.</small></div></li><li><span>○</span><div><strong>Validar recorrido y publicar</strong><small>Revisar enlace, catálogo y certificado.</small></div></li></ul></div>
         </section>
       </div>
+      <div id="personal-actions" class="sheet-link" aria-label="Guardar mesa">
+        <div><strong id="save-destination">Guarda esta mesa en tu Google Drive</strong><p id="save-destination-help">Tu diseño se conserva aquí. Crea su hoja independiente para continuar con experiencias.</p><a id="created-sheet-link" target="_blank" rel="noopener noreferrer" hidden>Ver hoja en Google Sheets ↗</a></div>
+        <div><button id="create-sheets" class="dark" type="button">Crear mesa en Sheets</button><button id="load-sheets" class="secondary" type="button" hidden>Actualizar datos</button><button id="save-sheets" class="dark" type="button" hidden>Revisar cambios y guardar</button><button id="continue-experiences" class="secondary" type="button" hidden>Continuar a Experiencias →</button></div>
+      </div>
       <details class="team"><summary>¿Quién participa en la preparación?</summary><div><p><strong>Omar</strong> · Apoya con captura y seguimiento cuando se le asigne.</p><p><strong>Fer</strong> · Responsable comercial, negociación y asesoría de bodas.</p><p><strong>Roberto</strong> · Prepara la lista de experiencias, solicita las especificaciones y monta las fotos generadas con IA.</p><p><strong>Rodrigo</strong> · Desarrollo, configuración técnica y dineros. Autoriza precios, descuentos, plataformas y excepciones. Experiencias reales: aerolíneas directamente y Expedia TAAP; otros servicios requieren su autorización.</p></div></details>
       </div>
       <section id="catalog-panel" hidden aria-label="Catálogo de experiencias">
         <div class="catalog-heading"><div><p class="eyebrow">ROBERTO · FOTOS Y LISTA DE EXPERIENCIAS</p><h2>Catálogo y fotografías</h2><p id="catalog-current" class="help"></p></div><button id="catalog-add" class="dark" type="button" disabled>＋ Agregar experiencia</button></div>
+        <div class="source-guide"><h3>Una lista, dos formas de trabajar</h3><p><b>Desde aquí:</b> agrega experiencias y fotos; cada cambio se guarda en la hoja cuando lo confirmas.</p><p><b>Desde Sheets:</b> edita EXPERIENCIAS en esa misma hoja y pulsa <b>Actualizar catálogo</b>. Rodrigo configura PRECIO y MONEDA.</p><a id="catalog-sheet-link" target="_blank" rel="noopener noreferrer" hidden>Abrir EXPERIENCIAS en Sheets ↗</a><button class="secondary" type="button" data-workspace="design">Preparar o conectar la hoja →</button><details><summary>Columnas del layout de Sheets</summary><p class="layout-columns">ID · EXPERIENCIA · DESCRIPCION · PRECIO · META · MONEDA · IMAGEN · TIPO · ESTADO · CATEGORIA · ORDEN · DESTINO</p><p>No cambies el ID de una experiencia existente. La carga de archivos al catálogo todavía no está habilitada.</p></details></div>
         <p class="catalog-notice">Prepara nombres, descripciones y fotografías. Los precios se consultan desde la hoja; Rodrigo autoriza y configura los importes antes de ofrecerlos.</p>
         <div class="catalog-tools"><label>Buscar experiencia<input id="catalog-search" type="search" placeholder="Nombre o ID" maxlength="200"></label><button id="catalog-refresh" class="secondary" type="button">Actualizar catálogo</button></div>
         <p id="catalog-count" class="help"></p><p id="catalog-status" class="status" role="status"></p>
         <div id="catalog-list" class="catalog-list"></div>
+        <div class="step-footer"><button type="button" class="secondary" data-workspace="design">← Diseño</button><button type="button" class="dark" data-workspace="payments">Continuar a Pagos →</button></div>
       </section>
       <section id="payments-panel" hidden aria-label="Configuración de pagos">
         <div class="catalog-heading"><div><p class="eyebrow">RODRIGO · DESARROLLO Y DINEROS</p><h2>Configura los datos de cobro</h2><p id="payment-current" class="help"></p></div><button id="payment-refresh" class="secondary" type="button" disabled>Actualizar pagos</button></div>
-        <p class="catalog-notice">Prepara los destinatarios de esta boda. La conexión con Stripe, las comisiones, las pruebas y la activación se completan después; guardar estos datos mantiene los medios desactivados.</p>
+        <p class="catalog-notice">En la plantilla V2 conserva los destinatarios vacíos. Para cada boda se completan sus datos de cobro. Los medios siguen desactivados durante la preparación.</p>
+        <p class="help">La selección para activar o desactivar medios se incorporará al completar la conexión técnica. Esta limpieza conserva los estados actuales. Stripe es la opción de tarjetas; el campo de PayPal corresponde a PayPal.Me.</p>
         <p id="payment-flags" class="help"></p>
         <form id="payment-form" autocomplete="off"><fieldset id="payment-fields" disabled>
           <div id="payment-common" class="payment-common"></div>
@@ -112,6 +129,12 @@
           </div>
         </fieldset><p id="payment-status" role="status" class="status"></p><button id="payment-save" class="dark" type="submit" disabled>Revisar y guardar datos de cobro</button></form>
         <details class="team"><summary>Comisiones guardadas en la hoja</summary><p id="payment-fees" class="help"></p><p class="help">Solo consulta. La fórmula, las comisiones y su autorización se configurarán antes de activar cobros. Estos valores no confirman las tarifas de tu contrato con Stripe.</p></details>
+        <div class="step-footer"><button type="button" class="secondary" data-workspace="experiences">← Experiencias</button><button type="button" class="dark" data-workspace="connection">Continuar a Conexión →</button></div>
+      </section>
+      <section id="connection-panel" hidden aria-label="Conexión y publicación">
+        <p class="eyebrow">RODRIGO · CONEXIÓN FINAL</p><h2>El enlace de esta celebración</h2>
+        <div class="connection-summary"><span class="mesa-badge">Publicación pendiente de verificar</span><h3>Primero la mesa; después, el subdominio</h3><p id="publication-sheet-state"></p><ol><li>Completar datos, diseño y catálogo de esta mesa.</li><li>Concluir conexión de pagos y revisión de Rodrigo.</li><li>Al final, validar el recorrido y publicar la mesa.</li><li>Registrar el destino de alojamiento y configurar el subdominio en GoDaddy.</li></ol><p class="help">La hoja de Sheets es la fuente de datos. No es el enlace público para invitados. La generación del enlace y los datos DNS aún no están conectados a este panel; se mostrarán cuando estén disponibles.</p></div>
+        <div class="step-footer"><button type="button" class="secondary" data-workspace="payments">← Pagos</button></div>
       </section>
       <footer>Proyecto EVA · Mesa Viajera <span>Preparación de la mesa · Pagos y publicación pendientes</span></footer>
     </section>

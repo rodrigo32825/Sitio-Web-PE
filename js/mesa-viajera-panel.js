@@ -61,7 +61,7 @@ const MesaModel = (() => {
     const drafts = raw.drafts.slice(0, 100).filter(d => {
       if (!d || typeof d.id !== 'string' || !/^[A-Za-z0-9-]{1,80}$/.test(d.id) || seen.has(d.id)) return false;
       seen.add(d.id); return true;
-    }).map(d => ({ id: d.id, updatedAt: Number.isFinite(d.updatedAt) ? d.updatedAt : 0, fechaCelebracion: cleanDate(d.fechaCelebracion), config: cleanConfig(d.config),...(cleanSheetRef(d.sheetRef)?{sheetRef:cleanSheetRef(d.sheetRef)}:{}) }));
+    }).map(d => ({ id: d.id, updatedAt: Number.isFinite(d.updatedAt) ? d.updatedAt : 0, fechaCelebracion: cleanDate(d.fechaCelebracion), config: cleanConfig(d.config),...(d.workStatus==='productive'?{workStatus:'productive'}:{}),...(d.designOrigin==='json'?{designOrigin:'json'}:{}),...(cleanSheetRef(d.sheetRef)?{sheetRef:cleanSheetRef(d.sheetRef)}:{}) }));
     return { drafts, activeId: drafts.some(d => d.id === raw.activeId) ? raw.activeId : drafts[0]?.id || null };
   }
   return { VERSION, KEY, FONTS, COLORS, FONT_FIELDS, DEFAULTS, cleanConfig, newDraft, cloneDesign, importDraft, exportDraft, completeCount, restore,cleanSheetRef };
@@ -81,6 +81,7 @@ if (typeof document !== 'undefined') (() => {
   let paymentsEditor = null;
   let googleLoaded = false;
   let busy = false;
+  let currentStep = 'data';
   let state = { drafts: [], activeId: null };
   let previewMode = 'table';
   let saveTimer;
@@ -126,17 +127,29 @@ if (typeof document !== 'undefined') (() => {
   }
   function renderList() {
     const list = $('draft-list'); list.replaceChildren();
-    state.drafts.forEach(draft => {
+    const query=$('mesa-search').value.trim().toLocaleLowerCase('es'),filter=$('mesa-filter').value;
+    const visible=state.drafts.filter(draft=>{
+      const hasSheet=!!draft.sheetRef;
+      return (filter==='all'||filter==='draft'&&draft.workStatus!=='productive'||filter==='live'&&draft.workStatus==='productive'||filter==='local'&&!hasSheet||filter==='sheets'&&hasSheet) && (draft.config.NOMBRE_MESA+' '+draft.config.NOMBRES).toLocaleLowerCase('es').includes(query);
+    });
+    $('mesa-count').textContent=visible.length+' de '+state.drafts.length+' mesas en este navegador';
+    visible.forEach(draft => {
       const button = document.createElement('button'); button.type = 'button'; button.className = 'draft-button';
       button.disabled = busy;
       button.classList.toggle('active', draft.id === state.activeId);
       button.setAttribute('aria-current', draft.id === state.activeId ? 'true' : 'false');
       const title = document.createElement('strong'); title.textContent = draft.config.NOMBRE_MESA.trim() || draft.config.NOMBRES.trim() || 'Nueva celebración';
-      const sub = document.createElement('small'); sub.textContent = M.completeCount(draft.config) + '/3 datos básicos · '+(draft.sheetRef?.state==='ready'?'Con hoja en Sheets':draft.sheetRef?'Preparación pendiente':'Borrador local');
-      button.append(title, sub);
-      button.addEventListener('click', () => { if (busy) return; persist(); state.activeId = draft.id; clearSheetLink(); setWorkspace('personalization'); renderForm(); persist(); });
+      const badge=document.createElement('span');badge.className='mesa-badge';badge.textContent=draft.workStatus==='productive'?'Productiva · manual':'Borrador';
+      const sub = document.createElement('small'); sub.textContent = draft.sheetRef?.state==='ready'?'Hoja vinculada · publicación sin verificar':draft.sheetRef?'Copia en preparación · sin publicación verificada':'Solo en este navegador · sin Sheets';
+      if(draft.designOrigin==='json')sub.textContent+=' · diseño importado de JSON';
+      const date=document.createElement('small');date.textContent='Edición: '+new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short',year:'numeric'}).format(new Date(draft.updatedAt||Date.now()));
+      button.append(title,badge,sub,date);
+      button.addEventListener('click', () => { if (busy) return; persist(); state.activeId = draft.id; clearSheetLink(); setWorkspace('data'); renderForm(); persist(); });
       list.append(button);
     });
+    if(!visible.length){const empty=document.createElement('p');empty.className='storage-note';empty.textContent=filter==='live'?'No has clasificado mesas como productivas en este navegador. La clasificación se elige dentro de cada mesa.':'No hay mesas con este filtro.';list.append(empty);}
+    const draft=active();
+    if(draft){$('active-mesa-name').textContent=draft.config.NOMBRE_MESA||draft.config.NOMBRES||'Nueva celebración';$('active-mesa-state').textContent=(draft.workStatus==='productive'?'Productiva · manual':'Borrador')+(draft.sheetRef?' · con Sheets':' · sin Sheets');$('mesa-work-status').value=draft.workStatus==='productive'?'productive':'draft';$('mesa-work-status').querySelector('[value=productive]').disabled=draft.sheetRef?.state!=='ready';$('mesa-work-status').disabled=busy;}
   }
   function renderPreview() {
     const draft = active(), c = draft.config, surface = $('preview-surface');
@@ -170,6 +183,7 @@ if (typeof document !== 'undefined') (() => {
     $('view-certificate').setAttribute('aria-pressed', String(mode === 'certificate'));
   }
   function setSection(section, focus = false) {
+    if(section!=='data'&&currentStep!=='design')setWorkspace('design');
     document.querySelectorAll('[role=tab]').forEach(tab => {
       const selected = tab.dataset.section === section;
       tab.setAttribute('aria-selected', String(selected)); tab.tabIndex = selected ? 0 : -1;
@@ -218,7 +232,7 @@ if (typeof document !== 'undefined') (() => {
   document.querySelectorAll('[role=tab]').forEach(tab => {
     tab.addEventListener('click', () => setSection(tab.dataset.section));
     tab.addEventListener('keydown', event => {
-      const tabs = [...document.querySelectorAll('[role=tab]')]; let next;
+      const tabs = [...document.querySelectorAll('[role=tab]:not([hidden])')]; let next;
       if (event.key === 'ArrowRight') next = (tabs.indexOf(tab) + 1) % tabs.length;
       if (event.key === 'ArrowLeft') next = (tabs.indexOf(tab) + tabs.length - 1) % tabs.length;
       if (event.key === 'Home') next = 0;
@@ -259,7 +273,7 @@ if (typeof document !== 'undefined') (() => {
     if (!file) return;
     try {
       if (file.size > 100000) throw new Error('El borrador debe pesar menos de 100 KB.');
-      const draft = M.importDraft(JSON.parse(await file.text()), id(), now());
+      const draft = M.importDraft(JSON.parse(await file.text()), id(), now());draft.designOrigin='json';
       addDraft(draft);
     } catch (error) { announce(error instanceof SyntaxError ? 'El archivo no contiene JSON válido.' : error.message || 'No se pudo cargar el borrador.', true); }
     finally { event.target.value = ''; }
@@ -268,8 +282,9 @@ if (typeof document !== 'undefined') (() => {
 
   function setBusy(value) {
     busy=value; form.inert=value;
-    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','create-sheets','continue-experiences','nav-personalization','nav-experiences','nav-payments']) $(key).disabled=value;
+    for (const key of ['new-table','duplicate','download','import-draft','connect-sheets','disconnect-sheets','load-sheets','save-sheets','create-sheets','continue-experiences','nav-personalization','nav-design','nav-experiences','nav-payments','nav-connection','open-existing']) $(key).disabled=value;
     if (!value && sheetSnapshot) $('save-sheets').disabled=!sheetSnapshot.canEdit;
+    document.querySelectorAll('[data-workspace]').forEach(button=>button.disabled=value);
     renderList();
   }
   function setExampleExperience() {
@@ -309,6 +324,8 @@ if (typeof document !== 'undefined') (() => {
     $('save-destination-help').textContent=linked?'Usa Revisar cambios y guardar para enviar los ajustes de personalización. Continúa con las experiencias cuando termines.':ref?.state==='ready'?'Conéctala para guardar tus ajustes locales; no se creará otra hoja.':ref?'El panel buscará la copia de este intento y continuará su preparación, sin duplicarla.':'Se creará una copia independiente de la plantilla V2 con este diseño. Los pagos quedan desactivados.';
     const link=$('created-sheet-link'),fileId=sheetSnapshot?.id||ref?.id;link.hidden=!fileId;
     if(fileId)link.href='https://docs.google.com/spreadsheets/d/'+fileId+'/edit';else link.removeAttribute('href');
+    const catalogLink=$('catalog-sheet-link');catalogLink.hidden=!fileId;if(fileId)catalogLink.href='https://docs.google.com/spreadsheets/d/'+fileId+'/edit';else catalogLink.removeAttribute('href');
+    $('publication-sheet-state').textContent=fileId?'Esta mesa tiene una referencia a Sheets. El enlace público sigue pendiente de verificar.':'Este borrador aún no tiene una hoja vinculada. Completa Diseño y prepara o conecta su hoja.';
   }
   function showReview(title,message,changes,confirmText) {
     const dialog=$('sheets-dialog');
@@ -427,25 +444,31 @@ if (typeof document !== 'undefined') (() => {
     finally {setBusy(false);}
   });
   function setWorkspace(section) {
-    const experiences=section === 'experiences';
-    const payments=section==='payments',personal=!experiences&&!payments;
+    if(section==='personalization')section='data';
+    currentStep=section;
+    const experiences=section==='experiences',payments=section==='payments',connection=section==='connection',design=section==='design',personal=section==='data'||design;
     $('personalization-content').hidden=!personal;
     $('personal-progress').hidden=!personal;
-    $('personal-actions').hidden=!personal;
-    $('duplicate').hidden=!personal;
-    $('download').hidden=!personal;
+    $('personal-actions').hidden=!design;
     $('catalog-panel').hidden=!experiences;
     $('payments-panel').hidden=!payments;
-    $('workspace-title').textContent=experiences ? 'Experiencias de esta mesa' : payments?'Pagos de esta mesa':'Personalización de la mesa';
-    $('nav-personalization').setAttribute('aria-pressed',String(personal));
-    $('nav-experiences').setAttribute('aria-pressed',String(experiences));
-    $('nav-payments').setAttribute('aria-pressed',String(payments));
+    $('connection-panel').hidden=!connection;
+    document.querySelector('.tabs').hidden=!design;
+    $('workspace-title').textContent={data:'Datos de la celebración',design:'Diseño de la mesa',experiences:'Lista de experiencias',payments:'Configuración de pagos',connection:'Conexión y publicación'}[section];
+    const nav={data:'nav-personalization',design:'nav-design',experiences:'nav-experiences',payments:'nav-payments',connection:'nav-connection'};
+    for(const[step,key]of Object.entries(nav)){$(key).setAttribute('aria-pressed',String(step===section));if(step===section)$(key).setAttribute('aria-current','step');else $(key).removeAttribute('aria-current');}
+    if(personal)setSection(design?'style':'data');
+    if(section==='data')setPreview('table');
     if (experiences && catalogEditor?.source && !catalogEditor.snapshot && !catalogEditor.busy) void catalogEditor.load();
     if(payments&&paymentsEditor?.source&&!paymentsEditor.snapshot&&!paymentsEditor.busy)void paymentsEditor.load();
   }
-  $('nav-personalization').addEventListener('click',()=>{if(!busy)setWorkspace('personalization')});
-  $('nav-experiences').addEventListener('click',()=>{if(!busy)setWorkspace('experiences')});
-  $('nav-payments').addEventListener('click',()=>{if(!busy)setWorkspace('payments')});
+  for(const[nav,step]of [['nav-personalization','data'],['nav-design','design'],['nav-experiences','experiences'],['nav-payments','payments'],['nav-connection','connection']])$(nav).addEventListener('click',()=>{if(!busy)setWorkspace(step)});
+  document.querySelectorAll('[data-workspace]').forEach(button=>button.addEventListener('click',()=>{if(!busy)setWorkspace(button.dataset.workspace)}));
+  $('mesa-search').addEventListener('input',renderList);
+  $('mesa-filter').addEventListener('change',renderList);
+  $('mesa-work-status').addEventListener('change',()=>{if(busy)return;const draft=active();if($('mesa-work-status').value==='productive'&&draft.sheetRef?.state==='ready')draft.workStatus='productive';else delete draft.workStatus;persist();renderList();announce('Clasificación guardada en este navegador. La publicación, Sheets y los pagos conservan su configuración.');});
+  $('open-existing').addEventListener('click',()=>{if(!busy){$('mesa-actions').open=false;$('connect-sheets').click();}});
+  $('new-table').addEventListener('click',()=>{$('mesa-actions').open=false;});
   catalogEditor=new MesaCatalog.Editor({
     client:sheets,onBusy:setBusy,review:showReview,
     onUpdated(items) {
@@ -460,6 +483,7 @@ if (typeof document !== 'undefined') (() => {
   paymentsEditor=new MesaPayments.Editor({client:sheets,onBusy:setBusy,review:showReview});
   renderForm();
   clearSheetLink();
+  setWorkspace('data');
   if (sheets.ready()) void prepareGoogleAccess();
   // No sobrescribir un guardado ilegible hasta que el usuario haga un cambio.
   if (recoveryWarning) announce(recoveryWarning, true); else persist();
