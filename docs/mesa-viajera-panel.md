@@ -149,3 +149,8 @@ La vista previa debe cargar antes de guardar. Drive puede limitar la visualizaci
 El diálogo lateral se cierra temporalmente al abrir Picker para evitar que el modal nativo oculte el selector. Cancelar conserva foto y campos. Una imagen privada, incorrecta o en papelera no reemplaza la foto previa. La sesión vencida pide abrir de nuevo la mesa conservando antes los cambios pendientes.
 
 Verificación de este bloque: pruebas automatizadas con API/Picker simulados para formatos de enlace, claves de recurso, selección/cancelación, permisos privados/públicos, MIME, papelera y ausencia de mutaciones de Drive. La comprobación real con la foto del titular se registra por separado, sin presentar la simulación como un guardado real.
+
+
+### Error 404 al guardar una foto
+
+El titular reportó HTTP 404 al guardar una experiencia. No se conoce todavía la solicitud concreta que falló. Una foto pública puede verse en el navegador sin que el panel tenga autorización drive.file para consultar su metadata. La lectura de fotos ahora diferencia 403/404 y pide seleccionar el archivo mediante Picker con la cuenta de la mesa. Si el error es de la hoja, mantiene un mensaje separado y recomienda actualizar el catálogo antes de repetir un guardado no confirmado. No se amplían scopes ni permisos. Pruebas simuladas reproducen 403/404 de fotos y 404 de hoja; el caso real requiere nueva comprobación del titular.

@@ -12,14 +12,17 @@ for(const value of ['https://drive.google.com/drive/folders/'+id,'https://drive.
 assert.equal(S.safeImage('https://drive.google.com/drive/folders/'+id),'');
 assert.equal(S.safeImage(link+'?access_token=should-never-persist'),preview);
 const settings={clientId:'example.apps.googleusercontent.com',pickerApiKey:'test-key',projectNumber:'1234',allowedSpreadsheetIds:['development-sheet-identifier-0001']};
-let permissions=[{type:'anyone',role:'reader'}],mime='image/png',trashed=false,calls=[];
+let permissions=[{type:'anyone',role:'reader'}],mime='image/png',trashed=false,calls=[],failure=0;
 const client=new S.Client(settings,async(url,options)=>{
  calls.push({url,options});assert.equal(options.method,undefined);assert(!url.includes('access_token'));assert.equal(options.credentials,'omit');
+ if(failure)return {ok:false,status:failure};
  return {ok:true,status:200,json:async()=>({id,name:'Foto de prueba.png',mimeType:mime,trashed,resourceKey:'abc_123',permissions})};
 });
 client.acceptToken({access_token:'fixture-not-a-real-token',expires_in:3600},true);
 (async()=>{
  const file=await client.drivePhoto(link);assert.equal(file.name,'Foto de prueba.png');assert.equal(file.link,link+'?resourcekey=abc_123');
+ for(const code of [403,404]){failure=code;await assert.rejects(client.drivePhoto(link),/Seleccionar foto de Drive/);}
+ failure=404;await assert.rejects(client.read(settings.allowedSpreadsheetIds[0]),e=>e.status===404&&/cuenta/.test(e.message));failure=0;
  await client.drivePhoto(link+'?resourcekey=abc_123');assert.equal(calls.at(-1).options.headers['X-Goog-Drive-Resource-Keys'],id+'/abc_123');
  assert(calls.at(-1).options.headers.Authorization.startsWith('Bearer '));
  for(const p of [undefined,[],[{type:'user',role:'owner'}],[{type:'domain',role:'reader'}],[{type:'anyone',role:'reader',deleted:true}],[{type:'anyone',role:'reader',expirationTime:'2000-01-01T00:00:00Z'}]]){

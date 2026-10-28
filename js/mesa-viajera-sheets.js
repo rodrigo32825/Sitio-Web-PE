@@ -127,7 +127,12 @@ const MesaSheets = (() => {
     async drivePhoto(value) {
       const image=driveImage(value);
       if(!image)throw Error('Usa el enlace de un archivo de imagen de Drive, no el de una carpeta.');
-      const file=await this.#request('https://www.googleapis.com/drive/v3/files/'+image.id+'?supportsAllDrives=true&fields=id,name,mimeType,trashed,resourceKey,permissions(type,role,deleted,expirationTime)',{headers:image.resourceKey?{'X-Goog-Drive-Resource-Keys':image.id+'/'+image.resourceKey}:{}});
+      let file;
+      try{file=await this.#request('https://www.googleapis.com/drive/v3/files/'+image.id+'?supportsAllDrives=true&fields=id,name,mimeType,trashed,resourceKey,permissions(type,role,deleted,expirationTime)',{headers:image.resourceKey?{'X-Goog-Drive-Resource-Keys':image.id+'/'+image.resourceKey}:{}});}
+      catch(error){
+        if(error.status===404||error.status===403)throw Error('Google no permitió comprobar la foto de Drive. Puede verse en la vista previa y aun faltar autorización para el panel. Pulsa Seleccionar foto de Drive y elige el archivo con la misma cuenta de la mesa; después vuelve a guardar. Si ya lo seleccionaste, revisa que el archivo exista y siga accesible. No se guardó esta experiencia.');
+        throw error;
+      }
       if(file.trashed||!['image/jpeg','image/png','image/webp'].includes(file.mimeType))throw Error('Selecciona una imagen JPG, PNG o WebP que no esté en la papelera.');
       const visible=file.permissions?.some(p=>p.type==='anyone'&&!p.deleted&&['reader','commenter','writer'].includes(p.role)&&(!p.expirationTime||Date.parse(p.expirationTime)>Date.now()));
       if(!visible)throw Error('No se confirmó acceso para los invitados. En Drive abre Compartir → Acceso general → Cualquier persona con el enlace → Lector. Después vuelve a seleccionar la foto. El panel no cambia permisos.');
@@ -143,7 +148,10 @@ const MesaSheets = (() => {
       catch {throw new Error(options.method === 'POST' ? 'No se pudo confirmar el guardado. Vuelve a leer la hoja antes de intentar guardar otra vez.' : 'No se pudo leer Google Sheets. Revisa la conexión y vuelve a intentarlo.');}
       finally {clearTimeout(timeout);}
       if (response.status === 401) {this.clearSession();throw new Error('La sesión de Google venció. Vuelve a conectar.');}
-      if (!response.ok) throw new Error(response.status === 403 ? 'Google no permite esta operación. Si pegaste una foto, usa Seleccionar foto de Drive para autorizar ese archivo; para la hoja revisa sus permisos o la activación de la aplicación.' : 'Google no completó la operación (HTTP '+response.status+').');
+      if (!response.ok) {
+        const message=response.status===404?'Google no encontró la hoja o el archivo solicitado, o tu cuenta no tiene acceso (HTTP 404). Comprueba la cuenta y vuelve a abrir la mesa. Si ya confirmaste un guardado, actualiza el catálogo antes de repetirlo.':response.status===403?'Google no permite esta operación. Revisa los permisos del archivo o la activación de la aplicación.':'Google no completó la operación (HTTP '+response.status+').';
+        throw Object.assign(new Error(message),{status:response.status});
+      }
       return response.json();
     }
     async read(id) {
