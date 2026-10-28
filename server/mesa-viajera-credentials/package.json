@@ -1,0 +1,9 @@
+{
+  "name": "eva-mesa-viajera-credentials",
+  "private": true,
+  "type": "module",
+  "description": "Servicio privado de administración de credenciales. Sin procesamiento de pagos.",
+  "engines": {"node": ">=22"},
+  "scripts": {"start": "node start.mjs", "test": "node --test *.test.mjs"},
+  "dependencies": {"google-auth-library": "^10.0.0"}
+}

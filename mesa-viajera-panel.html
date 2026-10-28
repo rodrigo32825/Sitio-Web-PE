@@ -10,12 +10,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;600&family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600&family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=order-1">
+  <link rel="stylesheet" href="./css/mesa-viajera-panel.css?v=central-info-1">
   <script defer src="./js/mesa-viajera-google-config.js?v=2"></script>
   <script defer src="./js/mesa-viajera-catalog.js?v=drive-1"></script>
   <script defer src="./js/mesa-viajera-payments.js?v=1"></script>
-  <script defer src="./js/mesa-viajera-sheets.js?v=order-1"></script>
-  <script defer src="./js/mesa-viajera-panel.js?v=order-1"></script>
+  <script defer src="./js/mesa-viajera-sheets.js?v=central-info-1"></script>
+  <script defer src="./js/mesa-viajera-panel.js?v=central-info-1"></script>
 </head>
 <body>
   <a class="skip" href="#editor">Ir al editor</a>
@@ -118,13 +118,14 @@
       <section id="payments-panel" hidden aria-label="Configuración de pagos">
         <div class="catalog-heading"><div><p class="eyebrow">RODRIGO · DESARROLLO Y DINEROS</p><h2>Configura los datos de cobro</h2><p id="payment-current" class="help"></p></div><button id="payment-refresh" class="secondary" type="button" disabled>Actualizar pagos</button></div>
         <p class="catalog-notice">En la plantilla V2 conserva los destinatarios vacíos. Para cada boda se completan sus datos de cobro. Los medios siguen desactivados durante la preparación.</p>
-        <p class="help">La selección para activar o desactivar medios se incorporará al completar la conexión técnica. Esta limpieza conserva los estados actuales. Stripe es la opción de tarjetas; el campo de PayPal corresponde a PayPal.Me.</p>
+        <p class="help">La selección para activar o desactivar medios se incorporará al completar la conexión técnica. Los estados actuales se conservan. Los campos de abajo son datos por mesa, separados de las credenciales de EVA.</p>
+        <div class="source-guide"><p class="eyebrow">CONEXIÓN DE ESTUDIA VIAJA Y APRENDE</p><h3>Stripe y PayPal de EVA</h3><p>Las credenciales de los proveedores pertenecen a EVA y se administrarán una sola vez. Cada mesa conserva sus opciones y los datos de destino que correspondan.</p><span class="mesa-badge">Conexión central pendiente</span><p>El acceso privado de Rodrigo aún está en preparación. Aquí no se solicitan claves secretas. En Stripe, la cuenta conectada de la mesa es distinta de la cuenta de EVA. PayPal Checkout usa el ID y secreto de EVA; PayPal.Me es un enlace complementario.</p></div>
         <p id="payment-flags" class="help"></p>
         <form id="payment-form" autocomplete="off"><fieldset id="payment-fields" disabled>
           <div id="payment-common" class="payment-common"></div>
           <div class="payment-grid">
             <section id="payment-stripe" class="payment-card"><span class="payment-step">01 · TARJETAS</span><h3>Stripe</h3><p>Introduce el ID de la cuenta conectada que recibirá el pago. Guardarlo no crea una cuenta ni verifica su titularidad o capacidad de cobro. La conexión se completa en Stripe.</p></section>
-            <section id="payment-paypal" class="payment-card"><span class="payment-step">02 · PAYPAL</span><h3>PayPal.Me</h3><p>Enlace del destinatario, sin importe. Este campo prepara el enlace de pago; no instala una integración de PayPal Checkout ni confirma automáticamente la recepción del dinero.</p></section>
+            <section id="payment-paypal" class="payment-card"><span class="payment-step">02 · PAYPAL</span><h3>PayPal</h3><p>Checkout se conecta con las credenciales de EVA en el servicio privado. El campo siguiente es únicamente el enlace complementario PayPal.Me, sin importe; no configura las credenciales de Checkout ni confirma la recepción de pagos.</p></section>
             <section id="payment-transfer" class="payment-card"><span class="payment-step">03 · TRANSFERENCIA</span><h3>Datos bancarios</h3><p>Captura la cuenta de la boda. El formato de la CLABE no confirma titularidad. Las horas de reserva definen el plazo previsto para completar la transferencia.</p></section>
           </div>
         </fieldset><p id="payment-status" role="status" class="status"></p><button id="payment-save" class="dark" type="submit" disabled>Revisar y guardar datos de cobro</button></form>
