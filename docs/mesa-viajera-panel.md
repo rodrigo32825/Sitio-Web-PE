@@ -198,3 +198,24 @@ Se trabaja sobre **Mesa Viajera Maestra V2 - Desarrollo**. No hace falta crear u
 7. **Conexión.** Muestra el estado pendiente del enlace público. Las pruebas operativas van al final. La generación del enlace, el despliegue de Apps Script y la entrega del destino DNS aún no están conectados al panel. No se presenta una URL de Sheets como enlace para invitados ni como destino DNS de GoDaddy.
 
 El recorrido tiene navegación directa y botones para continuar; la organización visual no sustituye las validaciones existentes. Los cambios de módulos preservan el formulario mientras la fuente no cambie. Al cambiar de mesa se conserva el comportamiento existente de limpieza de sesión y de datos sensibles.
+
+## Conexión central de EVA — alcance autorizado y pendiente de implementación
+
+Confirmación del titular: las credenciales de **Stripe y PayPal pertenecen a Estudia Viaja y Aprende (EVA)** y están actualmente en la configuración de Apps Script. La hoja BodaFYR de referencia es `1Km1G1z_Fwob3fiAxhFxjBO3PrilAeWcUH22ppCEEBw8`. En su pestaña CONFIG se observaron las claves PAYPAL_ME, MONEDA, MODO_PAGO y los tres indicadores de medios de pago. No se alcanzó a leer el valor de PAYPAL_ME ni el código del script; no se infiere que PayPal.Me sea el mecanismo usado por el cobro real.
+
+### Interfaz que se conectará
+
+- **Pagos → Conexión de EVA:** administración exclusiva de Rodrigo, identidad y permisos comprobados en servidor. Mostrar Stripe y PayPal por separado, ambiente de pruebas/producción, estado de configuración y fecha de modificación. No mostrar ni devolver los valores secretos guardados. La verificación de cuenta/proveedor debe distinguirse de tener una credencial almacenada.
+- **Pagos de la mesa:** medios seleccionados y datos específicos de esa mesa, conservando los nombres y las reglas existentes hasta revisar el script. Las credenciales de EVA no se duplican al crear una boda. El ID de una cuenta conectada no equivale a la credencial de la plataforma EVA.
+- **Actualizar credencial:** captura únicamente mediante un formulario conectado a un servidor privado autenticado. No añadir un formulario operativo de secretos al sitio estático mientras no exista esa conexión. Las credenciales no se incluyen en Sheets, JSON, localStorage, URLs, GitHub, trazas ni mensajes de error. Guardar versiones en una bóveda de secretos del servidor; permisos mínimos para el servicio consumidor. Stripe: preferir una clave restringida compatible con las operaciones existentes, tras comprobar esas operaciones.
+
+### Adaptación conservando la operación actual
+
+1. Revisar los archivos `.gs` y HTML del proyecto vinculado a BodaFYR. Se necesitan los nombres de propiedades, su ámbito (script/documento/usuario), las funciones consumidoras de Stripe y PayPal, las rutas de cobro, callbacks/webhooks y la lógica de comisiones. No copiar ni solicitar los valores secretos actuales.
+2. Documentar el recorrido real del dinero y la asociación mesa/hoja/cuenta. No cambiar el titular, el destino de los fondos, las comisiones ni la modalidad de cobro basándose en las etiquetas del panel.
+3. Conectar un servicio privado de administración y almacenamiento de secretos. GitHub Pages continúa sirviendo la interfaz; no puede ejecutar este servicio. Elegir el despliegue definitivo después de revisar la compatibilidad del script y del proyecto Google existente.
+4. Resolver credenciales de EVA en el servidor, por proveedor y ambiente; los navegadores y las hojas reciben únicamente configuración pública permitida y estados. Las solicitudes de cada mesa deben quedar autorizadas para esa mesa; el servidor valida destinatarios e importes. No convertir la conexión central en un proxy abierto de pagos.
+5. Adaptar inicialmente V2 sin activar cobros. Mantener bodafyr operativa y su configuración actual hasta completar la migración y validación. La sustitución de una credencial no activa medios automáticamente. Mantener por separado los secrets de firma de webhooks que existan.
+6. Al final, comprobar acceso por responsable, rechazo de usuarios no autorizados, aislamiento de mesas y ambientes, ausencia de secretos en respuestas y logs, firma de webhooks, reintentos sin duplicar operaciones y conciliación de estados antes de habilitar medios reales.
+
+**Bloqueo actual:** el conector de Sheets devolvió 404 para BodaFYR, aunque se abrió la hoja en el navegador. La sesión del navegador dejó de responder al intentar continuar; no se pudo inspeccionar el editor de Apps Script. Para implementar el adaptador exacto se requiere el código fuente del script, sin valores de propiedades ni credenciales. No se modificaron las credenciales, los cobros, la hoja ni el script durante esta revisión. Este apartado es el alcance de trabajo, no una conexión ya implementada.
